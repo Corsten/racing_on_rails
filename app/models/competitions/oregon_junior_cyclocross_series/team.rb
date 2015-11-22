@@ -1,6 +1,10 @@
 module Competitions
   module OregonJuniorCyclocrossSeries
     class Team < Competition
+      default_value_for :event_teams, true
+      default_value_for :maximum_events, 4
+      default_value_for :members_only, false
+
       def point_schedule
         (1..30).to_a.reverse
       end
@@ -12,13 +16,9 @@ module Competitions
       def create_slug
         "ojcs_team"
       end
-
-      def event_teams?
+  
+      def team?
         true
-      end
-
-      def members_only?
-        false
       end
 
       def source_result_category_names
@@ -34,8 +34,8 @@ module Competitions
         ]
       end
 
-      def maximum_events(race)
-        4
+      def source_events?
+        true
       end
 
       def source_results_query(race)
@@ -63,14 +63,6 @@ module Competitions
 
       def results_per_race
         Competition::UNLIMITED
-      end
-
-      def source_events?
-        true
-      end
-
-      def team?
-        true
       end
     end
   end

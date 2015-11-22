@@ -3,9 +3,7 @@ module Competitions
     class Overall < Competitions::Overall
       include PortlandShortTrackSeries::Common
 
-      def maximum_events(race)
-        7
-      end
+      default_value_for :maximum_events, 7
 
       def after_calculate
         super

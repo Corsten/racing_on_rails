@@ -5,6 +5,8 @@ module Competitions
    validates_presence_of :parent
    after_create :add_source_events
 
+   default_value_for :members_only, false
+
    def self.parent_event_name
      self.name
    end
@@ -49,11 +51,6 @@ module Competitions
       results.each do |result|
         result["multiplier"] = result["points_factor"] || 1
       end
-    end
-
-    # Only members can score points?
-    def members_only?
-      false
     end
   end
 end

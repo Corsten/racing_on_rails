@@ -4,6 +4,8 @@ module Competitions
 
     after_create :add_source_events
 
+    default_value_for :members_only, false
+
     def self.parent_event_name
       "Blind Date at the Dairy"
     end
@@ -42,11 +44,7 @@ module Competitions
     def team?
       true
     end
-
-    def members_only?
-      false
-    end
-
+    
     def all_year?
       false
     end

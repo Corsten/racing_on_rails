@@ -271,28 +271,6 @@ class Race < ActiveRecord::Base
     end
   end
 
-  def calculate_members_only_places!
-    # count up from zero
-    last_members_only_place = 0
-    # assuming first result starting at zero+one (better than sorting results twice?)
-    last_result_place = 0
-    results.sort.each do |result|
-      place_before = result.members_only_place.to_i
-      result.members_only_place = ''
-      if result.numeric_place?
-        if result.member_result?
-          # only increment if we have moved onto a new place
-          last_members_only_place += 1 if (result.numeric_place != last_members_only_place && result.numeric_place !=last_result_place)
-          result.members_only_place = last_members_only_place.to_s
-        end
-        # Slight optimization. Most of the time, no point in saving a result that hasn't changed
-        result.update(members_only_place: result.members_only_place) if place_before != result.members_only_place
-        # store to know when switching to new placement (team result feature)
-        last_result_place = result.numeric_place
-      end
-    end
-  end
-
   def create_result_before(result_id)
     if results.empty?
       return results.create(place: "1")

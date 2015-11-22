@@ -5,6 +5,11 @@ module Competitions
     after_create :add_source_events
     before_create :set_notes, :set_name
 
+    default_value_for :break_ties, false
+    default_value_for :members_only, false
+    default_value_for :missing_result_penalty, 100
+    default_value_for :most_points_win, false
+
     def self.calculate!(year = Time.zone.today.year)
       ActiveSupport::Notifications.instrument "calculate.#{name}.competitions.racing_on_rails" do
         transaction do
@@ -63,17 +68,8 @@ module Competitions
       where("results.race_name" => category_names)
     end
 
-    def most_points_win?
-      false
-    end
-
-    # Member teams, people
-    def members_only?
-      false
-    end
-
-    def break_ties?
-      false
+    def source_events?
+      true
     end
 
     def point_schedule
@@ -88,7 +84,7 @@ module Competitions
       self.name = "Team Competition"
     end
 
-    def source_events?
+    def team?
       true
     end
 
@@ -98,14 +94,6 @@ module Competitions
 
     def results_per_event
       10
-    end
-
-    def missing_result_penalty
-      100
-    end
-
-    def team?
-      true
     end
   end
 end

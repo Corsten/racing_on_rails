@@ -23,11 +23,6 @@ module Competitions
       [ friendly_name ]
     end
 
-    # Only consider results from categories. Default to false: use all races in year.
-    def categories?
-      false
-    end
-
     # Array of ids (integers)
     # +race+ category, +race+ category's siblings, and any competition categories
     def categories_for(race)

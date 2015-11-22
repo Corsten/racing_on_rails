@@ -7,6 +7,8 @@ module Competitions
 
     after_create :set_parent
 
+    default_value_for :use_source_result_points, true
+
     def source_results_query(race)
       super.
       select("competition_events.type").
@@ -49,10 +51,6 @@ module Competitions
 
     def results_per_event
       Competition::UNLIMITED
-    end
-
-    def use_source_result_points?
-      true
     end
 
     def team?

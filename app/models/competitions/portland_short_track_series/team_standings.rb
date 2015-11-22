@@ -3,6 +3,8 @@ module Competitions
     class TeamStandings < Competition
       include PortlandShortTrackSeries::Common
 
+      default_value_for :use_source_result_points, true
+
       validates_presence_of :parent
       after_create :add_source_events
       before_create :set_name
@@ -35,20 +37,12 @@ module Competitions
       def race_category_names
         [ "Team" ]
       end
-
+  
       def team?
         true
       end
 
-      def members_only?
-        false
-      end
-
       def source_events?
-        true
-      end
-
-      def use_source_result_points?
         true
       end
 

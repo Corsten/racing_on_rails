@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151117051750) do
+ActiveRecord::Schema.define(version: 20151122164951) do
 
   create_table "adjustments", force: :cascade do |t|
     t.integer  "order_id",    limit: 4
@@ -204,63 +204,79 @@ ActiveRecord::Schema.define(version: 20151117051750) do
   add_index "event_teams", ["team_id"], name: "index_event_teams_on_team_id", using: :btree
 
   create_table "events", force: :cascade do |t|
-    t.integer  "parent_id",                      limit: 4
-    t.string   "city",                           limit: 128
+    t.integer  "parent_id",                       limit: 4
+    t.string   "city",                            limit: 128
     t.date     "date"
-    t.string   "discipline",                     limit: 32
-    t.string   "flyer",                          limit: 255
-    t.string   "name",                           limit: 255
-    t.string   "notes",                          limit: 255,                            default: ""
-    t.string   "sanctioned_by",                  limit: 255
-    t.string   "state",                          limit: 64
-    t.string   "type",                           limit: 255
+    t.string   "discipline",                      limit: 32
+    t.string   "flyer",                           limit: 255
+    t.string   "name",                            limit: 255
+    t.string   "notes",                           limit: 255,                            default: ""
+    t.string   "sanctioned_by",                   limit: 255
+    t.string   "state",                           limit: 64
+    t.string   "type",                            limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "flyer_approved",                                                        default: false, null: false
-    t.boolean  "cancelled",                                                             default: false
-    t.integer  "number_issuer_id",               limit: 4
-    t.string   "first_aid_provider",             limit: 255
-    t.float    "pre_event_fees",                 limit: 24
-    t.float    "post_event_fees",                limit: 24
-    t.float    "flyer_ad_fee",                   limit: 24
-    t.string   "prize_list",                     limit: 255
-    t.integer  "velodrome_id",                   limit: 4
-    t.string   "time",                           limit: 255
-    t.boolean  "instructional",                                                         default: false
-    t.boolean  "practice",                                                              default: false
-    t.boolean  "atra_points_series",                                                    default: false, null: false
-    t.integer  "bar_points",                     limit: 4,                                              null: false
-    t.boolean  "ironman",                                                                               null: false
-    t.boolean  "auto_combined_results",                                                 default: true,  null: false
-    t.integer  "team_id",                        limit: 4
-    t.string   "sanctioning_org_event_id",       limit: 16
-    t.integer  "promoter_id",                    limit: 4
-    t.string   "phone",                          limit: 255
-    t.string   "email",                          limit: 255
-    t.decimal  "price",                                        precision: 10, scale: 2
-    t.boolean  "postponed",                                                             default: false, null: false
-    t.string   "chief_referee",                  limit: 255
-    t.boolean  "registration",                                                          default: false, null: false
-    t.boolean  "beginner_friendly",                                                     default: false, null: false
-    t.boolean  "promoter_pays_registration_fee",                                        default: false, null: false
-    t.boolean  "membership_required",                                                   default: false, null: false
+    t.boolean  "flyer_approved",                                                         default: false, null: false
+    t.boolean  "cancelled",                                                              default: false
+    t.integer  "number_issuer_id",                limit: 4
+    t.string   "first_aid_provider",              limit: 255
+    t.float    "pre_event_fees",                  limit: 24
+    t.float    "post_event_fees",                 limit: 24
+    t.float    "flyer_ad_fee",                    limit: 24
+    t.string   "prize_list",                      limit: 255
+    t.integer  "velodrome_id",                    limit: 4
+    t.string   "time",                            limit: 255
+    t.boolean  "instructional",                                                          default: false
+    t.boolean  "practice",                                                               default: false
+    t.boolean  "atra_points_series",                                                     default: false, null: false
+    t.integer  "bar_points",                      limit: 4,                                              null: false
+    t.boolean  "ironman",                                                                                null: false
+    t.boolean  "auto_combined_results",                                                  default: true,  null: false
+    t.integer  "team_id",                         limit: 4
+    t.string   "sanctioning_org_event_id",        limit: 16
+    t.integer  "promoter_id",                     limit: 4
+    t.string   "phone",                           limit: 255
+    t.string   "email",                           limit: 255
+    t.decimal  "price",                                         precision: 10, scale: 2
+    t.boolean  "postponed",                                                              default: false, null: false
+    t.string   "chief_referee",                   limit: 255
+    t.boolean  "registration",                                                           default: false, null: false
+    t.boolean  "beginner_friendly",                                                      default: false, null: false
+    t.boolean  "promoter_pays_registration_fee",                                         default: false, null: false
+    t.boolean  "membership_required",                                                    default: false, null: false
     t.datetime "registration_ends_at"
-    t.boolean  "override_registration_ends_at",                                         default: false, null: false
-    t.decimal  "all_events_discount",                          precision: 10, scale: 2
-    t.decimal  "additional_race_price",                        precision: 10, scale: 2
-    t.string   "website",                        limit: 255
-    t.string   "registration_link",              limit: 255
-    t.string   "custom_suggestion",              limit: 255
-    t.integer  "field_limit",                    limit: 4
-    t.text     "refund_policy",                  limit: 65535
-    t.boolean  "refunds",                                                               default: true,  null: false
-    t.integer  "region_id",                      limit: 4
-    t.date     "end_date",                                                                              null: false
-    t.boolean  "registration_public",                                                   default: true,  null: false
-    t.decimal  "junior_price",                                 precision: 10, scale: 2
-    t.boolean  "suggest_membership",                                                    default: true,  null: false
-    t.string   "slug",                           limit: 255
-    t.integer  "year",                           limit: 4,                                              null: false
+    t.boolean  "override_registration_ends_at",                                          default: false, null: false
+    t.decimal  "all_events_discount",                           precision: 10, scale: 2
+    t.decimal  "additional_race_price",                         precision: 10, scale: 2
+    t.string   "website",                         limit: 255
+    t.string   "registration_link",               limit: 255
+    t.string   "custom_suggestion",               limit: 255
+    t.integer  "field_limit",                     limit: 4
+    t.text     "refund_policy",                   limit: 65535
+    t.boolean  "refunds",                                                                default: true,  null: false
+    t.integer  "region_id",                       limit: 4
+    t.date     "end_date",                                                                               null: false
+    t.boolean  "registration_public",                                                    default: true,  null: false
+    t.decimal  "junior_price",                                  precision: 10, scale: 2
+    t.boolean  "suggest_membership",                                                     default: true,  null: false
+    t.string   "slug",                            limit: 255
+    t.integer  "year",                            limit: 4,                                              null: false
+    t.boolean  "break_ties",                                                             default: true
+    t.boolean  "categories",                                                             default: false
+    t.integer  "default_bar_points",              limit: 4,                              default: 0
+    t.decimal  "dnf_points",                                    precision: 10, scale: 2, default: 0.0
+    t.boolean  "double_points_for_last_event",                                           default: false
+    t.boolean  "event_teams",                                                            default: false
+    t.boolean  "field_size_bonus",                                                       default: false
+    t.boolean  "members_only",                                                           default: true
+    t.integer  "maximum_events",                  limit: 4
+    t.integer  "minimum_events",                  limit: 4
+    t.integer  "missing_result_penalty",          limit: 4
+    t.boolean  "most_points_win",                                                        default: true
+    t.boolean  "points_schedule_from_field_size",                                        default: false
+    t.integer  "results_per_race",                limit: 4,                              default: 1
+    t.boolean  "use_source_result_points",                                               default: false
+    t.boolean  "team",                                                                   default: false
   end
 
   add_index "events", ["bar_points"], name: "index_events_on_bar_points", using: :btree

@@ -2,6 +2,8 @@ module Competitions
   class OregonWomensPrestigeSeries < Competition
     include Competitions::OregonWomensPrestigeSeriesModules::Common
 
+    default_value_for :categories?, true
+
     def friendly_name
       "Oregon Womens Prestige Series"
     end
@@ -9,12 +11,8 @@ module Competitions
     def category_names
       [ "Women 1/2/3", "Women 4" ]
     end
-
+    
     def source_events?
-      true
-    end
-
-    def categories?
       true
     end
 

@@ -48,10 +48,6 @@ module Competitions
       true
     end
 
-    def field_size_bonus?
-      true
-    end
-
     def source_event_types
       [ Event,
         SingleDayEvent,

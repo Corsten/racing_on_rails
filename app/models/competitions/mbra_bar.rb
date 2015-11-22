@@ -8,6 +8,10 @@ module Competitions
   class MbraBar < Competition
     include Bars::Discipline
 
+    default_value_for :dnf_points, 0.5
+    default_value_for :members_only, false
+    default_value_for :points_schedule_from_field_size, true
+
     def self.calculate!(year = Time.zone.today.year)
       ActiveSupport::Notifications.instrument "calculate.#{name}.competitions.racing_on_rails" do
         transaction do
@@ -76,20 +80,8 @@ module Competitions
       30
     end
 
-    def members_only?
-      false
-    end
-
     def place_bonus
       [ 6, 3, 1 ]
-    end
-
-    def dnf_points
-      0.5
-    end
-
-    def points_schedule_from_field_size?
-      true
     end
 
     def friendly_name

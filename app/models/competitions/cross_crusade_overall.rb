@@ -4,6 +4,9 @@ module Competitions
   class CrossCrusadeOverall < Overall
     before_create :set_notes, :set_name
 
+    default_value_for :minimum_events, 3
+    default_value_for :maximum_events, 6
+
     def self.parent_event_name
       "Cross Crusade"
     end
@@ -46,14 +49,6 @@ module Competitions
 
     def point_schedule
       [ 26, 20, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
-    end
-
-    def minimum_events
-      3
-    end
-
-    def maximum_events(race)
-      6
     end
 
     def set_notes

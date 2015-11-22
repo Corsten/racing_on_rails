@@ -8,6 +8,11 @@ module Competitions
   # Many dynamically choose their source events each time they calculate.
   # +competition_event_memberships+: Relationship between source_events and competition.
   #
+  # +categories? Only consider results from categories. Default to false: use all races in year.
+  # +members_only?+ Only members can score points?
+  # +source_events?+ Only consider results from source_events. Default to false: use all events in year.
+  # +team+ Team-based competition? False (default) implies it is person-based.
+  #
   # +calculate!+ is the main method
   class Competition < Event
     include Competitions::Categories
@@ -70,7 +75,6 @@ module Competitions
           competition.create_races
           competition.create_children
           # Could bulk load all Event and Races at this point, but hardly seems to matter
-          competition.calculate_members_only_places
           competition.calculate!
         end
       end
@@ -125,7 +129,7 @@ module Competitions
           double_points_for_last_event: double_points_for_last_event?,
           end_date: end_date,
           field_size_bonus: field_size_bonus?,
-          maximum_events: maximum_events(race),
+          maximum_events: maximum_events,
           maximum_upgrade_points: maximum_upgrade_points,
           members_only: members_only?,
           minimum_events: minimum_events,
@@ -275,21 +279,6 @@ module Competitions
         ).to_a
       else
         results
-      end
-    end
-
-    # Some competitions are only open to RacingAssociation members, and non-members are dropped from the results.
-    def calculate_members_only_places
-      if place_members_only?
-        Race.
-          includes(:event).
-          where("events.type != ?", self.class.name.demodulize).
-          year(year).
-          where("events.updated_at > ? || races.updated_at > ?", 1.week.ago, 1.week.ago).
-          references(:events).
-          find_each do |r|
-            r.calculate_members_only_places!
-          end
       end
     end
 
@@ -512,18 +501,6 @@ module Competitions
       end
     end
 
-    def minimum_events
-      nil
-    end
-
-    def missing_result_penalty
-      nil
-    end
-
-    def maximum_events(race)
-      nil
-    end
-
     def maximum_upgrade_points
       Competition::UNLIMITED
     end
@@ -532,33 +509,8 @@ module Competitions
       nil
     end
 
-    def points_schedule_from_field_size?
-      false
-    end
-
-    def break_ties?
-      true
-    end
-
-    def dnf_points
-      0
-    end
-
     def results_per_event
       Competition::UNLIMITED
-    end
-
-    def results_per_race
-      1
-    end
-
-    def use_source_result_points?
-      false
-    end
-
-    # Team-based competition? False (default) implies it is person-based.
-    def team?
-      false
     end
 
     def default_ironman

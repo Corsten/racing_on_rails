@@ -5,6 +5,8 @@ module Competitions
     # include OverallBars::Points
     include OverallBars::Races
 
+    default_value_for :maximum_events, 5
+
     def create_children
       Discipline.find_all_bar.
       reject { |discipline| [Discipline[:age_graded], Discipline[:overall], Discipline[:team]].include?(discipline) }.
@@ -112,10 +114,6 @@ module Competitions
     # 300 points for first place, 299 for second, etc.
     def point_schedule
       (1..300).to_a.reverse
-    end
-
-    def maximum_events(race)
-      5
     end
 
     def friendly_name

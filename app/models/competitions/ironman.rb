@@ -2,19 +2,14 @@ module Competitions
   # Who has done the most events? Just counts starts/appearences in results. Not pefect -- some events
   # are probably over-counted.
   class Ironman < Competition
+    default_value_for :break_ties, false
+    default_value_for :dnf_points, 1
+
     def friendly_name
       "Ironman"
     end
 
     def points_for(source_result)
-      1
-    end
-
-    def break_ties?
-      false
-    end
-
-    def dnf_points
       1
     end
 

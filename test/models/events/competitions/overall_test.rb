@@ -4,6 +4,9 @@ module Competitions
   # :stopdoc:
   class OverallTest < ActiveSupport::TestCase
     class TestOverall < Overall
+      default_value_for :minimum_events, 2
+      default_value_for :maximum_events, 6
+
       def self.parent_event_name
         "Test Series"
       end
@@ -14,14 +17,6 @@ module Competitions
 
       def point_schedule
         [ 26, 20, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
-      end
-
-      def minimum_events
-        2
-      end
-
-      def maximum_events(race)
-        6
       end
     end
 

@@ -3,6 +3,8 @@ module Competitions
   class AgeGradedBar < Competition
     after_create :set_parent
 
+    default_value_for :use_source_result_points, true
+
     def source_results_query(race)
       super.
       where("races.category_id" => race.category.parent_id).
@@ -77,10 +79,6 @@ module Competitions
 
     def friendly_name
       "Age Graded BAR"
-    end
-
-    def use_source_result_points?
-      true
     end
   end
 end

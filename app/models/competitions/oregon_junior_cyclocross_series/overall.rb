@@ -1,6 +1,9 @@
 module Competitions
   module OregonJuniorCyclocrossSeries
     class Overall < Competition
+      default_value_for :members_only, false
+      default_value_for :maximum_events, 4
+
       def friendly_name
         "Oregon Junior Cyclocross Series"
       end
@@ -9,8 +12,8 @@ module Competitions
         [ 30, 28, 26, 24, 22, 20, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
       end
 
-      def members_only?
-        false
+      def source_events?
+        true
       end
 
       def category_names
@@ -24,14 +27,6 @@ module Competitions
           "Junior Women 15-16",
           "Junior Women 17-18"
         ]
-      end
-
-      def maximum_events(race)
-        4
-      end
-
-      def source_events?
-        true
       end
 
       def source_results_query(race)

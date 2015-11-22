@@ -81,13 +81,6 @@ class CombinedTimeTrialResultsTest < ActiveSupport::TestCase
     CombinedTimeTrialResults.calculate!
 
     assert_not_nil(event.combined_results(true), "TT event should have combined results")
-    result_id = event.combined_results.races.first.results.first.id
-
-    race.reload
-    race.calculate_members_only_places!
-    event.reload
-    result_id_after_member_place = event.combined_results(true).races.first.results.first.id
-    assert_equal(result_id, result_id_after_member_place, "calculate_members_only_places! should not trigger combined results recalc")
   end
 
   test "class calculate! with no results" do

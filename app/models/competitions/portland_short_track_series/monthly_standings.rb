@@ -3,6 +3,9 @@ module Competitions
     class MonthlyStandings < Competition
       include PortlandShortTrackSeries::Common
 
+      default_value_for :default_bar_points, 1
+      default_value_for :members_only, false
+
       def self.calculate!(year = Time.zone.today.year)
         ActiveSupport::Notifications.instrument "calculate.#{name}.competitions.racing_on_rails" do
           transaction do
@@ -50,14 +53,6 @@ module Competitions
 
       def source_events?
         true
-      end
-
-      def default_bar_points
-        1
-      end
-
-      def members_only?
-        false
       end
     end
   end

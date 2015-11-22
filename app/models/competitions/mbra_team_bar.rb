@@ -3,6 +3,11 @@ module Competitions
   class MbraTeamBar < Competition
     include Bars::Discipline
 
+    default_value_for :dnf_points, 0.5
+    default_value_for :members_only, false
+    default_value_for :points_schedule_from_field_size, true
+    default_value_for :results_per_race, 2
+
     def self.calculate!(year = Time.zone.today.year)
       ActiveSupport::Notifications.instrument "calculate.#{name}.competitions.racing_on_rails" do
         transaction do
@@ -65,39 +70,11 @@ module Competitions
       ::Discipline[discipline].bar_categories.map(&:name)
     end
 
-    def dnf_points
-      0.5
-    end
-
-    def members_only?
-      true
-    end
-
     def place_bonus
       [ 6, 3, 1 ]
-    end
-
-    def points_schedule_from_field_size?
-      true
-    end
-
-    def results_per_race
-      2
     end
 
     def team?
-      true
-    end
-
-    def dnf_points
-      0.5
-    end
-
-    def place_bonus
-      [ 6, 3, 1 ]
-    end
-
-    def points_schedule_from_field_size?
       true
     end
 

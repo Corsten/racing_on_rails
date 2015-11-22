@@ -1,5 +1,7 @@
 module Competitions
   class BlindDateAtTheDairyOverall < Overall
+    default_value_for :maximum_events, 4
+
     def self.parent_event_name
       "Blind Date at the Dairy"
     end
@@ -30,10 +32,6 @@ module Competitions
 
     def point_schedule
       [ 15, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
-    end
-
-    def maximum_events(race)
-      4
     end
 
     def after_calculate

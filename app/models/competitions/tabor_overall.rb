@@ -1,6 +1,9 @@
 module Competitions
   # Mount Tabor Overall Series results
   class TaborOverall < Overall
+    default_value_for :double_points_for_last_event?, true
+    default_value_for :default_bar_points, 1
+
     def self.parent_event_name
       "Mt. Tabor Series"
     end
@@ -17,14 +20,6 @@ module Competitions
         "Senior Men",
         "Senior Women"
       ]
-    end
-
-    def double_points_for_last_event?
-      true
-    end
-
-    def default_bar_points
-      1
     end
 
     def point_schedule

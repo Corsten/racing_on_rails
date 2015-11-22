@@ -1,5 +1,8 @@
 module Competitions
   class BlindDateAtTheDairyMonthlyStandings < Competition
+    default_value_for :default_bar_points, 1
+    default_value_for :members_only, false
+
     def self.parent_event_name
       "Blind Date at the Dairy"
     end
@@ -69,15 +72,6 @@ module Competitions
       parent.children.select { |c| c.date.month == date.month }.each do |source_event|
         source_events << source_event
       end
-    end
-
-    # Only members can score points?
-    def members_only?
-      false
-    end
-
-    def default_bar_points
-      1
     end
 
     def source_events?
