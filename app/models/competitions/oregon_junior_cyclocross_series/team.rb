@@ -16,7 +16,7 @@ module Competitions
       def create_slug
         "ojcs_team"
       end
-  
+
       def team?
         true
       end

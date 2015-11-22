@@ -37,7 +37,7 @@ module Competitions
       def race_category_names
         [ "Team" ]
       end
-  
+
       def team?
         true
       end

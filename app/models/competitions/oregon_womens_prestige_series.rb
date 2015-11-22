@@ -11,7 +11,7 @@ module Competitions
     def category_names
       [ "Women 1/2/3", "Women 4" ]
     end
-    
+
     def source_events?
       true
     end

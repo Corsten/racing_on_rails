@@ -37,7 +37,7 @@ module Competitions
     def point_schedule
       [ 15, 12, 10, 8, 7, 6, 5, 4, 3, 2 ]
     end
-    
+
     def source_events?
       true
     end

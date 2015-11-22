@@ -44,7 +44,7 @@ module Competitions
     def team?
       true
     end
-    
+
     def all_year?
       false
     end
