@@ -59,8 +59,8 @@ module Competitions
             disciplines: disciplines_for(race))
     end
 
-    def maximum_events(race)
-      (Event.find_all_bar_for_discipline(discipline, year).size * 0.7).round.to_i
+    def maximum_events
+      (Event.find_all_bar_for_discipline(discipline, year).count * 0.7).round.to_i
     end
 
     def upgrades
