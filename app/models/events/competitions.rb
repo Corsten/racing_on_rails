@@ -31,6 +31,10 @@ module Events
       competition_event_membership.save!
     end
 
+    def event_teams?
+      false
+    end
+    
     def source_events?
       false
     end
