@@ -34,7 +34,7 @@ module Events
     def event_teams?
       false
     end
-    
+
     def source_events?
       false
     end
