@@ -505,10 +505,6 @@ module Competitions
       Competition::UNLIMITED
     end
 
-    def place_bonus
-      nil
-    end
-
     def results_per_event
       Competition::UNLIMITED
     end

@@ -10,6 +10,7 @@ module Competitions
 
     default_value_for :dnf_points, 0.5
     default_value_for :members_only, false
+    default_value_for :place_bonus, [ 6, 3, 1 ]
     default_value_for :points_schedule_from_field_size, true
 
     def self.calculate!(year = Time.zone.today.year)
@@ -78,10 +79,6 @@ module Competitions
 
     def maximum_upgrade_points
       30
-    end
-
-    def place_bonus
-      [ 6, 3, 1 ]
     end
 
     def friendly_name

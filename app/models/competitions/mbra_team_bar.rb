@@ -5,6 +5,7 @@ module Competitions
 
     default_value_for :dnf_points, 0.5
     default_value_for :members_only, false
+    default_value_for :place_bonus, [ 6, 3, 1 ]
     default_value_for :points_schedule_from_field_size, true
     default_value_for :results_per_race, 2
 
@@ -68,10 +69,6 @@ module Competitions
 
     def category_names
       ::Discipline[discipline].bar_categories.map(&:name)
-    end
-
-    def place_bonus
-      [ 6, 3, 1 ]
     end
 
     def team?

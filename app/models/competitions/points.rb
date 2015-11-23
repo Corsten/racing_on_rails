@@ -2,6 +2,12 @@ module Competitions
   module Points
     extend ActiveSupport::Concern
 
+    included do
+      serialize :place_bonus
+      default_value_for :place_bonus, nil
+    end
+
+
     def default_bar_points
       0
     end
