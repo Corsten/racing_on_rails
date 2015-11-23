@@ -2,7 +2,7 @@ module Competitions
   class OregonWomensPrestigeTeamSeries < Competition
     include Competitions::OregonWomensPrestigeSeriesModules::Common
 
-    default_value_for :categories?, true
+    default_value_for :categories, true
     default_value_for :results_per_race, 3
 
     def friendly_name
