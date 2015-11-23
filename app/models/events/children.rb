@@ -19,7 +19,7 @@ module Events
       scope :not_child, lambda { where("parent_id is null") }
 
       scope :not_single_day_event, lambda {
-        where "type is null or type != 'SingleDayEvent'"
+        where.not(type: "SingleDayEvent")
       }
     end
 
