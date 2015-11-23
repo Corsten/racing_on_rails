@@ -266,7 +266,6 @@ ActiveRecord::Schema.define(version: 20151122164951) do
     t.integer  "default_bar_points",              limit: 4,                              default: 0
     t.decimal  "dnf_points",                                    precision: 10, scale: 2, default: 0.0
     t.boolean  "double_points_for_last_event",                                           default: false
-    t.boolean  "event_teams",                                                            default: false
     t.boolean  "field_size_bonus",                                                       default: false
     t.boolean  "members_only",                                                           default: true
     t.integer  "maximum_events",                  limit: 4

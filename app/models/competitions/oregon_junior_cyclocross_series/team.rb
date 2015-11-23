@@ -1,7 +1,6 @@
 module Competitions
   module OregonJuniorCyclocrossSeries
     class Team < Competition
-      default_value_for :event_teams, true
       default_value_for :maximum_events, 4
       default_value_for :members_only, false
 
@@ -49,6 +48,10 @@ module Competitions
         where("member_to is not null").
         where("year(member_to) >= ?", year).
         where("event_teams.id" => event_teams_with_at_least_members)
+      end
+
+      def event_teams?
+        true
       end
 
       def event_teams_with_at_least_members

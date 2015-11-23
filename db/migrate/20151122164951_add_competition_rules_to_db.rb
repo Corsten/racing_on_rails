@@ -6,7 +6,6 @@ class AddCompetitionRulesToDb < ActiveRecord::Migration
       t.integer :default_bar_points, default: 0
       t.decimal :dnf_points, precision: 10, scale: 2, default: 0.0
       t.boolean :double_points_for_last_event, default: false
-      t.boolean :event_teams, default: false
       t.boolean :field_size_bonus, default: false
       t.boolean :members_only, default: true
       t.integer :maximum_events
@@ -36,7 +35,7 @@ class AddCompetitionRulesToDb < ActiveRecord::Migration
           Competitions::MbraBar.update_all dnf_points: 0.5, members_only: false, points_schedule_from_field_size: true
           Competitions::MbraTeamBar.update_all members_only: false, points_schedule_from_field_size: true, results_per_race: 2
           Competitions::OregonJuniorCyclocrossSeries::Overall.update_all maximum_events: 4, members_only: false
-          Competitions::OregonJuniorCyclocrossSeries::Team.update_all event_teams: true, maximum_events: 4, members_only: false
+          Competitions::OregonJuniorCyclocrossSeries::Team.update_all maximum_events: 4, members_only: false
           Competitions::OregonWomensPrestigeSeries.update_all categories: true
           Competitions::OregonWomensPrestigeTeamSeries.update_all categories: true, results_per_race: 3
           Competitions::OregonTTCup.update_all maximum_events: 8
