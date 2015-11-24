@@ -2,6 +2,7 @@ module Competitions
   class CrossCrusadeCallups < Competition
     default_value_for :name, "Cross Crusade Callups"
     default_value_for :members_only, false
+    default_value_for :point_schedule, [ 15, 12, 10, 8, 7, 6, 5, 4, 3, 2 ]
 
     def category_names
       [
@@ -32,10 +33,6 @@ module Competitions
     def source_results_query(race)
       super.
       where("races.category_id" => categories_for(race))
-    end
-
-    def point_schedule
-      [ 15, 12, 10, 8, 7, 6, 5, 4, 3, 2 ]
     end
 
     def source_events?

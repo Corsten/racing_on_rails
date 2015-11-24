@@ -2,6 +2,7 @@ module Competitions
   # Year-long OBRA TT competition
   class OregonTTCup < Competition
     default_value_for :maximum_events, 8
+    default_value_for :point_schedule, [ 20, 17, 15, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
 
     def friendly_name
       "OBRA Time Trial Cup"
@@ -39,10 +40,6 @@ module Competitions
         "Senior Women 1/2",
         "Tandem"
       ]
-    end
-
-    def point_schedule
-      [ 20, 17, 15, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
     end
 
     def source_events?

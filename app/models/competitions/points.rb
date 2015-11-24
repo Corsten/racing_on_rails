@@ -4,20 +4,13 @@ module Competitions
 
     included do
       serialize :place_bonus
+      serialize :point_schedule
       default_value_for :place_bonus, nil
+      default_value_for :point_schedule, nil
     end
-
 
     def default_bar_points
       0
-    end
-
-    def point_schedule
-      @point_schedule || nil
-    end
-
-    def point_schedule=(value)
-      @point_schedule = value
     end
   end
 end

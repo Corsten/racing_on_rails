@@ -2,10 +2,11 @@ module Competitions
   # See Bar class.
   class OverallBar < Competition
     include OverallBars::Categories
-    # include OverallBars::Points
     include OverallBars::Races
 
     default_value_for :maximum_events, 5
+    # 300 points for first place, 299 for second, etc.
+    default_value_for :point_schedule, (1..300).to_a.reverse
 
     def create_children
       Discipline.find_all_bar.
@@ -109,11 +110,6 @@ module Competitions
       end
 
       filtered_results
-    end
-
-    # 300 points for first place, 299 for second, etc.
-    def point_schedule
-      (1..300).to_a.reverse
     end
 
     def friendly_name

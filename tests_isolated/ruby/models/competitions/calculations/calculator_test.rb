@@ -337,7 +337,7 @@ module Competitions
       end
 
       def test_upgrade_points
-        rules = { members_only: false, place_bonus: [ 6, 3, 1 ], points_schedule_from_field_size: true, }
+        rules = { members_only: false, place_bonus: [ 6, 3, 1 ], point_schedule_from_field_size: true, }
         source_results = [
           { "place" => "6", "participant_id" => 1, "event_id" => 1, "race_id" => 1, "field_size" => 51 },
           { "place" => "1", "participant_id" => 1, "event_id" => 2, "race_id" => 2, "field_size" => 22, "points" => 7, "upgrade" => true },
@@ -357,7 +357,7 @@ module Competitions
       end
 
       def test_maximum_upgrade_points
-        rules = { members_only: false, place_bonus: [ 6, 3, 1 ], points_schedule_from_field_size: true, maximum_upgrade_points: 5 }
+        rules = { members_only: false, place_bonus: [ 6, 3, 1 ], point_schedule_from_field_size: true, maximum_upgrade_points: 5 }
         source_results = [
           { "place" => "6", "participant_id" => 1, "event_id" => 1, "race_id" => 1, "field_size" => 51 },
           { "place" => "1", "participant_id" => 1, "event_id" => 2, "race_id" => 2, "field_size" => 22, "points" => 20, "upgrade" => true },

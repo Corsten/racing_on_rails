@@ -3,6 +3,7 @@ module Competitions
   class TaborOverall < Overall
     default_value_for :double_points_for_last_event?, true
     default_value_for :default_bar_points, 1
+    default_value_for :point_schedule, [ 100, 70, 50, 40, 36, 32, 28, 24, 20, 16, 15, 14, 13, 12, 11 ]
 
     def self.parent_event_name
       "Mt. Tabor Series"
@@ -20,10 +21,6 @@ module Competitions
         "Senior Men",
         "Senior Women"
       ]
-    end
-
-    def point_schedule
-      [ 100, 70, 50, 40, 36, 32, 28, 24, 20, 16, 15, 14, 13, 12, 11 ]
     end
   end
 end

@@ -47,12 +47,12 @@ module Competitions
       end
 
       def point_schedule?(rules)
-        rules[:point_schedule] || rules[:points_schedule_from_field_size]
+        rules[:point_schedule] || rules[:point_schedule_from_field_size]
       end
 
       # Basic: this place is worth this many points
       def points_from_place(result, rules)
-        if rules[:points_schedule_from_field_size]
+        if rules[:point_schedule_from_field_size]
           (result.field_size - numeric_place(result)) + 1
         else
           rules[:point_schedule][numeric_place(result) - 1]

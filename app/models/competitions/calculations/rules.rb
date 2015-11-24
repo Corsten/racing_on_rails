@@ -17,7 +17,7 @@ module Competitions
           most_points_win:                 true,
           place_bonus:                     [],
           point_schedule:                  nil,
-          points_schedule_from_field_size: false,
+          point_schedule_from_field_size: false,
           results_per_event:               UNLIMITED,
           results_per_race:                1,
           source_event_ids:                nil,

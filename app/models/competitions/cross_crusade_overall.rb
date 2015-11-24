@@ -6,6 +6,7 @@ module Competitions
 
     default_value_for :minimum_events, 3
     default_value_for :maximum_events, 6
+    default_value_for :point_schedule, [ 26, 20, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
 
     def self.parent_event_name
       "Cross Crusade"
@@ -45,10 +46,6 @@ module Competitions
         "Women B",
         "Women C"
       ]
-    end
-
-    def point_schedule
-      [ 26, 20, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
     end
 
     def set_notes

@@ -9,7 +9,9 @@ module Competitions
   class Bar < Competition
     include Bars::Categories
     include Bars::Discipline
-    include Bars::Points
+
+    default_value_for :field_size_bonus, true
+    default_value_for :point_schedule, [ 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
 
     def self.calculate!(year = Time.zone.today.year)
       ActiveSupport::Notifications.instrument "calculate.#{name}.competitions.racing_on_rails" do

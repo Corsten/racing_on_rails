@@ -150,20 +150,20 @@ module Competitions
         )
       end
 
-      def test_points_schedule_from_field_size
+      def test_point_schedule_from_field_size
         assert_equal 26, Calculator.points(
           result(place: "4", field_size: 29),
-          points_schedule_from_field_size: true
+          point_schedule_from_field_size: true
         )
 
         assert_equal 75, Calculator.points(
           result(place: "1", field_size: 75),
-          points_schedule_from_field_size: true
+          point_schedule_from_field_size: true
         )
 
         assert_equal 1, Calculator.points(
           result(place: "75", field_size: 75),
-          points_schedule_from_field_size: true
+          point_schedule_from_field_size: true
         )
       end
 
@@ -171,25 +171,25 @@ module Competitions
         assert_equal 26, Calculator.points(
           result(place: "4", field_size: 29),
           place_bonus: [ 7, 5, 3 ],
-          points_schedule_from_field_size: true
+          point_schedule_from_field_size: true
         )
 
         assert_equal 82, Calculator.points(
           result(place: "1", field_size: 75),
           place_bonus: [ 7, 5, 3 ],
-          points_schedule_from_field_size: true
+          point_schedule_from_field_size: true
         )
 
         assert_equal 1, Calculator.points(
           result(place: "75", field_size: 75),
           place_bonus: [ 7, 5, 3 ],
-          points_schedule_from_field_size: true
+          point_schedule_from_field_size: true
         )
 
         assert_equal 76, Calculator.points(
           result(place: "3", field_size: 75),
           place_bonus: [ 7, 5, 3 ],
-          points_schedule_from_field_size: true
+          point_schedule_from_field_size: true
         )
       end
     end

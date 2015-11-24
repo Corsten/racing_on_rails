@@ -12,7 +12,7 @@ class AddCompetitionRulesToDb < ActiveRecord::Migration
       t.integer :minimum_events
       t.integer :missing_result_penalty
       t.boolean :most_points_win, default: true
-      t.boolean :points_schedule_from_field_size, default: false
+      t.boolean :point_schedule_from_field_size, default: false
       t.integer :results_per_race, default: 1
       t.boolean :use_source_result_points, default: false
       t.boolean :team, default: false
@@ -32,8 +32,8 @@ class AddCompetitionRulesToDb < ActiveRecord::Migration
             break_ties: false, members_only: false, missing_result_penalty: 100, most_points_win: false
           )
           Competitions::Ironman.update_all break_ties: false, dnf_points: 1
-          Competitions::MbraBar.update_all dnf_points: 0.5, members_only: false, points_schedule_from_field_size: true
-          Competitions::MbraTeamBar.update_all members_only: false, points_schedule_from_field_size: true, results_per_race: 2
+          Competitions::MbraBar.update_all dnf_points: 0.5, members_only: false, point_schedule_from_field_size: true
+          Competitions::MbraTeamBar.update_all members_only: false, point_schedule_from_field_size: true, results_per_race: 2
           Competitions::OregonJuniorCyclocrossSeries::Overall.update_all maximum_events: 4, members_only: false
           Competitions::OregonJuniorCyclocrossSeries::Team.update_all maximum_events: 4, members_only: false
           Competitions::OregonWomensPrestigeSeries.update_all categories: true

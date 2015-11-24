@@ -6,7 +6,7 @@ module Competitions
     default_value_for :dnf_points, 0.5
     default_value_for :members_only, false
     default_value_for :place_bonus, [ 6, 3, 1 ]
-    default_value_for :points_schedule_from_field_size, true
+    default_value_for :point_schedule_from_field_size, true
     default_value_for :results_per_race, 2
 
     def self.calculate!(year = Time.zone.today.year)

@@ -1,6 +1,5 @@
 # OBRA, WSBA, USA Cycling, etc …
 # Many defaults. Override in environment.rb. Stored in RacingAssociation.current constant.
-# bar_point_schedule should be stored in the database with the BAR?
 #
 # cx_memberships? Offers cyclocross memberships
 # eager_match_on_license? Trust license number in results? Use it to match People instead of name.
