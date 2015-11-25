@@ -4,15 +4,7 @@ module Competitions
       extend ActiveSupport::Concern
 
       included do
-        default_value_for :point_schedule, [ 100, 80, 60, 50, 45, 40, 36, 32, 29, 26, 24, 22, 20, 18, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
-        
-        def self.parent_event_name
-          "Portland Short Track Series"
-        end
-      end
-
-      def category_names
-        [
+        default_value_for :category_names, [
           "Category 1 Men 19-34",
           "Category 1 Men 35-44",
           "Category 1 Men 45+",
@@ -35,6 +27,11 @@ module Competitions
           "Elite/Category 1 Women",
           "Singlespeed"
         ]
+        default_value_for :point_schedule, [ 100, 80, 60, 50, 45, 40, 36, 32, 29, 26, 24, 22, 20, 18, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
+
+        def self.parent_event_name
+          "Portland Short Track Series"
+        end
       end
 
       def upgrades

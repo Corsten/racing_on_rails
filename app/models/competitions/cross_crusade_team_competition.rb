@@ -3,12 +3,13 @@ module Competitions
   class CrossCrusadeTeamCompetition < Competition
     validates_presence_of :parent
     after_create :add_source_events
-    before_create :set_notes, :set_name
 
     default_value_for :break_ties, false
     default_value_for :members_only, false
     default_value_for :missing_result_penalty, 100
     default_value_for :most_points_win, false
+    default_value_for :notes, %Q{ In accordance with the Geneva Conventions, the official teams of the Cross Crusade have entered into a State of War for domination of the realm. <a href="http://crosscrusade.com/series.html" class="obvious">rules of engagement</a>. }
+    default_value_for :point_schedule, (1..100).to_a
 
     def self.calculate!(year = Time.zone.today.year)
       ActiveSupport::Notifications.instrument "calculate.#{name}.competitions.racing_on_rails" do
@@ -18,7 +19,8 @@ module Competitions
           if series && series.any_results_including_children?
             team_competition = series.child_competitions.detect { |c| c.is_a? CrossCrusadeTeamCompetition }
             unless team_competition
-              team_competition = self.new(parent_id: series.id)
+              team_competition = self.new
+              team_competition.parent_id = series.id
               team_competition.save!
             end
             team_competition.set_date
@@ -72,18 +74,6 @@ module Competitions
       true
     end
 
-    def point_schedule
-      @point_schedule ||= (1..100).to_a
-    end
-
-    def set_notes
-      self.notes = %Q{ In accordance with the Geneva Conventions, the official teams of the Cross Crusade have entered into a State of War for domination of the realm. <a href="http://crosscrusade.com/series.html" class="obvious">rules of engagement</a>. }
-    end
-
-    def set_name
-      self.name = "Team Competition"
-    end
-
     def team?
       true
     end
@@ -94,6 +84,10 @@ module Competitions
 
     def results_per_event
       10
+    end
+
+    def default_name
+      "Team Competition"
     end
   end
 end

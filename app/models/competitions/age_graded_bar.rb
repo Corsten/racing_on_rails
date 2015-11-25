@@ -2,7 +2,6 @@ module Competitions
   # OBRA OverallBar organized by Masters and Juniors age categories
   class AgeGradedBar < Competition
     after_create :set_parent
-
     default_value_for :use_source_result_points, true
 
     def source_results_query(race)
@@ -77,7 +76,7 @@ module Competitions
       "Age Graded"
     end
 
-    def friendly_name
+    def default_name
       "Age Graded BAR"
     end
   end

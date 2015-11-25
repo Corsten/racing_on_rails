@@ -1,6 +1,6 @@
 class AddCompetitionRulesToDb < ActiveRecord::Migration
   def change
-    change_table :events, force: true do |t|
+    change_table :events do |t|
       t.boolean :break_ties, default: true
       t.boolean :categories, default: false
       t.integer :default_bar_points, default: 0

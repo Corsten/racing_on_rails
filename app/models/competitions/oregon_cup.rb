@@ -1,11 +1,8 @@
 module Competitions
   # Year-long best rider competition for senior men. http://obra.org/oregon_cup
   class OregonCup < Competition
+    default_value_for :category_names, [ "Senior Men" ]
     default_value_for :point_schedule, [ 100, 75, 60, 50, 45, 40, 35, 30, 25, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10 ]
-
-    def friendly_name
-      "Oregon Cup"
-    end
 
     def source_results_query(race)
       super.
@@ -27,10 +24,6 @@ module Competitions
           )
         end
       end
-    end
-
-    def category_names
-      [ "Senior Men" ]
     end
 
     def source_events?

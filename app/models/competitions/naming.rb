@@ -1,15 +1,9 @@
 module Competitions
   module Naming
-    def name
-      self[:name] ||= "#{self.date.year} #{friendly_name}"
-    end
+    extend ActiveSupport::Concern
 
     def default_name
-      name
-    end
-
-    def friendly_name
-      "Competition"
+      model_name.human
     end
   end
 end

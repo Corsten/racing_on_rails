@@ -4,43 +4,14 @@ module Competitions
   class Ironman < Competition
     default_value_for :break_ties, false
     default_value_for :dnf_points, 1
-
-    def friendly_name
-      "Ironman"
-    end
+    default_value_for :notes, "The Ironman Competition is a 'just for fun' record of the number of events riders do. There is no prize just identification of riders who need to get a life."
 
     def points_for(source_result)
       1
     end
 
-    def notes
-      "The Ironman Competition is a 'just for fun' record of the number of events riders do. There is no prize just identification of riders who need to get a life."
-    end
-
     def source_results_query(race)
       super.where("events.ironman" => true)
-    end
-
-    # Workaround for Cross Crusade Junior results reporting
-    def after_source_results(results, race)
-      results.reject { |r| r["category_name"].in?(junior_categories) && r["event_id"].in?(cross_crusade_2014) }
-    end
-
-    def junior_categories
-      [
-        "Junior Men 10-12",
-        "Junior Men 13-14",
-        "Junior Men 15-16",
-        "Junior Men 17-18",
-        "Junior Women 10-12",
-        "Junior Women 13-14",
-        "Junior Women 15-16",
-        "Junior Women 17-18"
-      ]
-    end
-
-    def cross_crusade_2014
-      SingleDayEvent.where(parent_id: 22445).pluck(:id)
     end
   end
 end

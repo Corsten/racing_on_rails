@@ -3,17 +3,10 @@ module Competitions
     include Competitions::OregonWomensPrestigeSeriesModules::Common
 
     default_value_for :categories, true
+    default_value_for :category_names, [ "Team" ]
     # Decreasing points to 20th place, then 2 points for 21st through 100th
     default_value_for :point_schedule, [ 100, 80, 70, 60, 55, 50, 45, 40, 35, 30, 25, 20, 18, 16, 14, 12, 10, 8, 6, 4 ] + ([ 2 ] * 80)
     default_value_for :results_per_race, 3
-
-    def friendly_name
-      "Oregon Womens Prestige Team Series"
-    end
-
-    def category_names
-      [ "Team" ]
-    end
 
     def team?
       true

@@ -2,8 +2,8 @@ module Events
   module Naming
     extend ActiveSupport::Concern
 
-    module ClassMethods
-      def friendly_class_name
+    included do
+      def self.friendly_class_name
         name.underscore.humanize.titleize
       end
     end

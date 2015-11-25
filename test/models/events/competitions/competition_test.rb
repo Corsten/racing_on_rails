@@ -5,7 +5,7 @@ module Competitions
   # :stopdoc:
   class CompetitionTest < ActiveSupport::TestCase
     class TestCompetition < Competition
-      def friendly_name
+      def default_name
         "KOM"
       end
     end

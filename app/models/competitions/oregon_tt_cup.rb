@@ -1,45 +1,43 @@
 module Competitions
   # Year-long OBRA TT competition
   class OregonTTCup < Competition
+    default_value_for :category_names, [
+      "Category 3 Men",
+      "Category 3 Women",
+      "Category 4/5 Men",
+      "Category 4/5 Women",
+      "Eddy Senior Men",
+      "Eddy Senior Women",
+      "Junior Men 10-12",
+      "Junior Men 13-14",
+      "Junior Men 15-16",
+      "Junior Men 17-18",
+      "Junior Women 10-14",
+      "Junior Women 15-18",
+      "Masters Men 30-39",
+      "Masters Men 40-49",
+      "Masters Men 50-59",
+      "Masters Men 60-69",
+      "Masters Men 70+",
+      "Masters Women 30-39",
+      "Masters Women 40-49",
+      "Masters Women 50-59",
+      "Masters Women 60-69",
+      "Masters Women 70+",
+      "Senior Men Pro/1/2",
+      "Senior Women 1/2",
+      "Tandem"
+    ]
+
     default_value_for :maximum_events, 8
     default_value_for :point_schedule, [ 20, 17, 15, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
 
-    def friendly_name
+    def default_name
       "OBRA Time Trial Cup"
     end
 
     def default_discipline
       "Time Trial"
-    end
-
-    def category_names
-      [
-        "Category 3 Men",
-        "Category 3 Women",
-        "Category 4/5 Men",
-        "Category 4/5 Women",
-        "Eddy Senior Men",
-        "Eddy Senior Women",
-        "Junior Men 10-12",
-        "Junior Men 13-14",
-        "Junior Men 15-16",
-        "Junior Men 17-18",
-        "Junior Women 10-14",
-        "Junior Women 15-18",
-        "Masters Men 30-39",
-        "Masters Men 40-49",
-        "Masters Men 50-59",
-        "Masters Men 60-69",
-        "Masters Men 70+",
-        "Masters Women 30-39",
-        "Masters Women 40-49",
-        "Masters Women 50-59",
-        "Masters Women 60-69",
-        "Masters Women 70+",
-        "Senior Men Pro/1/2",
-        "Senior Women 1/2",
-        "Tandem"
-      ]
     end
 
     def source_events?

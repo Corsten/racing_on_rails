@@ -8,7 +8,7 @@ module Competitions
         (1..30).to_a.reverse
       end
 
-      def friendly_name
+      def default_name
         "Oregon Junior Cyclocross Team Series"
       end
 

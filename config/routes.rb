@@ -11,6 +11,8 @@ Rails.application.routes.draw do
         end
       end
 
+      resources :competitions
+      
       resources :events do
         collection do
           get  :add_children

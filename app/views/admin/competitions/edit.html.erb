@@ -1,0 +1,90 @@
+<% @page_title = "Admin: Competitions: #{@competition.name}" %>
+
+<%= render "shared/errors", object: @competition %>
+
+<h2><%= link_to_parents(@competition) %><%= @competition.name %></h2>
+
+<div class="edit_event">
+  <%= form_for(@competition,
+              as: :competition,
+              url: admin_competition_path(@competition),
+              html: { class: "form-horizontal", role: "form" }) do |f| -%>
+    <div class="row">
+      <div class="col-sm-6">
+        <%= f.labelled_text_field :point_schedule_string, "Point Schedule" %>
+        <%= f.labelled_check_box :double_points_for_last_event %>
+        <%= f.labelled_text_field :default_bar_points %>
+        <%= f.labelled_text :default_name %>
+        <%= f.labelled_text_field :parent_event_name %>
+        <%= f.labelled_text_field :default_discipline %>
+        <%= f.labelled_text :year %>
+      </div>
+      <div class="col-sm-6">
+        <%= f.labelled_text_field :minimum_events %>
+        <%= f.labelled_text_field :maximum_events %>
+        <%= f.labelled_text :completed_events %>
+        <div class="check_boxes">
+          <%= f.labelled_check_box :break_ties %>
+          <%= f.labelled_check_box :members_only %>
+          <%= f.labelled_check_box :team %>
+        </div>
+      </div>
+    </div>
+
+    <h3>Additional Rules</h3>
+    <div class="row">
+      <div class="col-sm-6">
+        <%= f.labelled_text_field :results_per_event %>
+        <%= f.labelled_text_field :results_per_race %>
+        <%= f.labelled_text_field :place_bonus_string %>
+        <%= f.labelled_text :maximum_upgrade_points %>
+      </div>
+      <div class="col-sm-6">
+        <div class="check_boxes">
+          <%= f.labelled_check_box :most_points_win %>
+          <%= f.labelled_check_box :use_source_result_points? %>
+          <%= f.labelled_check_box :dnf_points %>
+          <%= f.labelled_check_box :field_size_bonus %>
+          <%= f.labelled_check_box :missing_result_penalty %>
+          <%= f.labelled_check_box :point_schedule_from_field_size %>
+        </div>
+      </div>
+    </div>
+
+    <h3>Categories</h3>
+    <div class="row">
+      <div class="col-sm-6">
+        <%= f.labelled_text_area :category_names_string %>
+        <%= f.labelled_text :upgrades %>
+      </div>
+      <div class="col-sm-6">
+        <%= f.labelled_text_area :race_category_names_string %>
+        <%= f.labelled_text_area :source_result_category_names_string %>
+      </div>
+    </div>
+
+    <h3>Source Events</h3>
+    <div class="row">
+      <div class="col-sm-6">
+        <%= f.labelled_check_box :source_events? %>
+        <%= f.labelled_text_area :source_event_types_string %>
+      </div>
+      <div class="col-sm-6">
+        <ul>
+        <% @competition.source_events.sort.each do |source_event| %>
+          <li><%= link_to "#{source_event.date} #{source_event.full_name}", event_path(source_event) %></li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+
+    <div class="form-group col-sm-12">
+      <%= submit_tag "Save", class: "btn btn-default", id: "save" %>
+      <% unless mobile_request? %>
+      <div class="pull-right created_updated">
+        <% unless @competition.updated_at.nil? %>Updated: <%= time_ago_in_words(@competition.updated_at, include_seconds: true) + " ago" %><% end %>
+      </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

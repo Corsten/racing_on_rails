@@ -1,5 +1,26 @@
 module Competitions
   class BlindDateAtTheDairyMonthlyStandings < Competition
+    default_value_for :category_names, [
+      "Beginner Men",
+      "Beginner Women",
+      "Junior Men 10-13",
+      "Junior Men 14-18",
+      "Junior Women 10-13",
+      "Junior Women 14-18",
+      "Masters Men A 40+",
+      "Masters Men B 40+",
+      "Masters Men C 40+",
+      "Masters Men 50+",
+      "Masters Men 60+",
+      "Men A",
+      "Men B",
+      "Men C",
+      "Singlespeed",
+      "Stampede",
+      "Women A",
+      "Women B",
+      "Women C"
+    ]
     default_value_for :default_bar_points, 1
     default_value_for :members_only, false
     default_value_for :maximum_events, 4
@@ -35,30 +56,6 @@ module Competitions
         end
       end
       true
-    end
-
-    def category_names
-      [
-        "Beginner Men",
-        "Beginner Women",
-        "Junior Men 10-13",
-        "Junior Men 14-18",
-        "Junior Women 10-13",
-        "Junior Women 14-18",
-        "Masters Men A 40+",
-        "Masters Men B 40+",
-        "Masters Men C 40+",
-        "Masters Men 50+",
-        "Masters Men 60+",
-        "Men A",
-        "Men B",
-        "Men C",
-        "Singlespeed",
-        "Stampede",
-        "Women A",
-        "Women B",
-        "Women C"
-      ]
     end
 
     def source_results_query(race)

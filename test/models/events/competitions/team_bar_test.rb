@@ -186,7 +186,7 @@ module Competitions
       bar = TeamBar.find_for_year(2004)
       assert_not_nil(bar, "2004 TeamBar after calculate!")
       assert_equal(Date.new(2004, 1, 1), bar.date, "2004 TeamBar date")
-      assert_equal("2004 Team BAR", bar.name, "2004 Team Bar name")
+      assert_equal("Team BAR", bar.name, "name")
       assert_equal_dates(Time.zone.today, bar.updated_at, "BAR last updated")
 
       assert_equal(1, bar.races.size, 'Should have only one Team BAR race')

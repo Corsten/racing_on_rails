@@ -74,9 +74,5 @@ module Competitions
     def team?
       true
     end
-
-    def friendly_name
-      'MBRA BAT'
-    end
   end
 end

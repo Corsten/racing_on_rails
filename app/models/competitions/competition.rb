@@ -495,6 +495,10 @@ module Competitions
       [ SingleDayEvent, Event ]
     end
 
+    def source_event_types_string
+      source_event_types.join("\n")
+    end
+
     def source_event_ids(race)
       if source_events?
         source_events.map(&:id)

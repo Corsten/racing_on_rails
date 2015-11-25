@@ -9,6 +9,10 @@ module Competitions
 
     default_value_for :use_source_result_points, true
 
+    def default_name
+      "Team BAR"
+    end
+
     def source_results_query(race)
       super.
       select("competition_events.type").
@@ -59,10 +63,6 @@ module Competitions
 
     def default_discipline
       "Team"
-    end
-
-    def friendly_name
-      "Team BAR"
     end
   end
 end

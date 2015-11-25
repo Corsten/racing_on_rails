@@ -20,7 +20,9 @@ module Competitions
           if parent && parent.any_results_including_children?
             unless parent.overall
               # parent.create_overall will create an instance of Overall, which is probably not what we want
-              overall = self.new(parent_id: parent.id, date: parent.date)
+              overall = self.new(date: parent.date)
+              # Set parent after +new+ so default_name is used
+              overall.parent_id = parent.id
               overall.save!
               parent.overall = overall
             end

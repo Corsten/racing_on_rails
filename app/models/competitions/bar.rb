@@ -51,7 +51,8 @@ module Competitions
     end
 
     def source_event_types
-      [ Event,
+      [
+        Event,
         SingleDayEvent,
         MultiDayEvent,
         Series,
@@ -82,10 +83,6 @@ module Competitions
 
     def category_names
       ::Discipline[discipline].bar_categories.map(&:name)
-    end
-
-    def friendly_name
-      'BAR'
     end
   end
 end

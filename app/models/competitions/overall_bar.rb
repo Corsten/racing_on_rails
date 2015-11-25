@@ -112,8 +112,8 @@ module Competitions
       filtered_results
     end
 
-    def friendly_name
-      'Overall BAR'
+    def default_name
+      "Overall BAR"
     end
 
     def default_discipline

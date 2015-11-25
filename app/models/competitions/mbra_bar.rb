@@ -80,9 +80,5 @@ module Competitions
     def maximum_upgrade_points
       30
     end
-
-    def friendly_name
-      'MBRA BAR'
-    end
   end
 end

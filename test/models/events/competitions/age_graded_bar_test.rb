@@ -65,7 +65,7 @@ module Competitions
       bar = AgeGradedBar.find_for_year(2004)
       assert_not_nil(bar, "2004 AgeGradedBar after calculate!")
       assert_equal(Date.new(2004), bar.date, "2004 AgeGradedBar date")
-      assert_equal("2004 Age Graded BAR", bar.name, "2004 Bar name")
+      assert_equal("Age Graded BAR", bar.name, "2004 Bar name")
       assert_equal_dates(Time.zone.today, bar.updated_at, "AgeGradedBar last updated")
       assert_equal('Age Graded', bar.discipline, 'Age Graded BAR discipline')
 

@@ -1,34 +1,31 @@
 module Competitions
   class CrossCrusadeCallups < Competition
+    default_value_for :category_names, [
+      "Men A",
+      "Men B",
+      "Men C",
+      "Athena",
+      "Clydesdale",
+      "Junior Men",
+      "Junior Women",
+      "Masters 35+ A",
+      "Masters 35+ B",
+      "Masters 35+ C",
+      "Masters 50+",
+      "Masters 60+",
+      "Masters Women 35+ A",
+      "Masters Women 35+ B",
+      "Masters Women 45+",
+      "Singlespeed Women",
+      "Singlespeed",
+      "Unicycle",
+      "Women A",
+      "Women B",
+      "Women C"
+    ]
     default_value_for :name, "Cross Crusade Callups"
     default_value_for :members_only, false
     default_value_for :point_schedule, [ 15, 12, 10, 8, 7, 6, 5, 4, 3, 2 ]
-
-    def category_names
-      [
-        "Men A",
-        "Men B",
-        "Men C",
-        "Athena",
-        "Clydesdale",
-        "Junior Men",
-        "Junior Women",
-        "Masters 35+ A",
-        "Masters 35+ B",
-        "Masters 35+ C",
-        "Masters 50+",
-        "Masters 60+",
-        "Masters Women 35+ A",
-        "Masters Women 35+ B",
-        "Masters Women 45+",
-        "Singlespeed Women",
-        "Singlespeed",
-        "Unicycle",
-        "Women A",
-        "Women B",
-        "Women C"
-      ]
-    end
 
     def source_results_query(race)
       super.
