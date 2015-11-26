@@ -123,5 +123,17 @@ module Competitions
       assert_equal [ result_2.person_id ], existing_results.map(&:participant_id), "existing_results"
       assert_equal [ result_1.person_id ], obselete_results.map(&:person_id), "obselete_results"
     end
+
+    test "enabled" do
+      competition = TestCompetition.new
+      assert_equal true, competition.enabled?
+
+      TestCompetition.any_instance.expects(:before_calculate).once
+      TestCompetition.calculate!
+
+      TestCompetition.first.update! enabled: false
+      TestCompetition.any_instance.expects(:before_calculate).never
+      TestCompetition.calculate!
+    end
   end
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151123021143) do
+ActiveRecord::Schema.define(version: 20151126004751) do
 
   create_table "adjustments", force: :cascade do |t|
     t.integer  "order_id",    limit: 4
@@ -282,6 +282,7 @@ ActiveRecord::Schema.define(version: 20151123021143) do
     t.text     "race_category_names",            limit: 65535
     t.text     "source_event_types",             limit: 65535
     t.text     "source_result_category_names",   limit: 65535
+    t.boolean  "enabled",                                                               default: true,  null: false
   end
 
   add_index "events", ["bar_points"], name: "index_events_on_bar_points", using: :btree

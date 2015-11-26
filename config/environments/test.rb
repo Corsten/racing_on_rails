@@ -12,6 +12,7 @@ RacingOnRails::Application.configure do
   config.cache_classes                                      = true
   config.consider_all_requests_local                        = true
   config.eager_load                                         = false
+  config.log_level                                          = :debug
   config.mass_assignment_sanitizer                          = :strict
   config.serve_static_files                                 = true
   config.static_cache_control                               = "public, max-age=3600"

@@ -73,12 +73,12 @@ module Competitions
         transaction do
           year = year.to_i if year.is_a?(String)
           competition = self.find_or_create_for_year(year)
+          # Could bulk load all Event and Races at this point, but hardly seems to matter
           competition.set_date
           raise(ActiveRecord::ActiveRecordError, competition.errors.full_messages) unless competition.errors.empty?
           competition.delete_races
           competition.create_races
           competition.create_children
-          # Could bulk load all Event and Races at this point, but hardly seems to matter
           competition.calculate!
         end
       end
@@ -115,6 +115,8 @@ module Competitions
 
     # Rebuild results
     def calculate!
+      return true if !enabled?
+
       before_calculate
 
       races_in_upgrade_order.each do |race|
