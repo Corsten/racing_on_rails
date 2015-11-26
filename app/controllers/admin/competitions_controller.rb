@@ -1,15 +1,33 @@
 module Admin
   class CompetitionsController < Admin::AdminController
+    def index
+      Competitions::Competition::TYPES.map(&:safe_constantize)
+      @competitions = Competitions::Competition.current_year.all
+    end
+
     def edit
       @competition = Event.find(params[:id])
     end
 
     def update
       @competition = Event.find(params[:id])
-      if @competition.update(competition_params)
-        redirect_to edit_admin_competition_path(@competition)
-      else
-        render :edit
+      updated = @competition.update(competition_params)
+      respond_to do |type|
+        type.js do
+          if updated
+            render plain: "ok"
+          else
+            render plain: "failed", status: :unprocessable_entity
+          end
+        end
+
+        type.html do
+          if updated
+            redirect_to edit_admin_competition_path(@competition)
+          else
+            render :edit
+          end
+        end
       end
     end
 
@@ -23,6 +41,7 @@ module Admin
         :default_discipline,
         :dnf_points,
         :double_points_for_last_event,
+        :enabled,
         :field_size_bonus,
         :maximum_events,
         :maximum_upgrade_points,

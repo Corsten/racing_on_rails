@@ -1,6 +1,7 @@
 /*
  *= require admin_results
  *= require categories
+ *= require competitions
  *= require events
  *= require first_aid_providers
  *= require people

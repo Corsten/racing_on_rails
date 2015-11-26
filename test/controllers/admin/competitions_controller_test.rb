@@ -5,6 +5,10 @@ module Admin
   class CompetitionsControllerTest < ActionController::TestCase
     setup :create_administrator_session
 
+    test "index" do
+      get :index
+    end
+
     test "edit" do
       competition = Competitions::Ironman.create!
       get :edit, id: competition

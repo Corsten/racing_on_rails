@@ -1,0 +1,10 @@
+<div class="row">
+  <div class="col-sm-12">
+    <%= check_box_tag :competition_enabled,
+        "1",
+        competition.enabled?,
+        class: "competition_enabled",
+          data: { competition_id: competition.id, enabled: competition.enabled? ? 'true' : 'false' } %>
+    <%= competition.full_name %>
+  </div>
+</div>
