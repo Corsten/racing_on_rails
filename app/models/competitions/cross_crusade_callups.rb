@@ -26,6 +26,7 @@ module Competitions
     default_value_for :name, "Cross Crusade Callups"
     default_value_for :members_only, false
     default_value_for :point_schedule, [ 15, 12, 10, 8, 7, 6, 5, 4, 3, 2 ]
+    default_value_for :source_event_types, [ SingleDayEvent, Event, Competitions::BlindDateAtTheDairyOverall ]
 
     def source_results_query(race)
       super.
@@ -66,10 +67,6 @@ module Competitions
       end
 
       categories
-    end
-
-    def source_event_types
-      [ SingleDayEvent, Event, Competitions::BlindDateAtTheDairyOverall ]
     end
 
     def after_source_results(results, race)

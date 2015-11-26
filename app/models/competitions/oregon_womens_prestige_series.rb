@@ -7,13 +7,10 @@ module Competitions
 
     # Decreasing points to 20th place, then 2 points for 21st through 100th
     default_value_for :point_schedule, [ 100, 80, 70, 60, 55, 50, 45, 40, 35, 30, 25, 20, 18, 16, 14, 12, 10, 8, 6, 4 ] + ([ 2 ] * 80)
+    default_value_for :source_event_types, [ MultiDayEvent, SingleDayEvent, Event ]
 
     def source_events?
       true
-    end
-
-    def source_event_types
-      [ MultiDayEvent, SingleDayEvent, Event ]
     end
 
     def source_event_ids(race)

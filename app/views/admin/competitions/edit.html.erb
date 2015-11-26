@@ -23,10 +23,10 @@
         <%= f.labelled_text_field :minimum_events %>
         <%= f.labelled_text_field :maximum_events %>
         <%= f.labelled_text :completed_events %>
+        <%= f.labelled_text :team %>
         <div class="check_boxes">
           <%= f.labelled_check_box :break_ties %>
           <%= f.labelled_check_box :members_only %>
-          <%= f.labelled_check_box :team %>
         </div>
       </div>
     </div>
@@ -34,8 +34,8 @@
     <h3>Additional Rules</h3>
     <div class="row">
       <div class="col-sm-6">
-        <%= f.labelled_text_field :results_per_event %>
-        <%= f.labelled_text_field :results_per_race %>
+        <%= f.labelled_text :results_per_event %>
+        <%= f.labelled_text :results_per_race %>
         <%= f.labelled_text_field :place_bonus_string %>
         <%= f.labelled_text :maximum_upgrade_points %>
       </div>
@@ -66,7 +66,7 @@
     <h3>Source Events</h3>
     <div class="row">
       <div class="col-sm-6">
-        <%= f.labelled_check_box :source_events? %>
+        <%= f.labelled_text :source_events? %>
         <%= f.labelled_text_area :source_event_types_string %>
       </div>
       <div class="col-sm-6">

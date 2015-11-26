@@ -5,19 +5,26 @@ class AddSerializedCompetitionRules < ActiveRecord::Migration
       t.text :place_bonus
       t.text :point_schedule
       t.text :race_category_names
+      t.text :source_event_types
       t.text :source_result_category_names
     end
 
     reversible do |m|
       m.up do
         transaction do
-          (Competitions::MbraBar.all + Competitions::MbraTeamBar.all).each do |c|
-            c.place_bonus = [ 6, 3, 1 ]
+          Competitions::Competition.all.each do |c|
+            c.point_schedule = nil
+            c.source_event_types = [ SingleDayEvent, Event ]
             c.save!
           end
 
-          Competitions::Competition.all.each do |c|
-            c.point_schedule = nil
+          Competitions::AgeGradedBar.all.each do |c|
+            c.source_event_types = [ Competitions::OverallBar ]
+            c.save!
+          end
+
+          (Competitions::MbraBar.all + Competitions::MbraTeamBar.all).each do |c|
+            c.place_bonus = [ 6, 3, 1 ]
             c.save!
           end
 
@@ -78,6 +85,7 @@ class AddSerializedCompetitionRules < ActiveRecord::Migration
 
           Competitions::CrossCrusadeCallups.all.each do |c|
             c.point_schedule = [ 15, 12, 10, 8, 7, 6, 5, 4, 3, 2 ]
+            c.source_event_types = [ SingleDayEvent, Event, Competitions::BlindDateAtTheDairyOverall ]
             c.category_names = [
               "Men A",
               "Men B",
@@ -204,6 +212,7 @@ class AddSerializedCompetitionRules < ActiveRecord::Migration
 
           (Competitions::OregonWomensPrestigeSeries.all + Competitions::OregonWomensPrestigeTeamSeries.all).each do |c|
             c.point_schedule = [ 100, 80, 70, 60, 55, 50, 45, 40, 35, 30, 25, 20, 18, 16, 14, 12, 10, 8, 6, 4 ] + ([ 2 ] * 80)
+            c.source_event_types = [ MultiDayEvent, SingleDayEvent, Event ]
             c.save!
           end
 
@@ -219,6 +228,7 @@ class AddSerializedCompetitionRules < ActiveRecord::Migration
 
           Competitions::OverallBar.all.each do |c|
             c.point_schedule = (1..300).to_a.reverse
+            c.source_event_types = [ Competitions::Bar ]
             c.save!
           end
 

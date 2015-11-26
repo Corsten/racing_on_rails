@@ -50,6 +50,10 @@ module Competitions
              source: :event,
              class_name: "::Event"
 
+    serialize :source_event_types
+
+    default_value_for :source_event_types, [ SingleDayEvent, Event ]
+
     def self.find_for_year(year = RacingAssociation.current.year)
       self.where("date between ? and ?", Time.zone.local(year).beginning_of_year.to_date, Time.zone.local(year).end_of_year.to_date).first
     end
@@ -491,12 +495,16 @@ module Competitions
       )
     end
 
-    def source_event_types
-      [ SingleDayEvent, Event ]
-    end
-
     def source_event_types_string
       source_event_types.join("\n")
+    end
+
+    def source_event_types_string=(value)
+      if value.present?
+        self.source_event_types = value.split.map(&:safe_constantize).reject(&:blank?)
+      else
+        self.source_event_types = []
+      end
     end
 
     def source_event_ids(race)

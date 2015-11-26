@@ -12,6 +12,17 @@ module Competitions
 
     default_value_for :field_size_bonus, true
     default_value_for :point_schedule, [ 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
+    default_value_for :source_event_types, [
+      Event,
+      SingleDayEvent,
+      MultiDayEvent,
+      Series,
+      WeeklySeries,
+      Competitions::BlindDateAtTheDairyMonthlyStandings,
+      Competitions::PortlandShortTrackSeries::MonthlyStandings,
+      Competitions::PortlandShortTrackSeries::Overall,
+      Competitions::TaborOverall
+    ]
 
     def self.calculate!(year = Time.zone.today.year)
       ActiveSupport::Notifications.instrument "calculate.#{name}.competitions.racing_on_rails" do
@@ -48,20 +59,6 @@ module Competitions
       end
       # Don't return the entire populated instance!
       true
-    end
-
-    def source_event_types
-      [
-        Event,
-        SingleDayEvent,
-        MultiDayEvent,
-        Series,
-        WeeklySeries,
-        Competitions::BlindDateAtTheDairyMonthlyStandings,
-        Competitions::PortlandShortTrackSeries::MonthlyStandings,
-        Competitions::PortlandShortTrackSeries::Overall,
-        Competitions::TaborOverall
-      ]
     end
 
     def source_results_query(race)

@@ -2,16 +2,14 @@ module Competitions
   # OBRA OverallBar organized by Masters and Juniors age categories
   class AgeGradedBar < Competition
     after_create :set_parent
+
+    default_value_for :source_event_types, [ Competitions::OverallBar ]
     default_value_for :use_source_result_points, true
 
     def source_results_query(race)
       super.
       where("races.category_id" => race.category.parent_id).
       where("people.date_of_birth between ? and ?", race.dates_of_birth.begin, race.dates_of_birth.end)
-    end
-
-    def source_event_types
-      [ Competitions::OverallBar ]
     end
 
     def category_names

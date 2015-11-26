@@ -280,6 +280,7 @@ ActiveRecord::Schema.define(version: 20151123021143) do
     t.text     "place_bonus",                    limit: 65535
     t.text     "point_schedule",                 limit: 65535
     t.text     "race_category_names",            limit: 65535
+    t.text     "source_event_types",             limit: 65535
     t.text     "source_result_category_names",   limit: 65535
   end
 

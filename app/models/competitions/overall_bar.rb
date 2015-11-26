@@ -7,6 +7,7 @@ module Competitions
     default_value_for :maximum_events, 5
     # 300 points for first place, 299 for second, etc.
     default_value_for :point_schedule, (1..300).to_a.reverse
+    default_value_for :source_event_types, [ Competitions::Bar ]
 
     def create_children
       Discipline.find_all_bar.
@@ -76,10 +77,6 @@ module Competitions
         "Singlespeed/Fixed",
         "Tandem"
       ]
-    end
-
-    def source_event_types
-      [ Competitions::Bar ]
     end
 
     def after_source_results(results, race)
