@@ -279,6 +279,8 @@ ActiveRecord::Schema.define(version: 20151123021143) do
     t.text     "category_names",                 limit: 65535
     t.text     "place_bonus",                    limit: 65535
     t.text     "point_schedule",                 limit: 65535
+    t.text     "race_category_names",            limit: 65535
+    t.text     "source_result_category_names",   limit: 65535
   end
 
   add_index "events", ["bar_points"], name: "index_events_on_bar_points", using: :btree

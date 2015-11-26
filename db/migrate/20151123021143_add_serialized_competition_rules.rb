@@ -4,6 +4,8 @@ class AddSerializedCompetitionRules < ActiveRecord::Migration
       t.text :category_names
       t.text :place_bonus
       t.text :point_schedule
+      t.text :race_category_names
+      t.text :source_result_category_names
     end
 
     reversible do |m|
@@ -52,6 +54,25 @@ class AddSerializedCompetitionRules < ActiveRecord::Migration
 
           Competitions::BlindDateAtTheDairyTeamCompetition.all.each do |c|
             c.point_schedule = [ 15, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
+            c.race_category_names = [ "Team Competition" ]
+            c.source_result_category_names = [
+              "Beginner Men",
+              "Beginner Women",
+              "Masters Men A 40+",
+              "Masters Men B 40+",
+              "Masters Men C 40+",
+              "Masters Men 50+",
+              "Masters Men 60+",
+              "Men A",
+              "Men B",
+              "Men C",
+              "Singlespeed",
+              "Stampede",
+              "Women A",
+              "Women B",
+              "Women C"
+            ]
+
             c.save!
           end
 
@@ -86,9 +107,10 @@ class AddSerializedCompetitionRules < ActiveRecord::Migration
 
           Competitions::CrossCrusadeTeamCompetition.all.each do |c|
             c.point_schedule = (1..100).to_a
+            c.race_category_names = [ "Team" ]
             c.save!
           end
-          
+
           Competitions::CrossCrusadeOverall.all.each do |c|
             c.point_schedule = [ 26, 20, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
             c.category_names =[
@@ -241,6 +263,11 @@ class AddSerializedCompetitionRules < ActiveRecord::Migration
               "Elite/Category 1 Women",
               "Singlespeed"
             ]
+            c.save!
+          end
+
+          Competitions::PortlandShortTrackSeries::TeamStandings.all.each do |c|
+            c.race_category_names = [ "Team" ]
             c.save!
           end
         end

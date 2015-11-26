@@ -5,11 +5,37 @@ module Competitions
     after_create :add_source_events
 
     default_value_for :break_ties, false
+    default_value_for :category_names, [
+      "Athena",
+      "Beginner Men",
+      "Beginner Women",
+      "Category A",
+      "Category B",
+      "Category C",
+      "Clydesdale",
+      "Junior Men",
+      "Junior Women",
+      "Masters 35+ A",
+      "Masters 35+ B",
+      "Masters 35+ C",
+      "Masters 50+",
+      "Masters 60+",
+      "Masters Women 35+ A",
+      "Masters Women 35+ B",
+      "Masters Women 45+",
+      "Singlespeed Women",
+      "Singlespeed",
+      "Unicycle",
+      "Women A",
+      "Women B",
+      "Women C"
+    ]
     default_value_for :members_only, false
     default_value_for :missing_result_penalty, 100
     default_value_for :most_points_win, false
     default_value_for :notes, %Q{ In accordance with the Geneva Conventions, the official teams of the Cross Crusade have entered into a State of War for domination of the realm. <a href="http://crosscrusade.com/series.html" class="obvious">rules of engagement</a>. }
     default_value_for :point_schedule, (1..100).to_a
+    default_value_for :race_category_names, [ "Team" ]
 
     def self.calculate!(year = Time.zone.today.year)
       ActiveSupport::Notifications.instrument "calculate.#{name}.competitions.racing_on_rails" do
@@ -31,38 +57,6 @@ module Competitions
         end
       end
       true
-    end
-
-    def race_category_names
-      [ "Team" ]
-    end
-
-    def category_names
-      [
-        "Athena",
-        "Beginner Men",
-        "Beginner Women",
-        "Category A",
-        "Category B",
-        "Category C",
-        "Clydesdale",
-        "Junior Men",
-        "Junior Women",
-        "Masters 35+ A",
-        "Masters 35+ B",
-        "Masters 35+ C",
-        "Masters 50+",
-        "Masters 60+",
-        "Masters Women 35+ A",
-        "Masters Women 35+ B",
-        "Masters Women 45+",
-        "Singlespeed Women",
-        "Singlespeed",
-        "Unicycle",
-        "Women A",
-        "Women B",
-        "Women C"
-      ]
     end
 
     def source_results_query(race)

@@ -3,6 +3,7 @@ module Competitions
     class TeamStandings < Competition
       include PortlandShortTrackSeries::Common
 
+      default_value_for :race_category_names, [ "Team" ]
       default_value_for :use_source_result_points, true
 
       validates_presence_of :parent
@@ -32,10 +33,6 @@ module Competitions
 
       def set_name
         self.name = "Team Competition"
-      end
-
-      def race_category_names
-        [ "Team" ]
       end
 
       def team?

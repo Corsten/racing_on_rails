@@ -4,6 +4,8 @@ module Competitions
 
     included do
       serialize :category_names
+      serialize :race_category_names
+      serialize :source_result_category_names
       default_value_for(:category_names) { |r| [ r.default_name ] }
     end
 
@@ -11,7 +13,7 @@ module Competitions
     # But some competitions have race names like "Team" or "Overall" drawn
     # from +source_result_category_names+.
     def race_category_names
-      category_names
+      self[:race_category_names] || category_names
     end
 
     def race_category_names_string
@@ -35,7 +37,7 @@ module Competitions
     # Distinct from "which categories does the competition have?"
     # In most cases, these are the same, but not always.
     def source_result_category_names
-      category_names
+      self[:source_result_category_names] || category_names
     end
 
     def source_result_category_names_string
