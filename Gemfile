@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "5.0.0.beta1"
+gem "rails", "5.0.0.rc1"
 
 gem "activemerchant", ">= 1.44"
 gem "acts_as_list"
