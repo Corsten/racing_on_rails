@@ -40,7 +40,7 @@ module Competitions
     private
 
     def women_4_5?(race)
-      race.category.name == "Women 4/5"
+      race.category.ability_range == (4..5)
     end
   end
 end
