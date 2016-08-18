@@ -29,7 +29,7 @@ module Competitions
     end
 
     def categories_scope(race)
-      Category.similar race.category
+      Category.within race.category
     end
 
     # Array of ids (integers)

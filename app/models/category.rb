@@ -45,6 +45,26 @@ class Category < ActiveRecord::Base
     )
   }
 
+  scope :within, lambda { |category|
+    where(
+      ability_begin: category.ability_begin,
+      ages_begin: category.ages_begin,
+      ages_end: category.ages_end,
+      equipment: category.equipment,
+      gender: category.gender,
+      weight: category.weight
+    )
+      .where(
+        "(ability_begin >= :ability_begin and ability_end <= :ability_end)
+        or (
+           ability_begin > :ability_begin and
+           ability_begin < :ability_end and
+           ability_end = :maximum
+        )",
+        { ability_begin: category.ability_begin, ability_end: category.ability_end, maximum: ::Categories::MAXIMUM }
+      )
+  }
+
   # All categories with no parent (except root 'association' category)
   def self.find_all_unknowns
    Category.includes(:children).where(parent_id: nil).where("name != ?", RacingAssociation.current.short_name)
