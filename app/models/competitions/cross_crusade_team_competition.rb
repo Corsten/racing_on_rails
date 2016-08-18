@@ -115,6 +115,10 @@ module Competitions
       self.name = "Team Competition"
     end
 
+    def categories?
+      false
+    end
+
     def source_events?
       true
     end

@@ -55,7 +55,7 @@ module Competitions
         end
         if race.name == "Masters 35+ 4"
           categories << "Masters Men 4 40+"
-          categories << "Men 4 35+")
+          categories << "Men 4 35+"
         end
         if race.name == "Masters 50+"
           categories << "Men 50+"
@@ -77,7 +77,7 @@ module Competitions
 
       scope = super(race)
       categories.each do |category_name|
-        category = category_name)
+        category = Categor.where(name: category_name).find_or_create!
         scope = scope.merge(Category.similar(category))
       end
     end
