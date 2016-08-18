@@ -23,9 +23,13 @@ module Competitions
       [ friendly_name ]
     end
 
-    # Only consider results from categories. Default to false: use all races in year.
+    # Only consider results from categories. Default to true.
     def categories?
-      false
+      true
+    end
+
+    def categories_scope(race)
+      Category.similar race.category
     end
 
     # Array of ids (integers)

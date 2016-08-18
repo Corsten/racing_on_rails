@@ -54,32 +54,7 @@ module Competitions
     def source_results_query(race)
       super
         .where(bar: true)
-        .where("races.category_id" => categories_for(race))
         .where("events.sanctioned_by" => RacingAssociation.current.default_sanctioned_by)
-    end
-
-    def categories_for(race)
-      ids = [ race.category ] + race.category.descendants
-
-      case race.category.name
-      when "Senior Men Pro/1/2"
-        [ "Men Category 1/2" ]
-      when "Senior Women 1/2"
-        [ "Senior Women", "Women Category 1/2" ]
-      when "Category 4/5 Women"
-        [ "Women Category 4", "Women Category 4/5" ]
-      when "Category 3 Women"
-        [ "Women Category 3" ]
-      else
-        []
-      end.each do |name|
-        category = Category.find_by(name: name)
-        if category
-          ids << category.id
-        end
-      end
-
-      ids
     end
 
     def after_source_results(results, race)

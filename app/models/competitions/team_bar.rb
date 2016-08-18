@@ -2,7 +2,6 @@ module Competitions
   # Sum all of Team's discipline BAR's results
   # team = source_result.team
   class TeamBar < Competition
-    include Competitions::Bars::Categories
     include Competitions::Bars::Discipline
 
     after_create :set_parent

@@ -28,11 +28,6 @@ module Competitions
       ]
     end
 
-    def source_results_query(race)
-      super.
-      where("races.category_id" => categories_for(race))
-    end
-
     def point_schedule
       [ 15, 12, 10, 8, 7, 6, 5, 4, 3, 2 ]
     end
@@ -45,36 +40,31 @@ module Competitions
       false
     end
 
-    def categories_for(race)
-      categories = super(race)
-      if race.name == "Masters 35+ A"
-        categories << Category.find_or_create_by(name: "Masters Men A 40+")
-      end
-      if race.name == "Masters 35+ B"
-        categories << Category.find_or_create_by(name: "Masters Men B 40+")
-      end
-      if race.name == "Masters 35+ C"
-        categories << Category.find_or_create_by(name: "Masters Men C 40+")
-        categories << Category.find_or_create_by(name: "Men C 35+")
-      end
-      if race.name == "Masters 50+"
-        categories << Category.find_or_create_by(name: "Men 50+")
-        categories << Category.find_or_create_by(name: "Masters Men 50+")
-        categories << Category.find_or_create_by(name: "Masters 50+")
-      end
-      if race.name == "Masters 60+"
-        categories << Category.find_or_create_by(name: "Men 60+")
-        categories << Category.find_or_create_by(name: "Masters Men 60+")
-        categories << Category.find_or_create_by(name: "Masters 60+")
-      end
-      if race.name == "Masters Women 45+"
-        categories << Category.find_or_create_by(name: "Women 45+")
-      end
-      if race.name == "Unicycle"
-        categories << Category.find_or_create_by(name: "Stampede")
+    def categories_scope(race)
+      categories = []
+
+      if race.ages == (35..999) && race.ability_range == (1..1) && race.gender == "M"
+        categories << "Masters Men A 40+"
       end
 
-      categories
+      if race.ages == (35..999) && race.ability_range == (2..2) && race.gender == "M"
+        categories << "Masters Men B 40+"
+      end
+
+      if race.ages == (35..999) && race.ability_range == (3..3) && race.gender == "M"
+        categories << "Masters Men C 40+"
+        categories << "Men C 35+"
+      end
+
+      if race.equipment == "Unicycle"
+        categories << "Stampede"
+      end
+
+      scope = super(race)
+      categories.each do |category_name|
+        category = Category.find_or_create_by(name: category_name)
+        scope = scope.merge(Category.similar(category))
+      end
     end
 
     def source_event_types
@@ -84,11 +74,6 @@ module Competitions
     def after_source_results(results, race)
       results.each do |result|
         result["multiplier"] = 1
-      end
-
-      results.reject do |result|
-        jr_cats = [ "Junior Men", "Junior Women", "Junior Men (12-18)", "Junior Women (12-18)" ]
-        result["event_id"] != 24249 && result["category_name"][/Junior/] && (!result["category_name"].in?(jr_cats))
       end
     end
   end

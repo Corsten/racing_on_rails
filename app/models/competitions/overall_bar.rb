@@ -28,7 +28,6 @@ module Competitions
           "(events.discipline not in (:disciplines) and races.category_id in (:categories))
           or (events.discipline in (:disciplines) and races.category_id in (:mtb_categories))",
           disciplines: Discipline["Mountain Bike"].names,
-          categories: categories_for(race),
           mtb_categories: mtb_categories_for(race)
         )
     end
@@ -75,11 +74,11 @@ module Competitions
         "Junior Men",
         "Junior Women",
         "Masters Men 4/5",
-        "Masters Men",
+        "Masters Men 1/2/3",
         "Masters Women 4",
-        "Masters Women",
-        "Senior Men",
-        "Senior Women",
+        "Masters Women 1/2/3",
+        "Category 1/2 Men",
+        "Category 1/2 Women",
         "Singlespeed/Fixed",
         "Tandem"
       ]

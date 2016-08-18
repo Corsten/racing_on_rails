@@ -7,7 +7,6 @@ module Competitions
   # The BAR categories and disciplines are all configured in the database. Race categories need to have a bar_category_id to
   # show up in the BAR; disciplines must exist in the disciplines table and discipline_bar_categories.
   class Bar < Competition
-    include Bars::Categories
     include Bars::Discipline
     include Bars::Points
 
@@ -68,7 +67,6 @@ module Competitions
     def source_results_query(race)
       super.
       where(bar: true).
-      where("races.category_id" => categories_for(race)).
       where("events.sanctioned_by" => RacingAssociation.current.default_sanctioned_by).
       where("events.discipline in (:disciplines)
             or (events.discipline is null and parents_events.discipline in (:disciplines))

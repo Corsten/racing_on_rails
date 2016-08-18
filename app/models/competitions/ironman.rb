@@ -13,6 +13,10 @@ module Competitions
     def break_ties?
       false
     end
+    
+    def categories?
+      false
+    end
 
     def dnf_points
       1

@@ -67,37 +67,8 @@ module Competitions
       end
     end
 
-    def source_results_query(race)
-      super.
-      where("races.category_id" => categories_for(race))
-    end
-
     def race_category_names
       [ "Team Competition" ]
-    end
-
-    def source_results_category_names
-      [
-        "Beginner Men",
-        "Beginner Women",
-        "Masters Men A 40+",
-        "Masters Men B 40+",
-        "Masters Men C 40+",
-        "Masters Men 50+",
-        "Masters Men 60+",
-        "Men A",
-        "Men B",
-        "Men C",
-        "Singlespeed",
-        "Stampede",
-        "Women A",
-        "Women B",
-        "Women C"
-      ]
-    end
-
-    def categories_for(race)
-      Category.where(name: source_results_category_names)
     end
   end
 end
