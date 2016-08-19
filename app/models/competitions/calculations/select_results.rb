@@ -52,6 +52,20 @@ module Competitions
         end
       end
 
+      # If participant's results are all upgrade results from a lower category,
+      # remove their results
+      def reject_upgrade_only(results)
+        results.group_by(&:participant_id)
+          .map do |participant_id, participant_results|
+            if participant_results.all? { |r| r.upgrade }
+              []
+            else
+              participant_results
+            end
+          end
+          .flatten
+      end
+
       def select_results_for(field, results, limit, use_source_result_points)
         if limit == UNLIMITED
           results
