@@ -47,7 +47,6 @@ class Category < ActiveRecord::Base
 
   scope :within, lambda { |category|
     where(
-      ability_begin: category.ability_begin,
       ages_begin: category.ages_begin,
       ages_end: category.ages_end,
       equipment: category.equipment,

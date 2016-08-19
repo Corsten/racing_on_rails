@@ -29,7 +29,18 @@ module Competitions
     end
 
     def categories_scope(race)
-      Category.within race.category
+      if exact_categories?
+        Category.same race.category
+      else
+        Category.within race.category
+      end
+    end
+
+    # Count results only if abilities match exactly.
+    # If +true+, Senior Men would count: Senior Men, Category 1/2, Category 3, Category 4
+    # If +false+, Senior Men would only count: Senior Men
+    def exact_categories?
+      false
     end
 
     # Array of ids (integers)

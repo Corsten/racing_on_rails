@@ -27,7 +27,7 @@ module Competitions
     end
 
     def category_names
-      [ "Senior Men" ]
+      [ "Category Pro/1/2" ]
     end
 
     def source_events?

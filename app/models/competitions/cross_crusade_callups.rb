@@ -78,7 +78,7 @@ module Competitions
       scope = super(race)
       categories.each do |category_name|
         category = Categor.where(name: category_name).find_or_create!
-        scope = scope.merge(Category.similar(category))
+        scope = scope.merge(Category.samw(category))
       end
     end
 

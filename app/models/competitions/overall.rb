@@ -48,5 +48,9 @@ module Competitions
     def members_only?
       false
     end
+
+    def exact_categories?
+      true
+    end
   end
 end
