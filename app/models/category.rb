@@ -54,14 +54,9 @@ class Category < ActiveRecord::Base
       weight: category.weight
     )
       .where(
-        "(ability_begin >= :ability_begin and ability_end <= :ability_end)
-        or (
-           ability_begin > :ability_begin and
-           ability_begin < :ability_end and
-           ability_end = :maximum
-        )",
-        { ability_begin: category.ability_begin, ability_end: category.ability_end, maximum: ::Categories::MAXIMUM }
-      )
+        "ability_begin <= :ability_begin and ability_end >= :ability_begin",
+        { ability_begin: category.ability_begin }
+    )
   }
 
   # All categories with no parent (except root 'association' category)

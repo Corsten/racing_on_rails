@@ -93,4 +93,23 @@ class CategoryTest < ActiveSupport::TestCase
     category = Category.create!(name: "Masters Men 3 40+")
     assert_equal 40..999, category.ages
   end
+
+  test "within" do
+    senior_men = Category.create!(name: "Senior Men")
+    cat_1 = Category.create!(name: "Category 1")
+    cat_1_2 = Category.create!(name: "Category 1/2")
+    cat_1_2_3 = Category.create!(name: "Category 1/2/3")
+    pro_1_2 = Category.create!(name: "Pro 1/2")
+    cat_2 = Category.create!(name: "Category 2")
+    cat_3 = Category.create!(name: "Category 3")
+    elite_men = Category.create!(name: "Elite Men")
+    pro_elite_men = Category.create!(name: "Pro Elite Men")
+    pro_cat_1 = Category.create!(name: "Pro/Category 1")
+    elite_men = Category.create!(name: "Elite Men")
+
+    assert_same([
+      cat_1, cat_1_2, cat_1_2_3, pro_1_2, cat_2, pro_cat_1 ], 
+      Category.within(senior_men)
+    )
+  end
 end
