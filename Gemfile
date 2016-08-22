@@ -78,15 +78,16 @@ group :development, :test do
 end
 
 group :test do
-  gem "codeclimate-test-reporter", require: nil
-  gem "minitest", "~> 5.4"
   gem "capybara"
-  gem "poltergeist"
-  gem "selenium-webdriver"
+  gem "codeclimate-test-reporter", require: nil
   gem "database_cleaner"
   gem "factory_girl_rails"
   gem "fakeweb"
+  gem "minitest", "~> 5.4"
+  gem "minitest-unordered"
   gem "mocha", require: false
+  gem "poltergeist"
+  gem "selenium-webdriver"
   gem "timecop"
 end
 
