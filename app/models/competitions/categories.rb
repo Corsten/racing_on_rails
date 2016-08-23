@@ -32,7 +32,7 @@ module Competitions
       if exact_categories?
         Category.same race.category
       else
-        Category.within race.category
+        Category.within race
       end
     end
 
