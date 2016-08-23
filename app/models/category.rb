@@ -45,18 +45,57 @@ class Category < ActiveRecord::Base
     )
   }
 
-  scope :within, lambda { |category|
-    where(
-      ages_begin: category.ages_begin,
-      ages_end: category.ages_end,
-      equipment: category.equipment,
-      gender: category.gender,
-      weight: category.weight
-    )
-      .where(
-        "ability_begin <= :ability_begin and ability_end >= :ability_begin",
-        { ability_begin: category.ability_begin }
-    )
+  scope :within, lambda { |race|
+    # TODO match by ages for masters
+    # TODO all_ages? all_juniors?
+    # TODO Need to handle these as overlapping ranges in different tracks: junior, masters, equipment
+
+    ability_begin = race.category.ability_begin
+
+    event_abilities = race.event.categories.map(&:ability_begin).uniq.sort
+    if race.category.junior?
+      event_abilities = race.event.categories.select(&:junior?).map(&:ability_begin).uniq.sort
+    elsif race.category.masters?
+      event_abilities = race.event.categories.select(&:masters?).map(&:ability_begin).uniq.sort
+    elsif race.category.equipment
+      event_abilities = race.event.categories.select(&:equipment).map(&:ability_begin).uniq.sort
+    end
+
+    if ability_begin == 1 && event_abilities.min == 1
+      ability_begin = 0
+    end
+
+    index = event_abilities.find_index(race.category.ability_begin)
+    next_ability = event_abilities[index + 1]
+    ability_end = next_ability || race.category.ability_end
+    if ability_end > 0 && ability_end > ability_begin && ability_end < ::Categories::MAXIMUM
+      ability_end = ability_end - 1
+    end
+
+    query = where("ability_begin >= ? and ability_begin <= ?", ability_begin, ability_end)
+
+    if race.category.equipment && race.event.categories.one? { |c| c.equipment == race.category.equipment }
+      query = query.where(
+        equipment: race.category.equipment,
+        weight: race.category.weight
+      )
+    else
+      query = query.where(
+        equipment: race.category.equipment,
+        gender: race.category.gender,
+        weight: race.category.weight
+      )
+    end
+
+    if race.category.junior? || race.category.masters?
+      query = query.where("ages_begin >= ?", race.category.ages_begin).where("ages_end <= ?", race.category.ages_end)
+    elsif race.category.age_group?
+      query = query.where("ages_begin = ?", race.category.ages_begin).where("ages_end = ?", race.category.ages_end)
+    else
+      query = query.where("ages_begin = 0 or ages_begin = ? or (ages_begin > 18 and ages_begin < 30)", ::Categories::MAXIMUM)
+    end
+
+    query
   }
 
   # All categories with no parent (except root 'association' category)
