@@ -25,8 +25,7 @@ module Competitions
     def source_results_query(race)
       super
         .where(
-          "(events.discipline not in (:disciplines) and races.category_id in (:categories))
-          or (events.discipline in (:disciplines) and races.category_id in (:mtb_categories))",
+          "events.discipline in (:disciplines) and races.category_id in (:mtb_categories)",
           disciplines: Discipline["Mountain Bike"].names,
           mtb_categories: mtb_categories_for(race)
         )
