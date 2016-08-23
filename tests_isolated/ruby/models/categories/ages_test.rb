@@ -34,6 +34,8 @@ module Categories
       assert_equal 10..18, category.ages_from_name("Women Junior")
       assert_equal 30..999, category.ages_from_name("Master Men")
       assert_equal 0..34, category.ages_from_name("Category 2 Men U35")
+      assert_equal 30..999, category.ages_from_name("Two-Person Masters 100+")
+      assert_equal 15..18, category.ages_from_name("Junior 15+")
     end
 
     def test_age_group
@@ -43,12 +45,12 @@ module Categories
       category = Stub.new
       category.ages_begin = 0
       category.ages_end = 999
-      assert !category.age_group?, "0..99 age_group?"
+      assert !category.age_group?, "0..999 age_group?"
 
       category = Stub.new
       category.ages_begin = 60
       category.ages_end = 999
-      assert category.age_group?, "60..99 age_group?"
+      assert category.age_group?, "60..999 age_group?"
 
       category = Stub.new
       category.ages_begin = 10
@@ -63,12 +65,12 @@ module Categories
       category = Stub.new
       category.ages_begin = 0
       category.ages_end = 999
-      assert !category.junior?, "0..99 junior?"
+      assert !category.junior?, "0..999 junior?"
 
       category = Stub.new
       category.ages_begin = 60
       category.ages_end = 999
-      assert !category.junior?, "60..99 junior?"
+      assert !category.junior?, "60..999 junior?"
 
       category = Stub.new
       category.ages_begin = 10
@@ -83,7 +85,7 @@ module Categories
       category = Stub.new
       category.ages_begin = 30
       category.ages_end = 99
-      assert !category.junior?, "30..99 junior?"
+      assert !category.junior?, "30..999 junior?"
     end
   end
 end
