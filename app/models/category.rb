@@ -50,6 +50,43 @@ class Category < ActiveRecord::Base
     # TODO all_ages? all_juniors?
     # TODO Need to handle these as overlapping ranges in different tracks: junior, masters, equipment
 
+    # ability category ranges
+    # Senior  0..999 0..2
+    # Cat 3   3..3   3..3
+    # Cat 4   4..4   4..4
+    # Cat 5   5..5   5..5
+
+    # if any age group categories, then apply age range
+    # Junior  0..18
+    # Senior  19..29
+    # Masters 30..999
+
+    # If multiple genders, then apply gender
+    # If multiple equipment, then apply equipment
+    # If weight weights, then apply weights
+
+    # Or: apply filters, "most restrictive" first?
+
+    # OR: group all categories by their non-default values
+    # Road BAR
+    # gender: senior men, senior women
+    # gender, ability: cat 3 men, cat 4 men, cat 5 men, cat 3 women, cat 4 women, cat 5 men
+    # gender, age: junior men, junior women, masters men, masters women
+    # gender, age, ability: masters men 4/5
+    # equipment: singlespeed
+    # weight: clydesdale
+
+    # short track
+    # gender, age, ability: Category 1 Men 19-34, Category 3 Men 15-18, Category 1 Men 35-44,
+    #    Category 3 Men 19-44, Category 1 Men 45+,Category 3 Men 45+, Category 2 Men 35-44,
+    #    Category 3 Women 10-14, Category 2 Men 45-54, Category 3 Women 15-18,
+    #    Category 2 Men 55+, Category 3 Women 19+, Category 2 Men U35,
+    #    Category 2 Women 35-44, Category 2 Women 45+, Elite/Category 1 Women,
+    #    Category 2 Women U35, Category 3 Men 10-14
+    # gender, ability: Elite Men
+    # weight: Clydesdale
+    # equiment, gender: Singlespeed Men, Singlespeed Women
+
     ability_begin = race.category.ability_begin
 
     event_abilities = race.event.categories.map(&:ability_begin).uniq.sort
