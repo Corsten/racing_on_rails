@@ -95,21 +95,122 @@ class CategoryTest < ActiveSupport::TestCase
   end
 
   test "within" do
-    senior_men = Category.create!(name: "Senior Men")
-    cat_1 = Category.create!(name: "Category 1")
-    cat_1_2 = Category.create!(name: "Category 1/2")
-    cat_1_2_3 = Category.create!(name: "Category 1/2/3")
-    pro_1_2 = Category.create!(name: "Pro 1/2")
-    cat_2 = Category.create!(name: "Category 2")
-    cat_3 = Category.create!(name: "Category 3")
-    elite_men = Category.create!(name: "Elite Men")
-    pro_elite_men = Category.create!(name: "Pro Elite Men")
-    pro_cat_1 = Category.create!(name: "Pro/Category 1")
-    elite_men = Category.create!(name: "Elite Men")
+    senior_men = Category.find_or_create_by_normalized_name("Senior Men")
+    cat_1 = Category.find_or_create_by_normalized_name("Category 1")
+    cat_1_2 = Category.find_or_create_by_normalized_name("Category 1/2")
+    cat_1_2_3 = Category.find_or_create_by_normalized_name("Category 1/2/3")
+    pro_1_2 = Category.find_or_create_by_normalized_name("Pro 1/2")
+    cat_2 = Category.find_or_create_by_normalized_name("Category 2")
+    cat_3 = Category.find_or_create_by_normalized_name("Category 3")
+    cat_3_4 = Category.find_or_create_by_normalized_name("Category 3/4")
+    cat_4 = Category.find_or_create_by_normalized_name("Category 4")
+    elite_men = Category.find_or_create_by_normalized_name("Elite Men")
+    pro_elite_men = Category.find_or_create_by_normalized_name("Pro Elite Men")
+    pro_cat_1 = Category.find_or_create_by_normalized_name("Pro/Category 1")
+    masters_men = Category.find_or_create_by_normalized_name("Masters Men")
+    masters_novice = Category.find_or_create_by_normalized_name("Masters Novice")
+    masters_men_4_5 = Category.find_or_create_by_normalized_name("Masters Men 4/5")
+    Category.find_or_create_by_normalized_name("Senior Women")
+    junior_men = Category.find_or_create_by_normalized_name("Junior Men")
+    junior_women = Category.find_or_create_by_normalized_name("Junior Women")
+    junior_men_10_14 = Category.find_or_create_by_normalized_name("Junior Men 10-14")
+    junior_men_15_plus = Category.find_or_create_by_normalized_name("Junior 15+")
+    junior_men_3_4_5 = Category.find_or_create_by_normalized_name("Junior Men 3/4/5")
+    singlespeed = Category.find_or_create_by_normalized_name("Singlespeed/Fixed")
+    singlespeed_men = Category.find_or_create_by_normalized_name("Singlespeed Men")
+    singlespeed_women = Category.find_or_create_by_normalized_name("Singlespeed Women")
 
-    assert_same([
-      cat_1, cat_1_2, cat_1_2_3, pro_1_2, cat_2, pro_cat_1 ], 
-      Category.within(senior_men)
+    event = FactoryGirl.create(:event)
+    cat_1_race = event.races.create!(category: cat_1)
+    cat_2_race = event.races.create!(category: cat_2)
+    event.races.create!(category: cat_3)
+    cat_4_race = event.races.create!(category: cat_4)
+
+    assert_equal_unordered(
+    [ senior_men, cat_1, cat_1_2, cat_1_2_3, pro_1_2, pro_cat_1, elite_men, pro_elite_men ].map(&:name),
+      Category.within(cat_1_race).map(&:name)
+    )
+
+    assert_equal_unordered(
+      [ cat_2 ].map(&:name),
+      Category.within(cat_2_race).map(&:name)
+    )
+
+    assert_equal_unordered(
+      [ cat_4 ].map(&:name),
+      Category.within(cat_4_race).map(&:name)
+    )
+
+    event = FactoryGirl.create(:event)
+    senior_men_race = event.races.create!(category: senior_men)
+    cat_3_race = event.races.create!(category: cat_3)
+    cat_4_race = event.races.create!(category: cat_4)
+
+    assert_equal_unordered(
+      [ senior_men, cat_1, cat_1_2, cat_1_2_3, pro_1_2, cat_2, pro_cat_1, elite_men, pro_elite_men ].map(&:name),
+      Category.within(senior_men_race).map(&:name)
+    )
+
+    assert_equal_unordered(
+      [ cat_3, cat_3_4 ].map(&:name),
+      Category.within(cat_3_race).map(&:name)
+    )
+
+    assert_equal_unordered(
+      [ cat_4 ].map(&:name),
+      Category.within(cat_4_race).map(&:name)
+    )
+
+    event = FactoryGirl.create(:event)
+    senior_men_race = event.races.create!(category: senior_men)
+    cat_3_race = event.races.create!(category: cat_3)
+    cat_4_race = event.races.create!(category: cat_4)
+    cat_4_race = event.races.create!(category: cat_4)
+    masters_men_race = event.races.create!(category: masters_men)
+    masters_men_4_5_race = event.races.create!(category: masters_men_4_5)
+    junior_men_race = event.races.create!(category: junior_men)
+    junior_women_race = event.races.create!(category: junior_women)
+
+    assert_equal_unordered(
+      [ masters_men ].map(&:name),
+      Category.within(masters_men_race).map(&:name)
+    )
+
+    assert_equal_unordered(
+      [ masters_men_4_5, masters_novice ].map(&:name),
+      Category.within(masters_men_4_5_race).map(&:name)
+    )
+
+    assert_equal_unordered(
+      [ junior_men, junior_men_10_14, junior_men_15_plus, junior_men_3_4_5 ].map(&:name),
+      Category.within(junior_men_race).map(&:name)
+    )
+
+    assert_equal_unordered(
+      [ junior_women ].map(&:name),
+      Category.within(junior_women_race).map(&:name)
+    )
+
+    event = FactoryGirl.create(:event)
+    singlespeed_race = event.races.create!(category: singlespeed)
+
+    assert_equal_unordered(
+      [ singlespeed, singlespeed_men, singlespeed_women ].map(&:name),
+      Category.within(singlespeed_race).map(&:name)
+    )
+
+    event = FactoryGirl.create(:event)
+    singlespeed_men_race = event.races.create!(category: singlespeed_men)
+    singlespeed_women_race = event.races.create!(category: singlespeed_women)
+
+    assert_equal_unordered(
+      [ singlespeed_men, singlespeed ].map(&:name),
+      Category.within(singlespeed_men_race).map(&:name)
+    )
+
+    assert_equal_unordered(
+      [ singlespeed_women ].map(&:name),
+      Category.within(singlespeed_women_race).map(&:name)
     )
   end
 end
