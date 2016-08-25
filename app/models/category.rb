@@ -34,68 +34,107 @@ class Category < ActiveRecord::Base
   validates_presence_of :friendly_param
 
   scope :same, lambda { |category|
-    where(
-      ability_begin: category.ability_begin,
-      ability_end: category.ability_end,
-      ages_begin: category.ages_begin,
-      ages_end: category.ages_end,
-      equipment: category.equipment,
-      gender: category.gender,
-      weight: category.weight
-    )
+    query = Category.all
+
+    # if category.ability_range != (0..::Categories::MAXIMUM)
+      query = query.where(ability_begin: category.ability_range)
+    # end
+
+    # if category.ages != (0..::Categories::MAXIMUM)
+      query = query.where(ages_begin: category.ages)
+    # end
+
+    # if category.equipment
+      query = query.where(equipment: category.equipment)
+    # end
+
+    if category.gender != "M"
+      query = query.where(gender: category.gender)
+    end
+
+    # if category.weight
+      query = query.where(weight: category.weight)
+    # end
+
+    query
   }
+
+  scope :different, lambda { |category, other_category|
+    query = Category.all
+
+    if category.ability_range != (0..::Categories::MAXIMUM) && other_category.ability_range != (0..::Categories::MAXIMUM) && category.gender != "M"
+      query = query.where.not(gender: category.gender)
+    end
+
+    # if category.ability_range != (0..::Categories::MAXIMUM) && !category.ability_range.include?(other_category.ability_begin)
+    #   query = query.where.not(ability_begin: category.ability_range)
+    # end
+    #
+    # if category.ages != (0..::Categories::MAXIMUM) && !category.ages.include?(other_category.ages_begin)
+    #   query = query.where.not(ages_begin: category.ages)
+    # end
+    #
+    # if category.equipment != other_category.equipment
+    #   query = query.where.not(equipment: category.equipment)
+    # end
+    #
+    # if category.gender != other_category.gender
+    #   query = query.where.not(gender: category.gender)
+    # end
+    #
+    # if category.weight != other_category.weight
+    #   query = query.where.not(weight: category.weight)
+    # end
+
+    query
+  }
+
+  def all_abilities?
+    ability_range == (0..::Categories::MAXIMUM)
+  end
+
+  def all_ages?
+    ages == (0..::Categories::MAXIMUM)
+  end
+
+  def all_equipment?
+    equipment
+  end
+
+  def all_genders?
+    gender == "M"
+  end
+
+  def all_weights?
+    weight
+  end
 
   scope :within, lambda { |race|
     # TODO match by ages for masters
     # TODO all_ages? all_juniors?
     # TODO Need to handle these as overlapping ranges in different tracks: junior, masters, equipment
+    # TODO USe betweeen
+    # TODO handle no groups
+    # TODO other_event_categories should be a method?
 
-    ability_begin = race.category.ability_begin
+    # What groups does a category have?
+    # * ability + gender: cat 3 Men, cat 3 women (gender becasue there are two cats with same ability and different genders)
+    # * gender: senior Men
+    # * age + gender: junior men, jr Women
+    # * equipment: singlespeed
+    # * weight: Clydesdale
 
-    event_abilities = race.event.categories.map(&:ability_begin).uniq.sort
-    if race.category.junior?
-      event_abilities = race.event.categories.select(&:junior?).map(&:ability_begin).uniq.sort
-    elsif race.category.masters?
-      event_abilities = race.event.categories.select(&:masters?).map(&:ability_begin).uniq.sort
-    elsif race.category.equipment
-      event_abilities = race.event.categories.select(&:equipment).map(&:ability_begin).uniq.sort
+
+
+    within = same(race.category)
+
+    other_event_categories = race.event.categories.reject { |category| category == race.category }
+
+    other_event_categories.each do |category|
+      within = within.different(category, race.category)
     end
 
-    if ability_begin == 1 && event_abilities.min == 1
-      ability_begin = 0
-    end
-
-    index = event_abilities.find_index(race.category.ability_begin)
-    next_ability = event_abilities[index + 1]
-    ability_end = next_ability || race.category.ability_end
-    if ability_end > 0 && ability_end > ability_begin && ability_end < ::Categories::MAXIMUM
-      ability_end = ability_end - 1
-    end
-
-    query = where("ability_begin >= ? and ability_begin <= ?", ability_begin, ability_end)
-
-    if race.category.equipment && race.event.categories.one? { |c| c.equipment == race.category.equipment }
-      query = query.where(
-        equipment: race.category.equipment,
-        weight: race.category.weight
-      )
-    else
-      query = query.where(
-        equipment: race.category.equipment,
-        gender: race.category.gender,
-        weight: race.category.weight
-      )
-    end
-
-    if race.category.junior? || race.category.masters?
-      query = query.where("ages_begin >= ?", race.category.ages_begin).where("ages_end <= ?", race.category.ages_end)
-    elsif race.category.age_group?
-      query = query.where("ages_begin = ?", race.category.ages_begin).where("ages_end = ?", race.category.ages_end)
-    else
-      query = query.where("ages_begin = 0 or ages_begin = ? or (ages_begin > 18 and ages_begin < 30)", ::Categories::MAXIMUM)
-    end
-
-    query
+    within
   }
 
   # All categories with no parent (except root 'association' category)
