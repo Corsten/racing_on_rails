@@ -35,59 +35,91 @@ class Category < ActiveRecord::Base
 
   scope :same, lambda { |category|
     query = Category.all
-
-    # if category.ability_range != (0..::Categories::MAXIMUM)
-      query = query.where(ability_begin: category.ability_range)
-    # end
-
-    # if category.ages != (0..::Categories::MAXIMUM)
-      query = query.where(ages_begin: category.ages)
-    # end
-
-    # if category.equipment
-      query = query.where(equipment: category.equipment)
-    # end
-
-    if category.gender != "M"
-      query = query.where(gender: category.gender)
-    end
-
-    # if category.weight
-      query = query.where(weight: category.weight)
-    # end
+    query = query.where(ability_begin: category.ability_range)
+    query = query.where(ages_begin: category.ages)
+    query = query.where(equipment: category.equipment)
+    query = query.where(gender: category.gender)
+    query = query.where(weight: category.weight)
 
     query
   }
+
+  def include?(other_category)
+    other_category.ability_begin >= ability_begin &&
+    other_category.ability_begin <= ability_end &&
+    other_category.ages_begin >= ages_begin &&
+    other_category.ages_begin <= ages_end &&
+    (equipment.nil? || equipment == other_category.equipment) &&
+    (gender == "M" || other_category.gender == "F")
+  end
+
+  def differences(other_category)
+    differences = []
+
+    if ability_range != other_category.ability_range
+      differences << :ability
+    end
+
+    if ages != other_category.ages
+      differences << :ages
+    end
+
+    if equipment != other_category.equipment
+      differences << :equipment
+    end
+
+    if gender != other_category.gender
+      differences << :gender
+    end
+
+    differences
+  end
 
   scope :different, lambda { |category, other_category|
     query = Category.all
 
-    if category.ability_range != (0..::Categories::MAXIMUM) && other_category.ability_range != (0..::Categories::MAXIMUM) && category.gender != "M"
-      query = query.where.not(gender: category.gender)
+    differences = category.differences(other_category)
+
+    if category.include?(other_category)
+      if differences == [ :ability ]
+        query = query.where.not(ability_begin: other_category.ability_range)
+      end
+
+      if differences == [ :ages ]
+        query = query.where.not(ages_begin: other_category.ages)
+      end
     end
 
-    # if category.ability_range != (0..::Categories::MAXIMUM) && !category.ability_range.include?(other_category.ability_begin)
-    #   query = query.where.not(ability_begin: category.ability_range)
-    # end
+    # if category.include?(other_category)
+    #   differences = category.differences(other_category)
     #
-    # if category.ages != (0..::Categories::MAXIMUM) && !category.ages.include?(other_category.ages_begin)
-    #   query = query.where.not(ages_begin: category.ages)
-    # end
+    #   if differences.include?(:ability) && category.all_abilities?
+    #     query = query.where.not(ability_begin: other_category.ability_range)
+    #   end
     #
-    # if category.equipment != other_category.equipment
-    #   query = query.where.not(equipment: category.equipment)
-    # end
+    #   if differences.include?(:ages) && category.all_ages?
+    #     query = query.where.not(ages_begin: other_category.ages)
+    #   end
     #
-    # if category.gender != other_category.gender
-    #   query = query.where.not(gender: category.gender)
-    # end
+    #   if differences.include?(:gender) && category.all_genders?
+    #     query = query.where.not(gender: other_category.gender)
+    #   end
     #
-    # if category.weight != other_category.weight
-    #   query = query.where.not(weight: category.weight)
+    #   if differences.include?(:equipment) && all_equipment?
+    #     query = query.where.not(equipment: other_category.equipment)
+    #   end
     # end
 
     query
   }
+
+  def ability?
+    ability_range != (0..::Categories::MAXIMUM)
+  end
+
+  def ages?
+    ages != (0..::Categories::MAXIMUM)
+  end
 
   def all_abilities?
     ability_range == (0..::Categories::MAXIMUM)
@@ -98,7 +130,7 @@ class Category < ActiveRecord::Base
   end
 
   def all_equipment?
-    equipment
+    equipment.nil?
   end
 
   def all_genders?
@@ -106,9 +138,14 @@ class Category < ActiveRecord::Base
   end
 
   def all_weights?
-    weight
+    weight.nil?
   end
 
+  def gender?
+    gender != "M"
+  end
+
+  # If other category would match category, then reject other category
   scope :within, lambda { |race|
     # TODO match by ages for masters
     # TODO all_ages? all_juniors?
@@ -124,14 +161,12 @@ class Category < ActiveRecord::Base
     # * equipment: singlespeed
     # * weight: Clydesdale
 
-
-
     within = same(race.category)
 
     other_event_categories = race.event.categories.reject { |category| category == race.category }
 
     other_event_categories.each do |category|
-      within = within.different(category, race.category)
+      within = within.different(race.category, category)
     end
 
     within
