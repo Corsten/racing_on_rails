@@ -198,24 +198,13 @@ class CategoryTest < ActiveSupport::TestCase
     event = FactoryGirl.create(:event)
     cat_1_race = event.races.create!(category: cat_1)
     cat_2_race = event.races.create!(category: cat_2)
-    event.races.create!(category: cat_3)
+    cat_3_race = event.races.create!(category: cat_3)
     cat_4_race = event.races.create!(category: cat_4)
 
-    assert_equal_unordered(
-    [ cat_1, cat_1_2, cat_1_2_3 ].map(&:name),
-      Category.within(cat_1_race).map(&:name)
-    )
-
-    assert_equal_unordered(
-      [ cat_2 ].map(&:name),
-      Category.within(cat_2_race).map(&:name)
-    )
-
-    assert_equal_unordered(
-      # [ cat_4, cat_4_women, masters_men_4_5 ].map(&:name),
-      [ cat_4, masters_men_4_5 ].map(&:name),
-      Category.within(cat_4_race).map(&:name)
-    )
+    assert_categories_in_race [ cat_1, cat_1_2, cat_1_2_3 ], cat_1_race
+    assert_categories_in_race [ cat_2 ], cat_2_race
+    assert_categories_in_race [ cat_3 ], cat_3_race
+    assert_categories_in_race [ cat_4, cat_4_women, masters_men_4_5 ], cat_4_race
 
     event = FactoryGirl.create(:event)
     cat_1_race = event.races.create!(category: cat_1)
@@ -224,25 +213,10 @@ class CategoryTest < ActiveSupport::TestCase
     cat_4_race = event.races.create!(category: cat_4)
     cat_4_women_race = event.races.create!(category: cat_4_women)
 
-    assert_equal_unordered(
-    [ cat_1, cat_1_2, cat_1_2_3 ].map(&:name),
-      Category.within(cat_1_race).map(&:name)
-    )
-
-    assert_equal_unordered(
-      [ cat_2 ].map(&:name),
-      Category.within(cat_2_race).map(&:name)
-    )
-
-    assert_equal_unordered(
-      [ cat_4, masters_men_4_5 ].map(&:name),
-      Category.within(cat_4_race).map(&:name)
-    )
-
-    assert_equal_unordered(
-      [ cat_4_women ].map(&:name),
-      Category.within(cat_4_women_race).map(&:name)
-    )
+    assert_categories_in_race [ cat_1, cat_1_2, cat_1_2_3 ], cat_1_race
+    assert_categories_in_race [ cat_2 ], cat_2_race
+    assert_categories_in_race [ cat_4, masters_men_4_5 ], cat_4_race
+    assert_categories_in_race [ cat_4_women ], cat_4_women_race
 
     event = FactoryGirl.create(:event)
     senior_men_race = event.races.create!(category: senior_men)
@@ -254,66 +228,34 @@ class CategoryTest < ActiveSupport::TestCase
     junior_men_race = event.races.create!(category: junior_men)
     junior_women_race = event.races.create!(category: junior_women)
 
-    assert_equal_unordered(
-      [ senior_men, cat_1, cat_1_2, cat_1_2_3, pro_1_2, cat_2, pro_cat_1, elite_men, pro_elite_men].map(&:name),
-      Category.within(senior_men_race).map(&:name)
-    )
-
-    assert_equal_unordered(
-      [ cat_3, cat_3_4 ].map(&:name),
-      Category.within(cat_3_race).map(&:name)
-    )
-
-    assert_equal_unordered(
-      [ cat_4 ].map(&:name),
-      Category.within(cat_4_race).map(&:name)
-    )
-
-    assert_equal_unordered(
-      [ cat_4_women ].map(&:name),
-      Category.within(cat_4_women_race).map(&:name)
-    )
-
-    assert_equal_unordered(
-      [ masters_men ].map(&:name),
-      Category.within(masters_men_race).map(&:name)
-    )
-
-    assert_equal_unordered(
-      [ masters_men_4_5, masters_novice ].map(&:name),
-      Category.within(masters_men_4_5_race).map(&:name)
-    )
-
-    assert_equal_unordered(
-      [ junior_men, junior_men_10_14, junior_men_15_plus, junior_men_3_4_5 ].map(&:name),
-      Category.within(junior_men_race).map(&:name)
-    )
-
-    assert_equal_unordered(
-      [ junior_women ].map(&:name),
-      Category.within(junior_women_race).map(&:name)
-    )
+    assert_categories_in_race [ senior_men, cat_1, cat_1_2, cat_1_2_3, pro_1_2, cat_2, pro_cat_1, elite_men, pro_elite_men ], senior_men_race
+    assert_categories_in_race [ cat_3, cat_3_4 ], cat_3_race
+    assert_categories_in_race [ cat_4 ], cat_4_race
+    assert_categories_in_race [ cat_4_women ], cat_4_women_race
+    assert_categories_in_race [ masters_men ], masters_men_race
+    assert_categories_in_race [ masters_men_4_5 ], masters_men_4_5_race
+    assert_categories_in_race [ junior_men, junior_men_10_14, junior_men_15_plus, junior_men_3_4_5 ], junior_men_race
+    assert_categories_in_race [ junior_women ], junior_women_race
 
     event = FactoryGirl.create(:event)
     singlespeed_race = event.races.create!(category: singlespeed)
-
-    assert_equal_unordered(
-      [ singlespeed, singlespeed_men ].map(&:name),
-      Category.within(singlespeed_race).map(&:name)
-    )
+    assert_categories_in_race [ singlespeed, singlespeed_men ], singlespeed_race
 
     event = FactoryGirl.create(:event)
     singlespeed_men_race = event.races.create!(category: singlespeed_men)
     singlespeed_women_race = event.races.create!(category: singlespeed_women)
 
-    assert_equal_unordered(
-      [ singlespeed_men, singlespeed ].map(&:name),
-      Category.within(singlespeed_men_race).map(&:name)
-    )
+    assert_categories_in_race [ singlespeed_men, singlespeed ], singlespeed_men_race
+    assert_categories_in_race [ singlespeed_women ], singlespeed_women_race
+  end
 
-    assert_equal_unordered(
-      [ singlespeed_women ].map(&:name),
-      Category.within(singlespeed_women_race).map(&:name)
-    )
+  def assert_categories_in_race(categories, race)
+    categories.each do |category|
+      assert category.in?(race), "#{category.name} should be in #{race.name} race"
+    end
+
+    # Category.not.where(categories).each do |category|
+    #   assert !category.in?(race), "#{category.name} should not be in #{race.name} race"
+    # end
   end
 end

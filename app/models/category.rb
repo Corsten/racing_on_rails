@@ -145,8 +145,7 @@ class Category < ActiveRecord::Base
     gender != "M"
   end
 
-  # If other category would match category, then reject other category
-  scope :within, lambda { |race|
+  scope :within_old, lambda { |race|
     # TODO match by ages for masters
     # TODO all_ages? all_juniors?
     # TODO Need to handle these as overlapping ranges in different tracks: junior, masters, equipment
@@ -181,6 +180,78 @@ class Category < ActiveRecord::Base
   def self.short_name(name)
     return name if name.blank?
     name.gsub('Senior', 'Sr').gsub('Masters', 'Mst').gsub('Junior', 'Jr').gsub('Category', 'Cat').gsub('Beginner', 'Beg').gsub('Expert', 'Exp').gsub("Clydesdale", "Clyd")
+  end
+
+  # Need to iterate until there is a unique match
+  # weight
+  # equipment
+  # age
+  # gender
+  # ability
+  # Not really in? but best match
+  def in?(race)
+    p ""
+    p "#{self.name} in? #{race.name}"
+
+    return true if race.category == self
+
+    matching_categories = race.event.categories.select { |category| weight == category.weight }
+    p "weight: #{matching_categories.map(&:name).join(', ')}"
+    return true if matching_categories.one? && matching_categories.first == race.category
+    return false if matching_categories.one? && matching_categories.first != race.category
+    return false if matching_categories.none?
+
+    matching_categories = matching_categories.select { |category| equipment == category.equipment }
+    p "equipment: #{matching_categories.map(&:name).join(', ')}"
+    return true if matching_categories.one? && matching_categories.first == race.category
+    return false if matching_categories.one? && matching_categories.first != race.category
+    return false if matching_categories.none?
+
+    matching_categories = matching_categories.select { |category| ages_begin.in?(category.ages) }
+    p "ages: #{matching_categories.map(&:name).join(', ')}"
+    return true if matching_categories.one? && matching_categories.first == race.category
+    return false if matching_categories.one? && matching_categories.first != race.category
+    return false if matching_categories.none?
+
+    matching_categories = matching_categories.reject { |category| gender == "M" && category.gender == "F" }
+    p "gender: #{matching_categories.map(&:name).join(', ')}"
+    return true if matching_categories.one? && matching_categories.first == race.category
+    return false if matching_categories.one? && matching_categories.first != race.category
+    return false if matching_categories.none?
+
+    matching_categories = matching_categories.select { |category| ability_begin.in?(category.ability_range) }
+    p "ability: #{matching_categories.map(&:name).join(', ')}"
+    return true if matching_categories.one? && matching_categories.first == race.category
+    return false if matching_categories.one? && matching_categories.first != race.category
+    return false if matching_categories.none?
+
+    if junior?
+      matching_categories = matching_categories.select { |category| category.junior? }
+      p "junior: #{matching_categories.map(&:name).join(', ')}"
+      return true if matching_categories.one? && matching_categories.first == race.category
+      return false if matching_categories.one? && matching_categories.first != race.category
+      return false if matching_categories.none?
+    end
+
+    if masters?
+      matching_categories = matching_categories.select { |category| category.masters? }
+      p "masters?: #{matching_categories.map(&:name).join(', ')}"
+      return true if matching_categories.one? && matching_categories.first == race.category
+      return false if matching_categories.one? && matching_categories.first != race.category
+      return false if matching_categories.none?
+    end
+
+    # E.g., if Cat 3 matches Senior Men and Cat 3, use Cat 3
+    # Could check size of range and use narrowest if there is a single one more narrow than the others
+    # Or maybe the lowest?
+    matching_categories = matching_categories.reject { |category| category.all_abilities? }
+
+    p "no wild cards: #{matching_categories.map(&:name).join(', ')}"
+    return true if matching_categories.one? && matching_categories.first == race.category
+    return false if matching_categories.one? && matching_categories.first != race.category
+    return false if matching_categories.none?
+
+    raise "Multiple matches #{matching_categories.map(&:name)} for #{self.name} in #{race.event.categories.map(&:name).join(', ')}"
   end
 
   def name=(value)
