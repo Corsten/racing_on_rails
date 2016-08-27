@@ -2,11 +2,6 @@ module Categories
   module Ages
     extend ActiveSupport::Concern
 
-    ALL     = 0..::Categories::MAXIMUM.freeze
-    JUNIORS = 10..18.freeze
-    SENIOR  = 19..29.freeze
-    MASTERS = 30..::Categories::MAXIMUM.freeze
-
     included do
       before_save :set_ages_from_name
     end
@@ -20,15 +15,11 @@ module Categories
     end
 
     def junior?
-      age_group? && ages_end <= JUNIORS.end
+      age_group? && ages_end <= 18
     end
 
     def masters?
-      age_group? && ages_begin >= MASTERS.begin
-    end
-
-    def senior?
-      age_group? && ages.in?(SENIOR)
+      age_group? && ages_begin >= 30
     end
 
     # Return Range
@@ -49,25 +40,6 @@ module Categories
       end
     end
 
-<<<<<<< 5fdcd2545a1d9e6814f4cf721acb35eb2d260eed
-    def age_group?
-      ages_begin && ages_end && (ages_begin != 0 || ages_end != ::Categories::MAXIMUM)
-    end
-
-    def junior?
-      age_group? && ages_end <= 18
-    end
-
-    def masters?
-      age_group? && ages_begin >= 30
-    end
-
-    def and_over?
-      ages_end && ages_end == ::Categories::MAXIMUM
-    end
-
-=======
->>>>>>> Rearrange Category query methods and add masters?
     def set_ages_from_name
       if ages_begin.nil? || ages_begin == 0
         self.ages = ages_from_name(name)
@@ -86,13 +58,13 @@ module Categories
         age_range_match = /(\d\d)-(\d\d)/.match(name)
         age_range_match[1].to_i..age_range_match[2].to_i
       elsif name["Junior"]
-        JUNIORS
+        10..18
       elsif name["Master"]
-        MASTERS
+        30..::Categories::MAXIMUM
       elsif name[/U\d\d/]
         0..(/U(\d\d)/.match(name)[1].to_i - 1)
       else
-        ALL
+        0..::Categories::MAXIMUM
       end
     end
   end
