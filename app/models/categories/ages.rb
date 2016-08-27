@@ -6,6 +6,22 @@ module Categories
       before_save :set_ages_from_name
     end
 
+    def age_group?
+      ages_begin && ages_end && (ages_begin != 0 || ages_end != ::Categories::MAXIMUM)
+    end
+
+    def and_over?
+      ages_end && ages_end == ::Categories::MAXIMUM
+    end
+
+    def junior?
+      age_group? && ages_end <= 18
+    end
+
+    def masters?
+      age_group? && ages_begin >= 30
+    end
+
     # Return Range
     def ages
       ages_begin..ages_end
@@ -24,6 +40,7 @@ module Categories
       end
     end
 
+<<<<<<< 5fdcd2545a1d9e6814f4cf721acb35eb2d260eed
     def age_group?
       ages_begin && ages_end && (ages_begin != 0 || ages_end != ::Categories::MAXIMUM)
     end
@@ -40,6 +57,8 @@ module Categories
       ages_end && ages_end == ::Categories::MAXIMUM
     end
 
+=======
+>>>>>>> Rearrange Category query methods and add masters?
     def set_ages_from_name
       if ages_begin.nil? || ages_begin == 0
         self.ages = ages_from_name(name)
