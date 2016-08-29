@@ -29,15 +29,5 @@ module Competitions
     def set_name
       self.name = "Series Overall"
     end
-
-    # Use combined Junior results from race day. Don't combine all the age groups races into one.
-    def categories_for(race)
-      case race.name
-      when "Junior Men", "Junior Women"
-        [ Category.find_or_create_by(name: race.name) ]
-      else
-        super race
-      end
-    end
   end
 end

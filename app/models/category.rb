@@ -88,6 +88,72 @@ class Category < ActiveRecord::Base
     Category.short_name name
   end
 
+  # Iterate until there is a unique match
+  # weight
+  # equipment
+  # age
+  # gender
+  # ability
+  # Not really in? but best match
+  # TODO Move this to Competition#calculate? and just match once for each result category? Otherwise, repeating calcucations
+  def best_match_in(event)
+    Rails.logger.debug "Category#best_match_in #{self.name} #{event.categories.map(&:name).join(', ')}"
+
+    candidate_categories = event.categories
+
+    # TODO self or same?
+    self_match = candidate_categories.detect { |category| category == self }
+    Rails.logger.debug "self: #{self_match&.name}"
+    return self_match if self_match
+
+    candidate_categories = candidate_categories.select { |category| weight == category.weight }
+    Rails.logger.debug "weight: #{candidate_categories.map(&:name).join(', ')}"
+
+    candidate_categories = candidate_categories.select { |category| equipment == category.equipment }
+    Rails.logger.debug "equipment: #{candidate_categories.map(&:name).join(', ')}"
+
+    candidate_categories = candidate_categories.select { |category| ages_begin.in?(category.ages) }
+    Rails.logger.debug "ages: #{candidate_categories.map(&:name).join(', ')}"
+
+    candidate_categories = candidate_categories.reject { |category| gender == "M" && category.gender == "F" }
+    Rails.logger.debug "gender: #{candidate_categories.map(&:name).join(', ')}"
+
+    candidate_categories = candidate_categories.select { |category| ability_begin.in?(category.abilities) }
+    Rails.logger.debug "ability: #{candidate_categories.map(&:name).join(', ')}"
+    return candidate_categories.first if candidate_categories.one?
+    return nil if candidate_categories.empty?
+
+    if junior?
+      candidate_categories = candidate_categories.select { |category| category.junior? }
+      Rails.logger.debug "junior: #{candidate_categories.map(&:name).join(', ')}"
+      return candidate_categories.first if candidate_categories.one?
+      return nil if candidate_categories.empty?
+    end
+
+    if masters?
+      candidate_categories = candidate_categories.select { |category| category.masters? }
+      Rails.logger.debug "masters?: #{candidate_categories.map(&:name).join(', ')}"
+      return candidate_categories.first if candidate_categories.one?
+      return nil if candidate_categories.empty?
+    end
+
+    # E.g., if Cat 3 matches Senior Men and Cat 3, use Cat 3
+    # Could check size of range and use narrowest if there is a single one more narrow than the others
+    # Or maybe the lowest?
+    candidate_categories = candidate_categories.reject { |category| category.all_abilities? }
+
+    candidate_categories = candidate_categories.reject { |category| gender == "F" && category.gender == "M" }
+    Rails.logger.debug "exact gender: #{candidate_categories.map(&:name).join(', ')}"
+    return candidate_categories.first if candidate_categories.one?
+    return nil if candidate_categories.empty?
+
+    Rails.logger.debug "no wild cards: #{candidate_categories.map(&:name).join(', ')}"
+    return candidate_categories.first if candidate_categories.one?
+    return nil if candidate_categories.empty?
+
+    raise "Multiple matches #{candidate_categories.map(&:name)} for #{self.name} in #{event.categories.map(&:name).join(', ')}"
+  end
+
   # Compare by position, then by name
   def <=>(other)
     return -1 if other.nil?

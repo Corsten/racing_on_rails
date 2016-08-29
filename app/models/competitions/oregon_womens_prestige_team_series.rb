@@ -18,10 +18,6 @@ module Competitions
       (OregonWomensPrestigeSeries.find_for_year(year) || OregonWomensPrestigeSeries.create).source_events
     end
 
-    def categories?
-      true
-    end
-
     def results_per_race
       3
     end
@@ -34,15 +30,6 @@ module Competitions
       5
     end
 
-    def source_results_query(race)
-      # Only consider results with categories that match +race+'s category
-      if categories?
-        super.where("races.category_id in (?)", categories_for(race))
-      else
-        super
-      end
-    end
-
     def after_source_results(results, race)
       results = results.reject do |result|
         result["category_id"].in?(cat_4_category_ids) && result["event_id"].in?(cat_123_only_event_ids)
@@ -51,15 +38,6 @@ module Competitions
       # Ignore BAR points multiplier. Leave query "universal".
       set_multiplier results
       results
-    end
-
-    def categories_for(race)
-      if OregonWomensPrestigeSeries.find_for_year
-        categories = Category.where(name: OregonWomensPrestigeSeries.find_for_year.category_names)
-        categories = categories + categories.map(&:descendants).to_a.flatten
-      else
-        []
-      end
     end
 
     def cat_4_category_ids

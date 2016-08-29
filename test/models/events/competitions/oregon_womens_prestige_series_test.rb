@@ -55,6 +55,7 @@ module Competitions
       FactoryGirl.create(:result, place: 2)
 
       OregonWomensPrestigeSeries.calculate!
+      OregonWomensPrestigeSeries.last.inspect_debug
 
       race = competition.races.find { |r| r.category == women_12 }
       assert_equal [ 25, 1.5 ], race.results.sort.map(&:points), "points for Women 1/2"

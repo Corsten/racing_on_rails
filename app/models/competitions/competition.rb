@@ -229,6 +229,10 @@ module Competitions
         query = query.where("events.type in (?)", source_event_types)
       end
 
+      if categories?
+        query = query.where("races.category" => race.category)
+      end
+
       query
     end
 

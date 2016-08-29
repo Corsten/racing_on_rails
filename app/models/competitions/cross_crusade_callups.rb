@@ -4,79 +4,12 @@ module Competitions
 
     default_value_for :name, "Cross Crusade Callups"
 
-    def source_results_query(race)
-      super.
-      where("races.category_id" => categories_for(race))
-    end
-
     def point_schedule
       [ 15, 12, 10, 8, 7, 6, 5, 4, 3, 2 ]
     end
 
     def source_events?
       true
-    end
-
-    def categories_for(race)
-      categories = super(race)
-
-      if year < 2016
-        if race.name == "Masters 35+ A"
-          categories << Category.find_or_create_by(name: "Masters Men A 40+")
-        end
-        if race.name == "Masters 35+ B"
-          categories << Category.find_or_create_by(name: "Masters Men B 40+")
-        end
-        if race.name == "Masters 35+ C"
-          categories << Category.find_or_create_by(name: "Masters Men C 40+")
-          categories << Category.find_or_create_by(name: "Men C 35+")
-        end
-        if race.name == "Masters 50+"
-          categories << Category.find_or_create_by(name: "Men 50+")
-          categories << Category.find_or_create_by(name: "Masters Men 50+")
-          categories << Category.find_or_create_by(name: "Masters 50+")
-        end
-        if race.name == "Masters 60+"
-          categories << Category.find_or_create_by(name: "Men 60+")
-          categories << Category.find_or_create_by(name: "Masters Men 60+")
-          categories << Category.find_or_create_by(name: "Masters 60+")
-        end
-        if race.name == "Masters Women 45+"
-          categories << Category.find_or_create_by(name: "Women 45+")
-        end
-        if race.name == "Unicycle"
-          categories << Category.find_or_create_by(name: "Stampede")
-        end
-      else
-        if race.name == "Masters 35+ 1/2"
-          categories << Category.find_or_create_by(name: "Masters Men 1/2 40+")
-        end
-        if race.name == "Masters 35+ 3"
-          categories << Category.find_or_create_by(name: "Masters Men 3 40+")
-        end
-        if race.name == "Masters 35+ 4"
-          categories << Category.find_or_create_by(name: "Masters Men 4 40+")
-          categories << Category.find_or_create_by(name: "Men 4 35+")
-        end
-        if race.name == "Masters 50+"
-          categories << Category.find_or_create_by(name: "Men 50+")
-          categories << Category.find_or_create_by(name: "Masters Men 50+")
-          categories << Category.find_or_create_by(name: "Masters 50+")
-        end
-        if race.name == "Masters 60+"
-          categories << Category.find_or_create_by(name: "Men 60+")
-          categories << Category.find_or_create_by(name: "Masters Men 60+")
-          categories << Category.find_or_create_by(name: "Masters 60+")
-        end
-        if race.name == "Masters Women 45+"
-          categories << Category.find_or_create_by(name: "Women 45+")
-        end
-        if race.name == "Unicycle"
-          categories << Category.find_or_create_by(name: "Stampede")
-        end
-      end
-
-      categories
     end
 
     def source_event_types
