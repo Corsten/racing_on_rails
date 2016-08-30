@@ -154,6 +154,16 @@ class Category < ActiveRecord::Base
     raise "Multiple matches #{candidate_categories.map(&:name)} for #{self.name} in #{event.categories.map(&:name).join(', ')}"
   end
 
+  def in?(other)
+    return false unless other && other.is_a?(Category)
+
+    abilities.in?(other.abilities) &&
+    ages.in?(other.ages) &&
+    equipment == other.equipment &&
+    (other.gender == "M" || gender == "F") &&
+    weight == other.weight
+  end
+
   # Compare by position, then by name
   def <=>(other)
     return -1 if other.nil?
