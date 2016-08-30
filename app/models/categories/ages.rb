@@ -19,11 +19,15 @@ module Categories
     end
 
     def junior?
-      age_group? && ages_end <= 18
+      age_group? && ages_end <= JUNIORS.end
     end
 
     def masters?
-      age_group? && ages_begin >= 30
+      age_group? && ages_begin >= MASTERS.begin
+    end
+
+    def senior?
+      age_group? && ages.in?(SENIOR)
     end
 
     # Return Range
@@ -54,7 +58,7 @@ module Categories
     def ages_from_name(name)
       if name["+"] && !name[/\d\d\d\+/]
         if name["Junior"]
-          (name[/(\d\d)\+/].to_i)..18
+          (name[/(\d\d)\+/].to_i)..JUNIORS.end
         else
           (name[/(\d\d)\+/].to_i)..::Categories::MAXIMUM
         end
@@ -62,13 +66,13 @@ module Categories
         age_range_match = /(\d\d)-(\d\d)/.match(name)
         age_range_match[1].to_i..age_range_match[2].to_i
       elsif name["Junior"]
-        10..18
+        JUNIORS
       elsif name["Master"]
-        30..::Categories::MAXIMUM
+        MASTERS
       elsif name[/U\d\d/]
         0..(/U(\d\d)/.match(name)[1].to_i - 1)
       else
-        0..::Categories::MAXIMUM
+        ALL
       end
     end
   end
