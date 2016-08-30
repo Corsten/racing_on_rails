@@ -229,8 +229,9 @@ module Competitions
         query = query.where("events.type in (?)", source_event_types)
       end
 
+      # Only consider results with categories that match +race+'s category
       if categories?
-        query = query.where("races.category" => race.category)
+        query = query.where("races.category_id" => categories_for(race))
       end
 
       query

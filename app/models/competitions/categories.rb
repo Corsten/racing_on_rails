@@ -23,7 +23,7 @@ module Competitions
       [ friendly_name ]
     end
 
-    # Only consider results from categories. Default to true: use all races in year.
+    # Only consider results from categories. Default to true.
     def categories?
       true
     end
