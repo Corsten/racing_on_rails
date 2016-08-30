@@ -6,6 +6,10 @@ module Competitions
 
     after_create :set_parent
 
+    def categories?
+      false
+    end
+
     def source_results_query(race)
       super.
       select("competition_events.type").
