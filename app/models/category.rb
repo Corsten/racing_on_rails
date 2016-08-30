@@ -33,148 +33,36 @@ class Category < ActiveRecord::Base
   validates_presence_of :name
   validates_presence_of :friendly_param
 
-  scope :same, lambda { |category|
-    query = Category.all
-    query = query.where(ability_begin: category.ability_range)
-    query = query.where(ages_begin: category.ages)
-    query = query.where(equipment: category.equipment)
-    query = query.where(gender: category.gender)
-    query = query.where(weight: category.weight)
-
-    query
-  }
-
-  def include?(other_category)
-    other_category.ability_begin >= ability_begin &&
-    other_category.ability_begin <= ability_end &&
-    other_category.ages_begin >= ages_begin &&
-    other_category.ages_begin <= ages_end &&
-    (equipment.nil? || equipment == other_category.equipment) &&
-    (gender == "M" || other_category.gender == "F")
-  end
-
-  def differences(other_category)
-    differences = []
-
-    if ability_range != other_category.ability_range
-      differences << :ability
-    end
-
-    if ages != other_category.ages
-      differences << :ages
-    end
-
-    if equipment != other_category.equipment
-      differences << :equipment
-    end
-
-    if gender != other_category.gender
-      differences << :gender
-    end
-
-    differences
-  end
-
-  scope :different, lambda { |category, other_category|
-    query = Category.all
-
-    differences = category.differences(other_category)
-
-    if category.include?(other_category)
-      if differences == [ :ability ]
-        query = query.where.not(ability_begin: other_category.ability_range)
-      end
-
-      if differences == [ :ages ]
-        query = query.where.not(ages_begin: other_category.ages)
-      end
-    end
-
-    # if category.include?(other_category)
-    #   differences = category.differences(other_category)
-    #
-    #   if differences.include?(:ability) && category.all_abilities?
-    #     query = query.where.not(ability_begin: other_category.ability_range)
-    #   end
-    #
-    #   if differences.include?(:ages) && category.all_ages?
-    #     query = query.where.not(ages_begin: other_category.ages)
-    #   end
-    #
-    #   if differences.include?(:gender) && category.all_genders?
-    #     query = query.where.not(gender: other_category.gender)
-    #   end
-    #
-    #   if differences.include?(:equipment) && all_equipment?
-    #     query = query.where.not(equipment: other_category.equipment)
-    #   end
-    # end
-
-    query
-  }
-
-  def ability?
-    ability_range != (0..::Categories::MAXIMUM)
-  end
-
-  def ages?
-    ages != (0..::Categories::MAXIMUM)
-  end
-
-  def all_abilities?
-    ability_range == (0..::Categories::MAXIMUM)
-  end
-
-  def all_ages?
-    ages == (0..::Categories::MAXIMUM)
-  end
-
-  def all_equipment?
-    equipment.nil?
-  end
-
-  def all_genders?
-    gender == "M"
-  end
-
-  def all_weights?
-    weight.nil?
-  end
-
-  def gender?
-    gender != "M"
-  end
-
-  # If other category would match category, then reject other category
-  scope :within, lambda { |race|
-    # TODO match by ages for masters
-    # TODO all_ages? all_juniors?
-    # TODO Need to handle these as overlapping ranges in different tracks: junior, masters, equipment
-    # TODO USe betweeen
-    # TODO handle no groups
-    # TODO other_event_categories should be a method?
-
-    # What groups does a category have?
-    # * ability + gender: cat 3 Men, cat 3 women (gender becasue there are two cats with same ability and different genders)
-    # * gender: senior Men
-    # * age + gender: junior men, jr Women
-    # * equipment: singlespeed
-    # * weight: Clydesdale
-
-    within = same(race.category)
-
-    other_event_categories = race.event.categories.reject { |category| category == race.category }
-
-    other_event_categories.each do |category|
-      within = within.different(race.category, category)
-    end
-
-    within
+  scope :equal, lambda { |category|
+    where(
+      ability_begin: category.ability_begin,
+      ability_end: category.ability_end,
+      ages_begin: category.ages_begin,
+      ages_end: category.ages_end,
+      equipment: category.equipment,
+      gender: category.gender,
+      weight: category.weight
+    )
   }
 
   # All categories with no parent (except root 'association' category)
   def self.find_all_unknowns
    Category.includes(:children).where(parent_id: nil).where("name != ?", RacingAssociation.current.short_name)
+  end
+
+  # Update ability, age, equipment, etc. from names
+  def self.update_all_from_names!
+    ::Category.transaction do
+      Category.all.each do |category|
+        category.set_abilities_from_name
+        category.set_ages_from_name
+        category.set_equipment_from_name
+        category.set_gender_from_name
+        category.set_weight_from_name
+
+        category.save!
+      end
+    end
   end
 
   # Sr, Mst, Jr, Cat, Beg, Exp
@@ -198,6 +86,16 @@ class Category < ActiveRecord::Base
   # Sr, Mst, Jr, Cat, Beg, Exp
   def short_name
     Category.short_name name
+  end
+
+  def in?(other)
+    return false unless other && other.is_a?(Category)
+
+    abilities.in?(other.abilities) &&
+    ages.in?(other.ages) &&
+    equipment == other.equipment &&
+    (other.gender == "M" || gender == "F") &&
+    weight == other.weight
   end
 
   # Compare by position, then by name

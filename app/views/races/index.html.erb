@@ -5,7 +5,7 @@
 <form class="form-horizontal" role="form">
   <div class="row">
     <div class="col-sm-6">
-      <%= labelled_text :category, :ability_range %>
+      <%= labelled_text :category, :abilities %>
       <%= labelled_text :category, :ages %>
       <%= labelled_text :category, :equipment %>
     </div>
@@ -24,7 +24,7 @@
     </tr>
   </thead>
   <tbody>
-    <% @similar_categories.sort_by(&:name).each do |category| %>
+    <% @equal_categories.sort_by(&:name).each do |category| %>
     <tr>
       <td><%= category.name %></td>
     </tr>
