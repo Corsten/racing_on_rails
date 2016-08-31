@@ -45,94 +45,10 @@ class Category < ActiveRecord::Base
     )
   }
 
-  scope :within, lambda { |race|
-    # TODO match by ages for masters
-    # TODO all_ages? all_juniors?
-    # TODO Need to handle these as overlapping ranges in different tracks: junior, masters, equipment
-
-    # ability category ranges
-    # Senior  0..999 0..2
-    # Cat 3   3..3   3..3
-    # Cat 4   4..4   4..4
-    # Cat 5   5..5   5..5
-
-    # if any age group categories, then apply age range
-    # Junior  0..18
-    # Senior  19..29
-    # Masters 30..999
-
-    # If multiple genders, then apply gender
-    # If multiple equipment, then apply equipment
-    # If weight weights, then apply weights
-
-    # Or: apply filters, "most restrictive" first?
-
-    # OR: group all categories by their non-default values
-    # Road BAR
-    # gender: senior men, senior women
-    # gender, ability: cat 3 men, cat 4 men, cat 5 men, cat 3 women, cat 4 women, cat 5 men
-    # gender, age: junior men, junior women, masters men, masters women
-    # gender, age, ability: masters men 4/5
-    # equipment: singlespeed
-    # weight: clydesdale
-
-    # short track
-    # gender, age, ability: Category 1 Men 19-34, Category 3 Men 15-18, Category 1 Men 35-44,
-    #    Category 3 Men 19-44, Category 1 Men 45+,Category 3 Men 45+, Category 2 Men 35-44,
-    #    Category 3 Women 10-14, Category 2 Men 45-54, Category 3 Women 15-18,
-    #    Category 2 Men 55+, Category 3 Women 19+, Category 2 Men U35,
-    #    Category 2 Women 35-44, Category 2 Women 45+, Elite/Category 1 Women,
-    #    Category 2 Women U35, Category 3 Men 10-14
-    # gender, ability: Elite Men
-    # weight: Clydesdale
-    # equiment, gender: Singlespeed Men, Singlespeed Women
-
-    ability_begin = race.category.ability_begin
-
-    event_abilities = race.event.categories.map(&:ability_begin).uniq.sort
-    if race.category.junior?
-      event_abilities = race.event.categories.select(&:junior?).map(&:ability_begin).uniq.sort
-    elsif race.category.masters?
-      event_abilities = race.event.categories.select(&:masters?).map(&:ability_begin).uniq.sort
-    elsif race.category.equipment
-      event_abilities = race.event.categories.select(&:equipment).map(&:ability_begin).uniq.sort
-    end
-
-    if ability_begin == 1 && event_abilities.min == 1
-      ability_begin = 0
-    end
-
-    index = event_abilities.find_index(race.category.ability_begin)
-    next_ability = event_abilities[index + 1]
-    ability_end = next_ability || race.category.ability_end
-    if ability_end > 0 && ability_end > ability_begin && ability_end < ::Categories::MAXIMUM
-      ability_end = ability_end - 1
-    end
-
-    query = where("ability_begin >= ? and ability_begin <= ?", ability_begin, ability_end)
-
-    if race.category.equipment && race.event.categories.one? { |c| c.equipment == race.category.equipment }
-      query = query.where(
-        equipment: race.category.equipment,
-        weight: race.category.weight
-      )
-    else
-      query = query.where(
-        equipment: race.category.equipment,
-        gender: race.category.gender,
-        weight: race.category.weight
-      )
-    end
-
-    if race.category.junior? || race.category.masters?
-      query = query.where("ages_begin >= ?", race.category.ages_begin).where("ages_end <= ?", race.category.ages_end)
-    elsif race.category.age_group?
-      query = query.where("ages_begin = ?", race.category.ages_begin).where("ages_end = ?", race.category.ages_end)
-    else
-      query = query.where("ages_begin = 0 or ages_begin = ? or (ages_begin > 18 and ages_begin < 30)", ::Categories::MAXIMUM)
-    end
-
-    query
+  scope :results_in_year, lambda { |year|
+    joins(races: :results)
+      .where("results.year" => year)
+      .uniq
   }
 
   # All categories with no parent (except root 'association' category)
@@ -186,6 +102,65 @@ class Category < ActiveRecord::Base
     equipment == other.equipment &&
     (other.gender == "M" || gender == "F") &&
     weight == other.weight
+  end
+
+  # Find best matching competition race for category. Iterate through traits (weight, equipment, ages, gender, abilities) until there is a
+  # single match (or none).
+  def best_match_in(event)
+    Rails.logger.debug "Category#best_match_in #{self.name} #{event.categories.map(&:name).join(', ')}"
+
+    candidate_categories = event.categories
+
+    self_match = candidate_categories.detect { |category| category == self }
+    Rails.logger.debug "self: #{self_match&.name}"
+    return self_match if self_match
+
+    candidate_categories = candidate_categories.select { |category| weight == category.weight }
+    Rails.logger.debug "weight: #{candidate_categories.map(&:name).join(', ')}"
+
+    candidate_categories = candidate_categories.select { |category| equipment == category.equipment }
+    Rails.logger.debug "equipment: #{candidate_categories.map(&:name).join(', ')}"
+
+    candidate_categories = candidate_categories.select { |category| ages_begin.in?(category.ages) }
+    Rails.logger.debug "ages: #{candidate_categories.map(&:name).join(', ')}"
+
+    candidate_categories = candidate_categories.reject { |category| gender == "M" && category.gender == "F" }
+    Rails.logger.debug "gender: #{candidate_categories.map(&:name).join(', ')}"
+
+    candidate_categories = candidate_categories.select { |category| ability_begin.in?(category.abilities) }
+    Rails.logger.debug "ability: #{candidate_categories.map(&:name).join(', ')}"
+    return candidate_categories.first if candidate_categories.one?
+    return nil if candidate_categories.empty?
+
+    if junior?
+      candidate_categories = candidate_categories.select { |category| category.junior? }
+      Rails.logger.debug "junior: #{candidate_categories.map(&:name).join(', ')}"
+      return candidate_categories.first if candidate_categories.one?
+      return nil if candidate_categories.empty?
+    end
+
+    if masters?
+      candidate_categories = candidate_categories.select { |category| category.masters? }
+      Rails.logger.debug "masters?: #{candidate_categories.map(&:name).join(', ')}"
+      return candidate_categories.first if candidate_categories.one?
+      return nil if candidate_categories.empty?
+    end
+
+    # E.g., if Cat 3 matches Senior Men and Cat 3, use Cat 3
+    # Could check size of range and use narrowest if there is a single one more narrow than the others
+    # Or maybe the lowest?
+    candidate_categories = candidate_categories.reject { |category| category.all_abilities? }
+
+    candidate_categories = candidate_categories.reject { |category| gender == "F" && category.gender == "M" }
+    Rails.logger.debug "exact gender: #{candidate_categories.map(&:name).join(', ')}"
+    return candidate_categories.first if candidate_categories.one?
+    return nil if candidate_categories.empty?
+
+    Rails.logger.debug "no wild cards: #{candidate_categories.map(&:name).join(', ')}"
+    return candidate_categories.first if candidate_categories.one?
+    return nil if candidate_categories.empty?
+
+    raise "Multiple matches #{candidate_categories.map(&:name)} for #{self.name} in #{event.categories.map(&:name).join(', ')}"
   end
 
   # Compare by position, then by name
