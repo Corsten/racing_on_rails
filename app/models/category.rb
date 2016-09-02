@@ -107,41 +107,45 @@ class Category < ActiveRecord::Base
   # Find best matching competition race for category. Iterate through traits (weight, equipment, ages, gender, abilities) until there is a
   # single match (or none).
   def best_match_in(event)
-    Rails.logger.debug "Category#best_match_in #{self.name} #{event.categories.map(&:name).join(', ')}"
+    logger.debug "Category#best_match_in #{self.name} in #{event.categories.map(&:name).join(', ')}"
 
     candidate_categories = event.categories
 
     self_match = candidate_categories.detect { |category| category == self }
-    Rails.logger.debug "self: #{self_match&.name}"
+    logger.debug "Category#best_match_in self: #{self_match&.name}"
     return self_match if self_match
 
     candidate_categories = candidate_categories.select { |category| weight == category.weight }
-    Rails.logger.debug "weight: #{candidate_categories.map(&:name).join(', ')}"
+    logger.debug "Category#best_match_in weight: #{candidate_categories.map(&:name).join(', ')}"
 
     candidate_categories = candidate_categories.select { |category| equipment == category.equipment }
-    Rails.logger.debug "equipment: #{candidate_categories.map(&:name).join(', ')}"
+    logger.debug "Category#best_match_in equipment: #{candidate_categories.map(&:name).join(', ')}"
 
-    candidate_categories = candidate_categories.select { |category| ages_begin.in?(category.ages) }
-    Rails.logger.debug "ages: #{candidate_categories.map(&:name).join(', ')}"
+    if junior?
+      candidate_categories = candidate_categories.select { |category| logger.debug "#{ages_end}.in?(#{category.ages}) #{ages_end.in?(category.ages)}"; ages_end.in?(category.ages) }
+    else
+      candidate_categories = candidate_categories.select { |category| ages_begin.in?(category.ages) }
+    end
+    logger.debug "Category#best_match_in ages: #{candidate_categories.map(&:name).join(', ')}"
 
     candidate_categories = candidate_categories.reject { |category| gender == "M" && category.gender == "F" }
-    Rails.logger.debug "gender: #{candidate_categories.map(&:name).join(', ')}"
+    logger.debug "Category#best_match_in gender: #{candidate_categories.map(&:name).join(', ')}"
 
     candidate_categories = candidate_categories.select { |category| ability_begin.in?(category.abilities) }
-    Rails.logger.debug "ability: #{candidate_categories.map(&:name).join(', ')}"
+    logger.debug "Category#best_match_in ability: #{candidate_categories.map(&:name).join(', ')}"
     return candidate_categories.first if candidate_categories.one?
     return nil if candidate_categories.empty?
 
     if junior?
       candidate_categories = candidate_categories.select { |category| category.junior? }
-      Rails.logger.debug "junior: #{candidate_categories.map(&:name).join(', ')}"
+      logger.debug "Category#best_match_in junior: #{candidate_categories.map(&:name).join(', ')}"
       return candidate_categories.first if candidate_categories.one?
       return nil if candidate_categories.empty?
     end
 
     if masters?
       candidate_categories = candidate_categories.select { |category| category.masters? }
-      Rails.logger.debug "masters?: #{candidate_categories.map(&:name).join(', ')}"
+      logger.debug "Category#best_match_in masters?: #{candidate_categories.map(&:name).join(', ')}"
       return candidate_categories.first if candidate_categories.one?
       return nil if candidate_categories.empty?
     end
@@ -152,11 +156,11 @@ class Category < ActiveRecord::Base
     candidate_categories = candidate_categories.reject { |category| category.all_abilities? }
 
     candidate_categories = candidate_categories.reject { |category| gender == "F" && category.gender == "M" }
-    Rails.logger.debug "exact gender: #{candidate_categories.map(&:name).join(', ')}"
+    logger.debug "Category#best_match_in exact gender: #{candidate_categories.map(&:name).join(', ')}"
     return candidate_categories.first if candidate_categories.one?
     return nil if candidate_categories.empty?
 
-    Rails.logger.debug "no wild cards: #{candidate_categories.map(&:name).join(', ')}"
+    logger.debug "Category#best_match_in no wild cards: #{candidate_categories.map(&:name).join(', ')}"
     return candidate_categories.first if candidate_categories.one?
     return nil if candidate_categories.empty?
 

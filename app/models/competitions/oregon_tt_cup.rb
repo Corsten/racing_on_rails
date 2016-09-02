@@ -58,27 +58,7 @@ module Competitions
     end
 
     def categories_for(race)
-      ids = [ race.category ] + race.category.descendants
-
-      case race.category.name
-      when "Senior Men Pro/1/2"
-        [ "Men Category 1/2" ]
-      when "Senior Women 1/2"
-        [ "Senior Women", "Women Category 1/2" ]
-      when "Category 4/5 Women"
-        [ "Women Category 4", "Women Category 4/5" ]
-      when "Category 3 Women"
-        [ "Women Category 3" ]
-      else
-        []
-      end.each do |name|
-        category = Category.find_by(name: name)
-        if category
-          ids << category.id
-        end
-      end
-
-      ids
+      result_categories_by_race[race.category]
     end
 
     def after_source_results(results, race)
@@ -91,6 +71,17 @@ module Competitions
           result["member_to"] = end_of_year
         end
       end
+
+      results
+        .group_by { |r| [ r["participant_id"], r["event_id"] ] }
+        .each do |key, person_results|
+          if person_results.size > 1
+            person_results.each do |result|
+              p result
+              puts "#{person_results.size} results for #{result["participant_id"]} in #{result['event_id']} #{result['category_name']} #{result['category_id']}"
+            end
+          end
+        end
 
       results
     end

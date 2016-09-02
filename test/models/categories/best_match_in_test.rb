@@ -22,9 +22,11 @@ module Competitions
       @masters_novice = Category.find_or_create_by_normalized_name("Masters Novice")
       @masters_men_4_5 = Category.find_or_create_by_normalized_name("Masters Men 4/5")
       @senior_women = Category.find_or_create_by_normalized_name("Senior Women")
+      @junior = Category.find_or_create_by_normalized_name("Junior")
       @junior_men = Category.find_or_create_by_normalized_name("Junior Men")
       @junior_women = Category.find_or_create_by_normalized_name("Junior Women")
       @junior_men_10_14 = Category.find_or_create_by_normalized_name("Junior Men 10-14")
+      @junior_men_15_18 = Category.find_or_create_by_normalized_name("Junior Men 15-18")
       @junior_men_15_plus = Category.find_or_create_by_normalized_name("Junior 15+")
       @junior_men_3_4_5 = Category.find_or_create_by_normalized_name("Junior Men 3/4/5")
       @singlespeed = Category.find_or_create_by_normalized_name("Singlespeed/Fixed")
@@ -78,8 +80,17 @@ module Competitions
       assert_best_match_in [ @cat_4_women, @cat_4_5_women ], @cat_4_women, event
       assert_best_match_in [ @masters_men ], @masters_men, event
       assert_best_match_in [ @masters_men_4_5, @masters_novice ], @masters_men_4_5, event
-      assert_best_match_in [ @junior_men, @junior_men_10_14, @junior_men_15_plus, @junior_men_3_4_5 ], @junior_men, event
+      assert_best_match_in [ @junior, @junior_men, @junior_men_10_14, @junior_men_15_18, @junior_men_15_plus, @junior_men_3_4_5 ], @junior_men, event
       assert_best_match_in [ @junior_women ], @junior_women, event
+    end
+
+    test "junior" do
+      event = FactoryGirl.create(:event)
+      event.races.create!(category: @junior_men_10_14)
+      event.races.create!(category: @junior_men_15_18)
+      event.races.create!(category: @junior_women)
+      assert_best_match_in [ @junior_men_10_14 ], @junior_men_10_14, event
+      assert_best_match_in [ @junior_men, @junior_men_15_18, @junior, @junior_men_15_plus, @junior_men_3_4_5 ], @junior_men_15_18, event
     end
 
     test "equipment" do
