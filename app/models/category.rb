@@ -33,7 +33,7 @@ class Category < ActiveRecord::Base
   validates_presence_of :name
   validates_presence_of :friendly_param
 
-  scope :equal, lambda { |category|
+  scope :equivalent, lambda { |category|
     where(
       ability_begin: category.ability_begin,
       ability_end: category.ability_end,
@@ -61,7 +61,7 @@ class Category < ActiveRecord::Base
     ::Category.transaction do
       Category.all.each do |category|
         category.set_abilities_from_name
-        category.set_ages_from_name
+        category.set_ages_from_name!
         category.set_equipment_from_name
         category.set_gender_from_name
         category.set_weight_from_name
@@ -104,63 +104,83 @@ class Category < ActiveRecord::Base
     weight == other.weight
   end
 
+  def equivalent?(other)
+    return false unless other && other.is_a?(Category)
+
+    abilities == other.abilities &&
+    ages == other.ages &&
+    equipment == other.equipment &&
+    gender == other.gender &&
+    weight == other.weight
+  end
+
   # Find best matching competition race for category. Iterate through traits (weight, equipment, ages, gender, abilities) until there is a
   # single match (or none).
   def best_match_in(event)
-    logger.debug "Category#best_match_in #{self.name} in #{event.categories.map(&:name).join(', ')}"
+    logger.debug "Category#best_match_in #{self.name} #{event.categories.map(&:name).join(', ')}"
 
     candidate_categories = event.categories
 
-    self_match = candidate_categories.detect { |category| category == self }
-    logger.debug "Category#best_match_in self: #{self_match&.name}"
-    return self_match if self_match
+    equivalent_match = candidate_categories.detect { |category| equivalent?(category) }
+    logger.debug "equivalent: #{equivalent_match&.name}"
+    return equivalent_match if equivalent_match
 
     candidate_categories = candidate_categories.select { |category| weight == category.weight }
-    logger.debug "Category#best_match_in weight: #{candidate_categories.map(&:name).join(', ')}"
+    logger.debug "weight: #{candidate_categories.map(&:name).join(', ')}"
 
     candidate_categories = candidate_categories.select { |category| equipment == category.equipment }
-    logger.debug "Category#best_match_in equipment: #{candidate_categories.map(&:name).join(', ')}"
+    logger.debug "equipment: #{candidate_categories.map(&:name).join(', ')}"
 
-    if junior?
-      candidate_categories = candidate_categories.select { |category| logger.debug "#{ages_end}.in?(#{category.ages}) #{ages_end.in?(category.ages)}"; ages_end.in?(category.ages) }
-    else
-      candidate_categories = candidate_categories.select { |category| ages_begin.in?(category.ages) }
-    end
-    logger.debug "Category#best_match_in ages: #{candidate_categories.map(&:name).join(', ')}"
+    candidate_categories = candidate_categories.select { |category| ages_begin.in?(category.ages) }
+    logger.debug "ages: #{candidate_categories.map(&:name).join(', ')}"
 
     candidate_categories = candidate_categories.reject { |category| gender == "M" && category.gender == "F" }
-    logger.debug "Category#best_match_in gender: #{candidate_categories.map(&:name).join(', ')}"
+    logger.debug "gender: #{candidate_categories.map(&:name).join(', ')}"
 
     candidate_categories = candidate_categories.select { |category| ability_begin.in?(category.abilities) }
-    logger.debug "Category#best_match_in ability: #{candidate_categories.map(&:name).join(', ')}"
+    logger.debug "ability: #{candidate_categories.map(&:name).join(', ')}"
     return candidate_categories.first if candidate_categories.one?
     return nil if candidate_categories.empty?
 
     if junior?
-      candidate_categories = candidate_categories.select { |category| category.junior? }
-      logger.debug "Category#best_match_in junior: #{candidate_categories.map(&:name).join(', ')}"
-      return candidate_categories.first if candidate_categories.one?
-      return nil if candidate_categories.empty?
+      junior_categories = candidate_categories.select { |category| category.junior? }
+      logger.debug "junior: #{junior_categories.map(&:name).join(', ')}"
+      return junior_categories.first if junior_categories.one?
+      if junior_categories.present?
+        candidate_categories = junior_categories
+      end
     end
 
     if masters?
-      candidate_categories = candidate_categories.select { |category| category.masters? }
-      logger.debug "Category#best_match_in masters?: #{candidate_categories.map(&:name).join(', ')}"
-      return candidate_categories.first if candidate_categories.one?
-      return nil if candidate_categories.empty?
+      masters_categories = candidate_categories.select { |category| category.masters? }
+      logger.debug "masters?: #{masters_categories.map(&:name).join(', ')}"
+      return masters_categories.first if masters_categories.one?
+      if masters_categories.present?
+        candidate_categories = masters_categories
+      end
     end
 
     # E.g., if Cat 3 matches Senior Men and Cat 3, use Cat 3
     # Could check size of range and use narrowest if there is a single one more narrow than the others
-    # Or maybe the lowest?
     candidate_categories = candidate_categories.reject { |category| category.all_abilities? }
-
-    candidate_categories = candidate_categories.reject { |category| gender == "F" && category.gender == "M" }
-    logger.debug "Category#best_match_in exact gender: #{candidate_categories.map(&:name).join(', ')}"
+    logger.debug "reject wildcards: #{candidate_categories.map(&:name).join(', ')}"
     return candidate_categories.first if candidate_categories.one?
     return nil if candidate_categories.empty?
 
-    logger.debug "Category#best_match_in no wild cards: #{candidate_categories.map(&:name).join(', ')}"
+    # "Highest" is lowest ability number
+    highest_ability = candidate_categories.map(&:ability_begin).min
+    if candidate_categories.one? { |category| category.ability_begin == highest_ability }
+      highest_ability_category = candidate_categories.detect { |category| category.ability_begin == highest_ability }
+      logger.debug "highest ability: #{highest_ability_category.name}"
+      return highest_ability_category
+    end
+
+    candidate_categories = candidate_categories.reject { |category| gender == "F" && category.gender == "M" }
+    logger.debug "exact gender: #{candidate_categories.map(&:name).join(', ')}"
+    return candidate_categories.first if candidate_categories.one?
+    return nil if candidate_categories.empty?
+
+    logger.debug "no wild cards: #{candidate_categories.map(&:name).join(', ')}"
     return candidate_categories.first if candidate_categories.one?
     return nil if candidate_categories.empty?
 
