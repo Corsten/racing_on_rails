@@ -38,6 +38,17 @@ module Competitions
       true
     end
 
+    def after_source_results(results, race)
+      results.each do |result|
+        result["multiplier"] = result["points_factor"] || 1
+      end
+    end
+
+    # Only members can score points?
+    def members_only?
+      false
+    end
+
     def categories_for(race)
       result_categories_by_race[race.category]
     end

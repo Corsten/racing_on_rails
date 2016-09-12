@@ -57,20 +57,6 @@ module Competitions
       Category.results_in_year(year).where("results.event_id" => source_events)
     end
 
-    def after_source_results(results, race)
-      results.each do |result|
-        result["multiplier"] = result["points_factor"] || 1
-      end
-    end
-
-    # Only members can score points?
-    def members_only?
-      false
-    end
-
-
-    private
-
     def debug_result_categories_by_race(result_categories_by_race)
       result_categories_by_race.each do |competition_category, source_results_categories|
         source_results_categories.sort_by(&:name).each do |category|
