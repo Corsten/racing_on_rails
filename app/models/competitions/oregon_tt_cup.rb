@@ -72,18 +72,22 @@ module Competitions
         end
       end
 
+      results = results.to_a
       results
         .group_by { |r| [ r["participant_id"], r["event_id"] ] }
         .each do |key, person_results|
           if person_results.size > 1
-            person_results.each do |result|
-              p result
-              puts "#{person_results.size} results for #{result["participant_id"]} in #{result['event_id']} #{result['category_name']} #{result['category_id']}"
-            end
+            duplicate_result = person_results.detect { |result| !Category.where(name: result["category_name"]).first!.equivalent?(race.category) }
+            p "Remove #{duplicate_result}"
+            results.delete duplicate_result
+            # person_results.each do |result|
+            #   p result
+            #   puts "#{person_results.size} results for #{result["participant_id"]} in #{result['event_id']} #{result['category_name']} #{result['category_id']}"
+            # end
           end
         end
 
-      results
+      # results
     end
 
     # Source events' categories don't match competition's categories.

@@ -110,6 +110,7 @@ module Competitions
       before_calculate
 
       races_in_upgrade_order.each do |race|
+        p race.name
         results = source_results(race)
         results = add_upgrade_results(results, race)
         results = after_source_results(results, race)
