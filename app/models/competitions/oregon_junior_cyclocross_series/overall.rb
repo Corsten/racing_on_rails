@@ -15,28 +15,37 @@ module Competitions
 
       def category_names
         [
-          "Junior Men 10-12",
-          "Junior Men 13-14",
-          "Junior Men 15-16",
-          "Junior Men 17-18",
-          "Junior Women 10-12",
-          "Junior Women 13-14",
-          "Junior Women 15-16",
-          "Junior Women 17-18"
+          "Junior Men 9-12 3/4/5",
+          "Junior Men 13-14 3/4/5",
+          "Junior Men 15-16 3/4/5",
+          "Junior Men 17-18 3/4/5",
+          "Elite Junior Men",
+          "Junior Women 9-12 3/4/5",
+          "Junior Women 13-14 3/4/5",
+          "Junior Women 15-16 3/4/5",
+          "Junior Women 17-18 3/4/5",
+          "Elite Junior Women"
         ]
       end
 
-      def maximum_events(race)
+      def categories_clause(race)
+        if race.category.abilities == (0..0)
+          Category.where(ages_begin: 9, ages_end: 18, gender: race.category.gender, ability_begin: 0, ability_end: 0)
+        else
+          Category
+            .where(gender: race.category.gender)
+            .where("(ability_begin = 3 and ability_end = 5) or (ability_begin = 0 and ability_end = 999)")
+            .where("ages_begin >= ?", race.category.ages_begin)
+            .where("ages_end <= ?", race.category.ages_end)
+        end
+      end
+
+      def maximum_events(_)
         4
       end
 
       def source_events?
         true
-      end
-
-      def source_results_query(race)
-        super.
-        where("races.category_id" => categories_for(race))
       end
 
       def create_slug

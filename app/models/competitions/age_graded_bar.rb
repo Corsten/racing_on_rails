@@ -5,8 +5,11 @@ module Competitions
 
     def source_results_query(race)
       super.
-      where("races.category_id" => race.category.parent_id).
       where("people.date_of_birth between ? and ?", race.dates_of_birth.begin, race.dates_of_birth.end)
+    end
+
+    def categories_for(race)
+      [ race.category.parent_id ]
     end
 
     def source_event_types
@@ -40,12 +43,12 @@ module Competitions
       30.step(65, 5) do |age|
         template_categories << Category.new(name: "Masters Men #{age}-#{age + 4}", ages: (age)..(age + 4), position: position = position.next, parent: masters_men)
       end
-      template_categories << Category.new(name: 'Masters Men 70+', ages: 70..999, position: position = position.next, parent: masters_men)
+      template_categories << Category.new(name: 'Masters Men 70+', ages: 70..::Categories::MAXIMUM, position: position = position.next, parent: masters_men)
 
       30.step(55, 5) do |age|
         template_categories << Category.new(name: "Masters Women #{age}-#{age + 4}", ages: (age)..(age + 4), position: position = position.next, parent: masters_women)
       end
-      template_categories << Category.new(name: 'Masters Women 60+', ages: 60..999, position: position = position.next, parent: masters_women)
+      template_categories << Category.new(name: 'Masters Women 60+', ages: 60..::Categories::MAXIMUM, position: position = position.next, parent: masters_women)
 
       template_categories << Category.new(name: "Junior Men 10-12", ages: 10..12, position: position = position.next, parent: junior_men)
       template_categories << Category.new(name: "Junior Men 13-14", ages: 13..14, position: position = position.next, parent: junior_men)

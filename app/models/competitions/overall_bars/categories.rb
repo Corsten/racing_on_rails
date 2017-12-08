@@ -1,4 +1,5 @@
-# TODO Delete
+# frozen_string_literal: true
+
 module Competitions
   module OverallBars
     module Categories
@@ -42,6 +43,14 @@ module Competitions
             categories.delete masters_women_4
             categories = categories - masters_women_4.descendants
           end
+        end
+
+        if race.category.name == "Category 3 Men"
+          categories << ::Category.find_by_name("Category 2/3 Men")
+        end
+
+        if race.category.name == "Senior Men"
+          categories.delete ::Category.find_by_name("Category 2/3 Men")
         end
 
         categories

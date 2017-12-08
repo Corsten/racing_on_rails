@@ -1,18 +1,51 @@
 <% @page_title = "Races: #{@category.name}" %>
 
 <h2><%= @category.name %></h2>
+
+<form class="form-horizontal" role="form">
+  <div class="row">
+    <div class="col-sm-6">
+      <%= labelled_text :category, :abilities %>
+      <%= labelled_text :category, :ages %>
+      <%= labelled_text :category, :equipment %>
+    </div>
+    <div class="col-sm-6">
+      <%= labelled_text :category, :gender %>
+      <%= labelled_text :category, :weight %>
+    </div>
+  </div>
+</form>
+
+<h3>Equivalent</h3>
+<%= table columns: 2 do %>
+  <thead>
+    <tr>
+      <th>Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @equivalent_categories.sort_by(&:name).each do |category| %>
+    <tr>
+      <td><%= category.name %></td>
+    </tr>
+    <% end %>
+  </tbody>
+<% end %>
+
 <%= table columns: 2 do %>
   <thead>
     <tr>
       <th>Date</th>
       <th>Event</th>
+      <th>Discipline</th>
     </tr>
   </thead>
   <tbody>
-    <% @category.races.each do |race| %>
+    <% @category.races.sort_by(&:date).reverse.each do |race| %>
     <tr>
       <td class="date"><%= link_to race.event.date.to_s(:mdY), event_results_path(race.event, anchor: "race_#{race.id}") %></td>
       <td><%= link_to race.event.name, event_results_path(race.event, anchor: "race_#{race.id}") %></td>
+      <td><%= race.event.discipline %></td>
     </tr>
     <% end %>
   </tbody>

@@ -71,7 +71,9 @@ class Event < ActiveRecord::Base
 
   scope :today_and_future, -> { where("date >= :today || end_date >= :today", today: Time.zone.today) }
   scope :year, ->(year) { where(date: year_range(year)) }
-  scope :current_year, -> { where(date: current_year_range) }
+  # Actually this is effective_year
+  scope :current_year, -> { where(date: RacingAssociation.current.effective_year_range) }
+  scope :current_year_and_later, -> { where("date > ?", Time.zone.now.beginning_of_year) }
   scope :upcoming_in_weeks, ->(number_of_weeks) {
     where(
       "(date between :today and :later) || (end_date between :today and :later)",
@@ -129,16 +131,12 @@ class Event < ActiveRecord::Base
     last_of_year = date.end_of_year
     discipline_names = [discipline]
     discipline_names << 'Circuit' if discipline.downcase == 'road'
+    discipline_names << 'Road/Gravel' if discipline.downcase == 'road'
     Event.select("distinct events.id, events.*")
       .where("events.date" => first_of_year..last_of_year)
       .where("events.discipline" => discipline_names)
       .where("bar_points > 0")
       .where("events.team_id" => team)
-  end
-
-  def self.current_year_range
-    effective_year = Time.zone.local(RacingAssociation.current.effective_year)
-    effective_year.beginning_of_year.to_date..effective_year.end_of_year.to_date
   end
 
   def self.year_range(year)

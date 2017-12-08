@@ -23,7 +23,7 @@ class ResultsController < ApplicationController
 
   # All Results for Event
   def event
-    if !Event.exists?(params[:event_id])
+    if !Event.where(id: params[:event_id]).exists?
       return event_not_found(params[:event_id])
     end
 
@@ -55,6 +55,11 @@ class ResultsController < ApplicationController
       end
       format.json { render json: results_for_api(@event.id) }
       format.xml { render xml: results_for_api(@event.id) }
+      format.xlsx do
+        assign_event_data
+        headers['Content-Disposition'] = 'filename="results.xlsx"'
+        render :event
+      end
     end
   end
 

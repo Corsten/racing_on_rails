@@ -15,7 +15,7 @@ module Competitions
     include Competitions::Naming
     include Competitions::Points
 
-    TYPES = %w{
+    TYPES = %w(
       Competitions::AgeGradedBar
       Competitions::Bar
       Competitions::Cat4WomensRaceSeries
@@ -32,7 +32,7 @@ module Competitions
       Competitions::OverallBar
       Competitions::TaborOverall
       Competitions::TeamBar
-    }
+    ).freeze
 
     UNLIMITED = Float::INFINITY
 
@@ -86,10 +86,7 @@ module Competitions
 
     def create_races
       race_category_names.each do |name|
-        category = Category.where(name: name).first
-        if category.nil?
-          category = Category.create!(raw_name: name)
-        end
+        category = Category.where(name: name).first || Category.create!(raw_name: name)
         if !races.where(category: category).exists?
           if team?
             races.create! category: category, result_columns: %W{ place team_name points }
@@ -138,10 +135,15 @@ module Competitions
           results_per_race: results_per_race,
           source_event_ids: source_event_ids(race),
           team: team?,
-          use_source_result_points: use_source_result_points?
+          use_source_result_points: use_source_result_points?,
+          upgrade_points_multiplier: upgrade_points_multiplier
         )
 
+        race.destroy_duplicate_results!
+        race.results.reload
+
         new_results, existing_results, obselete_results = partition_results(calculated_results, race)
+        Rails.logger.debug "Calculator source results:   #{results.size}"
         Rails.logger.debug "Calculator new_results:      #{new_results.size}"
         Rails.logger.debug "Calculator existing_results: #{existing_results.size}"
         Rails.logger.debug "Calculator obselete_results: #{obselete_results.size}"
@@ -168,7 +170,7 @@ module Competitions
       if upgrades.present?
         upgrade_categories = upgrades.values.map { |categories| Array.wrap(categories) }.flatten.uniq
         categories_in_upgrade_order = upgrade_categories + (races.map(&:name) - upgrade_categories)
-        categories_in_upgrade_order.map { |name| races.detect { |race| race.name == name }}.compact
+        categories_in_upgrade_order.map { |name| races.detect { |race| race.name == name } }.compact
       else
         races
       end
@@ -186,9 +188,10 @@ module Competitions
           "distinct results.id as id",
           "1 as multiplier",
           "age",
-          "categories.ability as category_ability",
+          "categories.ability_begin as category_ability",
           "categories.ages_begin as category_ages_begin",
           "categories.ages_end as category_ages_end",
+          "categories.equipment as category_equipment",
           "categories.gender as category_gender",
           "events.bar_points as event_bar_points",
           "events.date",
@@ -226,7 +229,16 @@ module Competitions
         query = query.where("events.type in (?)", source_event_types)
       end
 
+      query = query.merge(categories_clause(race))
+
       query
+    end
+
+    # Only consider results with categories that match +race+'s category
+    def categories_clause(race)
+      if categories?
+        Category.where("races.category_id" => categories_for(race))
+      end
     end
 
     def after_source_results(results, race)
@@ -299,6 +311,7 @@ module Competitions
           category_ability
           category_ages_begin
           category_ages_end
+          category_equipment
           category_gender
           discipline
           event_bar_points
@@ -369,12 +382,12 @@ module Competitions
 
       new_participant_ids      = calculated_participant_ids - participant_ids
       existing_participant_ids = calculated_participant_ids & participant_ids
-      old_participant_ids      = participant_ids            - calculated_participant_ids
+      obsolete_participant_ids = participant_ids            - calculated_participant_ids
 
       [
         calculated_results.select { |r| r.participant_id.in?            new_participant_ids },
         calculated_results.select { |r| r.participant_id.in?            existing_participant_ids },
-        race.results.select       { |r| r[participant_id_attribute].in? old_participant_ids }
+        race.results.select       { |r| r[participant_id_attribute].in? obsolete_participant_ids }
       ]
     end
 
@@ -482,8 +495,8 @@ module Competitions
       results.map(&:participant_id).uniq.each do |participant_id|
         team_ids_by_participant_id_hash[participant_id] = participant_id
       end
-      if team?
-      else
+
+      if !team?
         ::Person.select("id, team_id").where("id in (?)", results.map(&:participant_id).uniq).map do |person|
           team_ids_by_participant_id_hash[person.id] = person.team_id
         end
@@ -554,6 +567,10 @@ module Competitions
 
     def use_source_result_points?
       false
+    end
+
+    def upgrade_points_multiplier
+      0.50
     end
 
     # Team-based competition? False (default) implies it is person-based.

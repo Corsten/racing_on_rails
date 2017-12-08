@@ -7,6 +7,8 @@ gem "acts_as_list"
 gem "acts_as_tree", git: "https://github.com/amerine/acts_as_tree.git"
 gem "Ascii85", require: "ascii85"
 gem "authlogic"
+gem "axlsx", git: "https://github.com/randym/axlsx.git"
+gem "axlsx_rails", ">=0.4"
 gem "bcrypt"
 # gem "bootstrap-datepicker-rails"
 gem "bootstrap-sass"
@@ -36,11 +38,15 @@ gem "puma"
 # gem "rails-observers"
 gem "rake"
 gem "redcarpet"
+gem "rest-client", ">= 2.0.0.rc1"
 gem "ri_cal"
-gem "roo"
-gem "roo-xls", git: "https://github.com/scottwillson/roo-xls.git", branch: "preserve-fractional-seconds"
+# Roo versions after 2.1.1 break fractional seconds in Excel import, and 2.1.1 has warnings in Rubby 2.4
+gem "roo", git: "https://github.com/scottwillson/roo.git", branch: "v2.1.1-ruby-2-4"
+gem "roo-xls"
 gem "ruby-ole"
-gem "sass-rails" #, "~> 5"
+# Security update
+gem "rubyzip", ">= 1.2.1"
+gem "sass-rails", "~> 5"
 gem "scrypt"
 gem "spreadsheet"
 gem "stripe"
@@ -49,8 +55,9 @@ gem "truncate_html"
 gem "uglifier"
 gem "vestal_versions", git: "https://github.com/scottwillson/vestal_versions.git"
 gem "will_paginate", "~> 3.0"
-gem "will_paginate-bootstrap"
+gem "will_paginate-bootstrap", git: "https://github.com/estately/will_paginate-bootstrap.git"
 gem "yui-compressor"
+gem "zip-zip"
 
 # Require after WillPaginate
 gem "elasticsearch-model"
@@ -69,15 +76,15 @@ group :development do
 end
 
 group :test do
-  gem "codeclimate-test-reporter", require: nil
-  gem "minitest", "~> 5.4"
   gem "capybara"
+  gem "codeclimate-test-reporter", require: nil
+  gem "database_cleaner"
+  gem "factory_bot_rails"
+  gem "fakeweb", git: "https://github.com/SamMolokanov/fakeweb.git", branch: "ruby-2-4-1-support"
+  gem "minitest", "~> 5.4"
+  gem "mocha", require: false
   gem "poltergeist"
   gem "selenium-webdriver"
-  gem "database_cleaner"
-  # gem "factory_girl_rails"
-  gem "fakeweb"
-  gem "mocha", require: false
   gem "timecop"
 end
 

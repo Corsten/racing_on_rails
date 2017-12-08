@@ -10,8 +10,8 @@ module Results
     setup :setup_number_issuer
 
     def setup_number_issuer
-      FactoryGirl.create(:discipline)
-      FactoryGirl.create(:number_issuer)
+      FactoryBot.create(:discipline)
+      FactoryBot.create(:number_issuer)
     end
 
     test "new" do
@@ -41,10 +41,25 @@ module Results
           expected_result = expected_race.results[result_index]
           assert_equal(expected_result.place, result.place, "place for race #{index} result #{result_index} #{expected_result.first_name} #{expected_result.last_name}")
           if result.license && result.license.empty? #may have found person by license
-            assert_equal(expected_result.first_name, result.first_name, "first_name for race #{index} result #{result_index}")
-            assert_equal(expected_result.last_name, result.last_name, "last_name for race #{index} result #{result_index}")
+            if expected_result.first_name
+              assert_equal(expected_result.first_name, result.first_name, "first_name for race #{index} result #{result_index}")
+            else
+              assert_nil(result.first_name, "first_name for race #{index} result #{result_index}")
+            end
+
+            if expected_result.last_name
+              assert_equal(expected_result.last_name, result.last_name, "last_name for race #{index} result #{result_index}")
+            else
+              assert_nil(result.last_name, "last_name for race #{index} result #{result_index}")
+            end
           end
-          assert_equal(expected_result.team_name, result.team_name, "team name for race #{index} result #{result_index}")
+
+          if expected_result.team_name
+            assert_equal(expected_result.team_name, result.team_name, "team name for race #{index} result #{result_index}")
+          else
+            assert_nil(result.team_name, "team name for race #{index} result #{result_index}")
+          end
+
           assert_equal(expected_result.points, result.points, "points for race #{index} result #{result_index}")
           if result.person(true)
             if RaceNumber.rental?(result.number, Discipline[event.discipline])
@@ -71,15 +86,15 @@ module Results
     end
 
     test "import time trial people with same name" do
-      FactoryGirl.create(:discipline, name: "Time Trial")
+      FactoryBot.create(:discipline, name: "Time Trial")
       bruce_109 = Person.create!(first_name: 'Bruce', last_name: 'Carter')
       bruce_109.race_numbers.create(year: Time.zone.today.year, value: '109')
 
       bruce_1300 = Person.create!(first_name: 'Bruce', last_name: 'Carter')
       bruce_1300.race_numbers.create!(year: Time.zone.today.year, value: '1300')
 
-      existing_weaver = FactoryGirl.create(:person, name: "Ryan Weaver", road_number: "341")
-      existing_matson = FactoryGirl.create(:person, name: "Mark Matson", road_number: "340")
+      existing_weaver = FactoryBot.create(:person, name: "Ryan Weaver", road_number: "341")
+      existing_matson = FactoryBot.create(:person, name: "Mark Matson", road_number: "340")
 
       event = SingleDayEvent.create!(discipline: 'Time Trial')
 
@@ -102,20 +117,6 @@ module Results
       assert_equal(2, Person.where(first_name: 'bruce', last_name: 'carter').count, 'Bruce Carters after import')
 
       assert(!event.races.empty?, 'event.races should not be empty')
-      event.races.each do |race|
-        assert_kind_of(Race, race, 'race')
-        assert_kind_of(Category, race.category, 'race.category')
-        race.results.sort.each do |result|
-          assert_kind_of(Result, result, 'result')
-          assert_kind_of(Person, result.person, 'result.person') unless result.person.nil?
-          assert_kind_of(Team, result.team, 'result.team') unless result.team.nil?
-          assert_kind_of(Category, result.category, 'result.category') unless result.category.nil?
-          result.place
-          result.person
-          result.team
-          result.first_name
-        end
-      end
 
       # Existing people, same name, different numbers
       bruce_1300 = event.races.first.results[6].person
@@ -150,7 +151,7 @@ module Results
     end
 
     test "import 2006 v2" do
-      FactoryGirl.create(:discipline, name: "Circuit")
+      FactoryBot.create(:discipline, name: "Circuit")
       expected_races = []
 
       paul_bourcier = Person.create!(first_name: "Paul", last_name: "Bourcier", member: true)
@@ -205,13 +206,27 @@ module Results
         actual_race.results.sort.each_with_index do |result, result_index|
           expected_result = expected_race.results[result_index]
           assert_equal(expected_result.place, result.place, "place for race #{index} result #{result_index}")
-          assert_equal(expected_result.first_name, result.first_name, "first_name for race #{index} result #{result_index}")
-          assert_equal(expected_result.last_name, result.last_name, "last_name for race #{index} result #{result_index}")
-          assert_equal(expected_result.team_name, result.team_name, "team name for race #{index} result #{result_index}")
+          if expected_result.first_name
+            assert_equal(expected_result.first_name, result.first_name, "first_name for race #{index} result #{result_index}")
+          else
+            assert_nil(result.first_name, "first_name for race #{index} result #{result_index}")
+          end
+
+          if expected_result.last_name
+            assert_equal(expected_result.last_name, result.last_name, "last_name for race #{index} result #{result_index}")
+          else
+            assert_nil(result.last_name, "last_name for race #{index} result #{result_index}")
+          end
+
+          if expected_result.team_name
+            assert_equal(expected_result.team_name, result.team_name, "team name for race #{index} result #{result_index}")
+          else
+            assert_nil(result.team_name, "team name for race #{index} result #{result_index}")
+          end
           assert_equal(expected_result.points, result.points, "points for race #{index} result #{result_index}")
           assert_equal(expected_result.number, result.number, "Result number for race #{index} result #{result_index}")
-          if result.person and RaceNumber.rental?(result.number, Discipline[event.discipline])
-            assert_equal(nil, result.person.road_number, "Road number")
+          if result.person && RaceNumber.rental?(result.number, Discipline[event.discipline])
+            assert_nil(result.person.road_number, "Road number")
           end
         end
       end
@@ -242,7 +257,7 @@ module Results
       event.races.create! category: Category.find_or_create_by(name: "Category 4")
       event.races.create! category: Category.find_or_create_by(name: "Category 5")
 
-      weaver = FactoryGirl.create(:person)
+      weaver = FactoryBot.create(:person)
       pro_1_2_race.results.create! place: 1, person: weaver
 
       results_file = ResultsFile.new(File.new(File.expand_path("../../../fixtures/results/small_event.xls", __FILE__)), event)
@@ -332,18 +347,18 @@ module Results
 
     # File causes error -- just import to recreate
     test "dh" do
-      FactoryGirl.create(:discipline, name: "Downhill")
+      FactoryBot.create(:discipline, name: "Downhill")
       event = SingleDayEvent.create(discipline: 'Downhill')
       results_file = ResultsFile.new(File.new(File.expand_path("../../../fixtures/results/dh.xls", __FILE__)), event)
       results_file.import
     end
 
     test "mtb" do
-      FactoryGirl.create(:mtb_discipline)
-      pro_semi_pro_men = FactoryGirl.create(:category, name: "Pro, Semi-Pro Men")
+      FactoryBot.create(:mtb_discipline)
+      pro_semi_pro_men = FactoryBot.create(:category, name: "Pro, Semi-Pro Men")
       pro_semi_pro_men.children.create(name: 'Pro Men')
       pro_semi_pro_men.children.create(name: 'Expert Men')
-      pro_expert_women = FactoryGirl.create(:category, name: "Pro, Expert Women")
+      pro_expert_women = FactoryBot.create(:category, name: "Pro, Expert Women")
       pro_expert_women.children.create(name: 'Pro/Expert Women')
 
       event = SingleDayEvent.create!(discipline: 'Mountain Bike')
@@ -354,7 +369,7 @@ module Results
     end
 
     test "custom columns" do
-      FactoryGirl.create(:discipline, name: "Downhill")
+      FactoryBot.create(:discipline, name: "Downhill")
       event = SingleDayEvent.create(discipline: 'Downhill')
       results_file = ResultsFile.new(File.new(File.expand_path("../../../fixtures/results/custom_columns.xls", __FILE__)), event)
       results_file.import
@@ -363,7 +378,7 @@ module Results
     end
 
     test "add custom columns to existing race" do
-      FactoryGirl.create(:discipline, name: "Downhill")
+      FactoryBot.create(:discipline, name: "Downhill")
       event = SingleDayEvent.create(discipline: 'Downhill')
       event.races.create!(category: Category.create!(name: "Pro/Elite Men"))
       results_file = ResultsFile.new(File.new(File.expand_path("../../../fixtures/results/custom_columns.xls", __FILE__)), event)
@@ -394,7 +409,7 @@ module Results
     end
 
     test "times" do
-      event = FactoryGirl.create(:event)
+      event = FactoryBot.create(:event)
       results_file = ResultsFile.new(File.new(File.expand_path("../../../fixtures/results/times.xlsx", __FILE__)), event)
       results_file.import
       results = event.races.first.results
@@ -422,6 +437,24 @@ module Results
       assert_equal(36000, results[18].time, 'row 18: 10:00:00')
       # Document edge case bug. Custom format causes fractional seconds to be dropped.
       assert_equal 1086, results[19].time, 'row 19: 18:06.23 formatted as 18:06.2 in Excel'
+    end
+
+    test "#same_time?" do
+       table = Tabular::Table.new([
+        { place: "1", name: "Joanne Eastwood", time: "24:21" },
+        { place: "2", name: "Nicole Pressprich", time: "" }
+      ])
+
+      assert ResultsFile.same_time?(table.rows.second)
+    end
+
+    test "#same_time? should consider place" do
+       table = Tabular::Table.new([
+        { place: "1", name: "Joanne Eastwood", time: "24:21" },
+        { place: "DNS", name: "Nicole Pressprich", time: "DNS" }
+      ])
+
+      assert !ResultsFile.same_time?(table.rows.second)
     end
 
     def expected_results(event)
@@ -494,7 +527,7 @@ module Results
         { place: "1.0", name: "Moser" },
         { place: "1.0", name: "De Vlaminck" },
         { place: "1.0", name: "De Wolfe" }
-        ])
+      ])
 
       table.rows.each do |row|
         assert !results_file.race?(row), "Should not be a race: #{row}"

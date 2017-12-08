@@ -28,23 +28,15 @@ class Race < ActiveRecord::Base
 
   belongs_to :category
   belongs_to :event, inverse_of: :races
+  belongs_to :split_from, class_name: "Race"
   has_one :promoter, through: :event
   has_many :results, dependent: :destroy
 
   serialize :result_columns, Array
   serialize :custom_columns, Array
 
-  scope :year, lambda { |year|
-    where(
-      "date between ? and ?",
-      Time.zone.local(year).beginning_of_year.to_date,
-      Time.zone.local(year).end_of_year.to_date
-    )
-  }
-
-  scope :include_results, lambda {
-    includes(:category, { results: :team })
-  }
+  scope :include_results, -> { includes(:category, { results: :team })}
+  scope :year, ->(year) { where(date: Time.zone.local(year).beginning_of_year.to_date..Time.zone.local(year).end_of_year.to_date) }
 
   default_value_for(:result_columns) { DEFAULT_RESULT_COLUMNS.dup }
   default_value_for :custom_columns, []
@@ -75,7 +67,7 @@ class Race < ActiveRecord::Base
   end
 
   def discipline
-    self.event.discipline if event
+    event&.discipline
   end
 
   def category_name
@@ -87,7 +79,7 @@ class Race < ActiveRecord::Base
   end
 
   def name
-    self.category_name
+    category_name
   end
 
   # Combine with event name
@@ -177,7 +169,7 @@ class Race < ActiveRecord::Base
         column
       end
     end
-    columns << "bar" #if RacingAssociation.current.competitions.include?(:bar)
+    columns << "bar"
     columns.uniq!
     columns
   end
@@ -188,6 +180,36 @@ class Race < ActiveRecord::Base
 
   def symbolize_custom_columns
     self.custom_columns.map! { |col| col.to_s.to_sym }
+  end
+
+  def update_split_from!
+    if set_split_from
+      save!
+    end
+  end
+
+  def set_split_from
+    return false unless results.present?
+
+    event.races.reject { |race| race == self }.each do |race|
+      if category.in?(race.category) && results_in?(race)
+        self.split_from = race
+        return true
+      end
+    end
+
+    false
+  end
+
+  def results_in?(other_race)
+    people = results.sort.map(&:person_id)
+    other_race_people = other_race.results.sort.map(&:person_id)
+
+    people_not_in_other_race = people - other_race_people
+    return false if people_not_in_other_race.present?
+
+    people_in_other_race = people & other_race_people
+    people == people_in_other_race
   end
 
   # Ensure child team and people are not duplicates of existing records
@@ -203,6 +225,8 @@ class Race < ActiveRecord::Base
         self.category = existing_category if existing_category
       end
     end
+
+    true
   end
 
   def has_result(row_hash)
@@ -328,6 +352,20 @@ class Race < ActiveRecord::Base
       end
     end
     result.destroy
+  end
+
+  def destroy_duplicate_results!
+    duplicate_results = []
+
+    results.group_by(&:person_id).each do |person_id, person_results|
+      if person_results.size > 1
+        duplicate_results << person_results.drop(1)
+      end
+    end
+
+    duplicate_results.flatten.uniq.each do |result|
+      result.destroy!
+    end
   end
 
   def any_results?

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require File.expand_path(File.dirname(__FILE__) + "/../acceptance_test")
 
 # :stopdoc:
@@ -5,12 +7,12 @@ class ResultsTest < AcceptanceTest
   test "results editing" do
     javascript!
 
-    FactoryGirl.create(:number_issuer, name: RacingAssociation.current.short_name)
-    event = FactoryGirl.create(:event, name: "Copperopolis Road Race")
-    race = FactoryGirl.create(:race, event: event)
-    result = FactoryGirl.create(:result, race: race, name: "Ryan Weaver")
+    FactoryBot.create(:number_issuer, name: RacingAssociation.current.short_name)
+    event = FactoryBot.create(:event, name: "Copperopolis Road Race")
+    race = FactoryBot.create(:race, event: event)
+    result = FactoryBot.create(:result, race: race, name: "Ryan Weaver")
 
-    login_as FactoryGirl.create(:administrator)
+    login_as FactoryBot.create(:administrator)
 
     if Time.zone.today.month == 12
       visit "/admin/events?year=#{Time.zone.today.year}"
@@ -18,7 +20,7 @@ class ResultsTest < AcceptanceTest
       visit "/admin/events"
     end
 
-    if Time.zone.today.month == 1 && Time.zone.today.day < 6
+    if Time.zone.today.month == 1 && Time.zone.today.day < 4
       visit "/admin/events?year=#{Time.zone.today.year - 1}"
     end
 

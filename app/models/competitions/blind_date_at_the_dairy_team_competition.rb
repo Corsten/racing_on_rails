@@ -1,12 +1,10 @@
 module Competitions
   class BlindDateAtTheDairyTeamCompetition < Competition
+    include Competitions::BlindDateAtTheDairy::Common
+
     validates_presence_of :parent
 
     after_create :add_source_events
-
-    def self.parent_event_name
-      "Blind Date at the Dairy"
-    end
 
     def self.calculate!(year = Time.zone.today.year)
       ActiveSupport::Notifications.instrument "calculate.#{name}.competitions.racing_on_rails" do
@@ -31,6 +29,10 @@ module Competitions
       true
     end
 
+    def source_results_query(race)
+      super(race).where.not("categories.ages_begin" => 9..18)
+    end
+
     def name
       "Team Competition"
     end
@@ -43,20 +45,16 @@ module Competitions
       true
     end
 
-    def members_only?
-      false
-    end
-
     def all_year?
       false
     end
 
-    def point_schedule
-      [ 15, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
-    end
-
     def source_events?
       true
+    end
+
+    def categories?
+      false
     end
 
     def add_source_events
@@ -67,37 +65,8 @@ module Competitions
       end
     end
 
-    def source_results_query(race)
-      super.
-      where("races.category_id" => categories_for(race))
-    end
-
     def race_category_names
       [ "Team Competition" ]
-    end
-
-    def source_results_category_names
-      [
-        "Beginner Men",
-        "Beginner Women",
-        "Masters Men A 40+",
-        "Masters Men B 40+",
-        "Masters Men C 40+",
-        "Masters Men 50+",
-        "Masters Men 60+",
-        "Men A",
-        "Men B",
-        "Men C",
-        "Singlespeed",
-        "Stampede",
-        "Women A",
-        "Women B",
-        "Women C"
-      ]
-    end
-
-    def categories_for(race)
-      Category.where(name: source_results_category_names)
     end
   end
 end

@@ -91,6 +91,8 @@ module Categories
           unless name[/laps/i]
             name = name.gsub(/(\d+) lap/i, '\1-Lap')
           end
+
+          name = name.gsub("Category 1/Pro", "Pro/Category 1")
         end
         name
       end
@@ -99,9 +101,9 @@ module Categories
       def self.normalize_ability_punctuation(name)
         5.downto(2).each do |length|
           [ "P", 1, 2, 3, 4, 5 ].each_cons(length) do |cats|
-            [ " ", ".", "-" ].each do |delimiter|
+            [ " ", "\.", "-" ].each do |delimiter|
               # Don't combine 1/2/3 40+
-              unless name[%r{/\d#{delimiter}\d\d}]
+              unless name[%r{[/ ]\d#{delimiter}\d\d}]
                 name = name.gsub(%r{( ?)#{cats.join(delimiter)}( ?)}, "\\1#{cats.join("/")}\\2")
               end
             end
@@ -126,7 +128,11 @@ module Categories
         (30..90).each do |age|
           name = name.gsub(%r{#{age}/#{age + 9}}, "#{age}-#{age + 5}")
           name = name.gsub(%r{#{age}/#{age + 4}}, "#{age}-#{age + 9}")
+          name = name.gsub(%r{#{age}/#{age + 14}}, "#{age}-#{age + 14}")
         end
+
+        name = name.gsub(%r{\((\d\d-\d\d)\)}, '\1')
+
         name
       end
 
@@ -208,7 +214,7 @@ module Categories
               "Sport"
             elsif token[/\Ajv\z/i]
               "Junior Varsity"
-            elsif token[/\Aclydesdales\z/i] || token[/\Aclyde(s)?\z/i] || token[/\Aclydsdales\z/i]
+            elsif token[/\Aclydesdales\z/i] || token[/\Aclyde(s)?\z/i] || token[/\Aclydsdales\z/i] || token[/\Aclydesdatle\z/i]
               "Clydesdale"
             elsif token[/\Awomen'?s\z/i] || token[/\Awoman'?s\z/i]
               "Women"

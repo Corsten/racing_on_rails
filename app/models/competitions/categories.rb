@@ -23,15 +23,46 @@ module Competitions
       [ friendly_name ]
     end
 
-    # Only consider results from categories. Default to false: use all races in year.
+    # Only consider results from categories. Default to true.
     def categories?
-      false
+      true
     end
 
     # Array of ids (integers)
     # +race+ category, +race+ category's siblings, and any competition categories
     def categories_for(race)
       [ race.category ] + race.category.descendants
+    end
+
+    def result_categories_by_race
+      @result_categories_by_race ||= create_result_categories_by_race
+    end
+
+    def create_result_categories_by_race
+      result_categories_by_race = Hash.new { |hash, race_category| hash[race_category] = [] }
+
+      result_categories.each do |category|
+         best_match = category.best_match_in(self)
+         if best_match
+           result_categories_by_race[best_match] << category
+         end
+       end
+
+       debug_result_categories_by_race(result_categories_by_race) if logger.debug?
+
+       result_categories_by_race
+    end
+
+    def result_categories
+      Category.results_in_year(year).where("results.event_id" => source_events)
+    end
+
+    def debug_result_categories_by_race(result_categories_by_race)
+      result_categories_by_race.each do |competition_category, source_results_categories|
+        source_results_categories.sort_by(&:name).each do |category|
+          logger.debug "result_categories_by_race for #{full_name} competition: #{competition_category.name} source: #{category.name}"
+        end
+      end
     end
   end
 end

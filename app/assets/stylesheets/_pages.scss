@@ -415,6 +415,18 @@ table.child_single_day_events td.child a {
 
 .event_notes {
   text-align: center;
+  a {
+    text-decoration: underline;
+  }
+}
+
+.event_notes.large {
+  text-align: left;
+
+  @media (min-width: 767px) {
+    margin-left: 25%;
+    width: 50%;
+  }
 }
 
 // Event first aid providers

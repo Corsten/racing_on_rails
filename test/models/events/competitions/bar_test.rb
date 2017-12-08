@@ -7,36 +7,36 @@ module Competitions
   # :stopdoc:
   class BarTest < ActiveSupport::TestCase
     test "calculate" do
-      alice  = FactoryGirl.create(:person, name: "Alice")
-      matson = FactoryGirl.create(:person, name: "Matson")
-      molly  = FactoryGirl.create(:person, name: "Molly")
-      tonkin = FactoryGirl.create(:person, name: "Tonkin")
-      weaver = FactoryGirl.create(:person, name: "Weaver")
+      alice  = FactoryBot.create(:person, name: "Alice")
+      matson = FactoryBot.create(:person, name: "Matson")
+      molly  = FactoryBot.create(:person, name: "Molly")
+      tonkin = FactoryBot.create(:person, name: "Tonkin")
+      weaver = FactoryBot.create(:person, name: "Weaver")
 
-      association_category = FactoryGirl.create(:category, name: "CBRA")
-      senior_men           = FactoryGirl.create(:category, name: "Senior Men", parent: association_category)
-      men_a                = FactoryGirl.create(:category, name: "Men A", parent: senior_men)
-      sr_p_1_2             = FactoryGirl.create(:category, name: "Senior Men Pro/1/2", parent: senior_men)
-      senior_women         = FactoryGirl.create(:category, name: "Senior Women", parent: association_category)
+      association_category = FactoryBot.create(:category, name: "CBRA")
+      senior_men           = FactoryBot.create(:category, name: "Senior Men", parent: association_category)
+      men_a                = FactoryBot.create(:category, name: "Men A", parent: senior_men)
+      sr_p_1_2             = FactoryBot.create(:category, name: "Senior Men Pro/1/2", parent: senior_men)
+      senior_women         = FactoryBot.create(:category, name: "Senior Women", parent: association_category)
 
-      discipline = FactoryGirl.create(:discipline, name: "Road")
+      discipline = FactoryBot.create(:discipline, name: "Road")
       discipline.bar_categories << senior_men
       discipline.bar_categories << senior_women
 
-      discipline = FactoryGirl.create(:discipline, name: "Time Trial")
+      discipline = FactoryBot.create(:discipline, name: "Time Trial")
       discipline.bar_categories << senior_men
       discipline.bar_categories << senior_women
 
-      discipline = FactoryGirl.create(:discipline, name: "Cyclocross")
+      discipline = FactoryBot.create(:discipline, name: "Cyclocross")
       discipline.bar_categories << men_a
 
-      discipline = FactoryGirl.create(:discipline, name: "Track")
+      discipline = FactoryBot.create(:discipline, name: "Track")
       discipline.bar_categories << senior_men
 
-      discipline = FactoryGirl.create(:discipline, name: "Criterium")
+      discipline = FactoryBot.create(:discipline, name: "Criterium")
       discipline.bar_categories << senior_men
 
-      cross_crusade = Series.create!(name: "Cross Crusade", discipline: "Cyclocross")
+      cross_crusade = Series.create!(name: "River City Bicycles Cyclocross Crusade", discipline: "Cyclocross")
       barton = SingleDayEvent.create!(
         name: "Cross Crusade: Barton Park",
         discipline: "Cyclocross",
@@ -149,30 +149,30 @@ module Competitions
 
       # Weekly series overall should count, not individual race
       blind_date = WeeklySeries.create!(name: "Blind Date", discipline: "Cyclocross", date: Date.new(2004, 9, 1))
-      blind_date.
-      races.create!(category: men_a).
-      results.create!(
-        place: 15,
-        person: tonkin
-      )
+      blind_date
+        .races.create!(category: men_a)
+        .results.create!(
+          place: 15,
+          person: tonkin
+        )
 
-      blind_date.children.create!(date: Date.new(2004, 9, 1)).
-      races.create!(category: men_a).
-      results.create!(
-        place: 1,
-        person: tonkin
-      )
+      blind_date.children.create!(date: Date.new(2004, 9, 1))
+                .races.create!(category: men_a)
+                .results.create!(
+                  place: 1,
+                  person: tonkin
+                )
 
-      blind_date.children.create!(date: Date.new(2004, 9, 8)).
-      races.create!(category: men_a).
-      results.create!(
-        place: 3,
-        person: tonkin
-      )
+      blind_date.children.create!(date: Date.new(2004, 9, 8))
+                .races.create!(category: men_a)
+                .results.create!(
+                  place: 3,
+                  person: tonkin
+                )
 
       # Previous year
-      event = FactoryGirl.build(:event, date: Date.new(2003))
-      FactoryGirl.build(:result, race: FactoryGirl.build(:race, event: event))
+      event = FactoryBot.build(:event, date: Date.new(2003))
+      FactoryBot.build(:result, race: FactoryBot.build(:race, event: event))
 
       Bar.any_instance.expects(:expire_cache).at_least_once
       assert_difference "Result.count", 10 do
@@ -200,21 +200,21 @@ module Competitions
       assert_equal(1, results[1].scores.size, "Weaver Men A Cyclocross BAR results scores")
 
       track_bar = Bar.find_by_name("2004 Track BAR")
-      assert_not_nil(track_bar, 'Track BAR')
+      assert_not_nil(track_bar, "Track BAR")
       sr_men_track = track_bar.races.detect { |r| r.category == senior_men }
-      assert_not_nil(sr_men_track, 'Senior Men Track BAR')
+      assert_not_nil(sr_men_track, "Senior Men Track BAR")
       tonkin_track_bar_result = sr_men_track.results.detect { |result| result.person == tonkin }
-      assert_not_nil(tonkin_track_bar_result, 'Tonkin Track BAR result')
-      assert_equal(12, tonkin_track_bar_result.points, 'Tonkin Track BAR points')
+      assert_not_nil(tonkin_track_bar_result, "Tonkin Track BAR result")
+      assert_equal(12, tonkin_track_bar_result.points, "Tonkin Track BAR points")
     end
 
     test "calculate team events" do
-      person = FactoryGirl.create(:person, name: "Paul Mautner")
+      person = FactoryBot.create(:person, name: "Paul Mautner")
 
-      association_category = FactoryGirl.create(:category, name: "CBRA")
-      senior_men           = FactoryGirl.create(:category, name: "Senior Men", parent: association_category)
+      association_category = FactoryBot.create(:category, name: "CBRA")
+      senior_men           = FactoryBot.create(:category, name: "Senior Men", parent: association_category)
 
-      discipline = FactoryGirl.create(:discipline, name: "Track")
+      discipline = FactoryBot.create(:discipline, name: "Track")
       discipline.bar_categories << senior_men
 
       team_track = SingleDayEvent.create!(
@@ -230,11 +230,11 @@ module Competitions
       )
       team_track_senior_men.results.create!(
         place: 1,
-        person: FactoryGirl.create(:person)
+        person: FactoryBot.create(:person)
       )
       team_track_senior_men.results.create!(
         place: 1,
-        person: FactoryGirl.create(:person)
+        person: FactoryBot.create(:person)
       )
 
       Bar.calculate! 2004
@@ -245,46 +245,37 @@ module Competitions
       assert_equal(10, result.points, "points")
     end
 
-    test "count category 4 5 results" do
-      category_4_5_men = FactoryGirl.create(:category, name: "Category 4/5 Men")
-      category_4_men = FactoryGirl.create(:category, name: "Category 4 Men")
-      category_4_5_men.children << category_4_men
-
-      cats = Bar.new.categories_for(Race.new(category: category_4_men))
-      assert_same_elements [ category_4_5_men, category_4_men ], cats, "Should include Cat 4/5 in Cat 4 results"
-    end
-
     test "masters 4 5" do
-      masters_men             = FactoryGirl.create(:category, name: "Masters Men")
-      masters_men_4_5         = FactoryGirl.create(:category, name: "Masters Men 4/5", parent: masters_men)
-                                FactoryGirl.create(:category, name: "Masters Men 4/5 40+", parent: masters_men_4_5)
-                                FactoryGirl.create(:category, name: "Masters Men 4/5 50+", parent: masters_men_4_5)
-      masters_men_40_plus     = FactoryGirl.create(:category, name: "Masters Men 40+", parent: masters_men)
+      masters_men             = FactoryBot.create(:category, name: "Masters Men")
+      masters_men_4_5         = FactoryBot.create(:category, name: "Masters Men 4/5", parent: masters_men)
+                                FactoryBot.create(:category, name: "Masters Men 4/5 40+", parent: masters_men_4_5)
+                                FactoryBot.create(:category, name: "Masters Men 4/5 50+", parent: masters_men_4_5)
+      masters_men_40_plus     = FactoryBot.create(:category, name: "Masters Men 40+", parent: masters_men)
 
       cats = Bar.new.categories_for(Race.new(category: masters_men))
       assert_same_elements [ masters_men, masters_men_40_plus ], cats, "Should include all Masters children except 4/5"
     end
 
     test "masters women" do
-      masters_women           = FactoryGirl.create(:category, name: "Masters Women")
-      masters_women_4         = FactoryGirl.create(:category, name: "Masters Women 4", parent: masters_women)
-                                FactoryGirl.create(:category, name: "Masters Women 4 40+", parent: masters_women_4)
-      masters_women_40_plus   = FactoryGirl.create(:category, name: "Masters Women 40+", parent: masters_women)
+      masters_women           = FactoryBot.create(:category, name: "Masters Women")
+      masters_women_4         = FactoryBot.create(:category, name: "Masters Women 4", parent: masters_women)
+                                FactoryBot.create(:category, name: "Masters Women 4 40+", parent: masters_women_4)
+      masters_women_40_plus   = FactoryBot.create(:category, name: "Masters Women 40+", parent: masters_women)
 
       cats = Bar.new.categories_for(Race.new(category: masters_women))
       assert_same_elements [ masters_women, masters_women_40_plus ], cats, "Should include all Masters women children except 4"
     end
 
     test "#categories_for should not modify association" do
-      root = FactoryGirl.create(:category)
-      node = FactoryGirl.create(:category, parent: root)
-      leaf = FactoryGirl.create(:category, parent: node)
+      root = FactoryBot.create(:category)
+      node = FactoryBot.create(:category, parent: root)
+      leaf = FactoryBot.create(:category, parent: node)
 
       Bar.new.categories_for(Race.new(category: root.reload))
       Bar.new.categories_for(Race.new(category: node.reload))
       Bar.new.categories_for(Race.new(category: leaf.reload))
 
-      assert_equal nil, root.parent, "root parent"
+      assert_nil root.parent, "root parent"
       assert_equal root, node.parent, "node parent"
       assert_equal node, leaf.parent, "leaf parent"
     end

@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 module Competitions
   # See Bar class.
   class OverallBar < Competition
     include OverallBars::Categories
-    # include OverallBars::Points
     include OverallBars::Races
 
     def create_children
@@ -20,6 +21,11 @@ module Competitions
         date: date,
         discipline: discipline.name
       )
+    end
+
+    # BAR _does_ have categories, but selection is different than default
+    def categories?
+      false
     end
 
     def source_results_query(race)
@@ -56,10 +62,14 @@ module Competitions
         [ ::Category.find_or_create_by(name: "Category 2 Men") ]
       when "Category 3 Women"
         [ ::Category.find_or_create_by(name: "Category 2 Women") ]
-      when "Category 4/5 Men"
+      when "Category 4 Men"
         [ ::Category.find_or_create_by(name: "Category 3 Men") ]
+      when "Category 5 Men"
+        [ ::Category.find_or_create_by(name: "Category 4 Men"), ::Category.find_or_create_by(name: "Category 5 Men") ]
       when "Category 4 Women"
         [ ::Category.find_or_create_by(name: "Category 3 Women") ]
+      when "Category 5 Women"
+        [ ::Category.find_or_create_by(name: "Category 4 Women"), ::Category.find_or_create_by(name: "Category 5 Women") ]
       else
         [ race.category ]
       end
@@ -67,11 +77,14 @@ module Competitions
 
     def category_names
       [
+        "Athena",
         "Clydesdale",
         "Category 3 Men",
         "Category 3 Women",
         "Category 4 Women",
-        "Category 4/5 Men",
+        "Category 5 Women",
+        "Category 4 Men",
+        "Category 5 Men",
         "Junior Men",
         "Junior Women",
         "Masters Men 4/5",
@@ -99,18 +112,10 @@ module Competitions
     # count only highest-placing category.
     # This typically happens for age-based categories like Masters and Juniors
     # Assume scores sorted in preferred order (usually by points descending)
-    # For the Category 4/5 Overall BAR, if a person has both a Cat 4 and Cat 5 result for the same discipline,
-    # we only count the Cat 4 result
     def reject_duplicate_discipline_results(source_results)
       filtered_results = []
 
       source_results.group_by { |r| r["participant_id"] }.each do |_, results|
-        results.select { |r| r["category_name"] == "Category 4 Men" }.each do |cat_4_result|
-          results = results.reject do |r|
-            r["category_name"] == "Category 5 Men" && r["discipline"] == cat_4_result["discipline"]
-          end
-        end
-
         results.group_by { |r| r["discipline"] }.each do |_, discipline_results|
           filtered_results << discipline_results.sort_by { |r| r["points"].to_f }.reverse.first
         end
@@ -129,7 +134,7 @@ module Competitions
     end
 
     def friendly_name
-      'Overall BAR'
+      "Overall BAR"
     end
 
     def default_discipline

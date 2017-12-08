@@ -21,6 +21,7 @@ module Categories
       assert_equal "Men Pro/1/2", Category.new(name: "Men Pro,1/2").name, "Men Pro,1/2"
       assert_equal "Men Pro/1/2", Category.new(name: "Men Pro 1/2").name, "Men Pro 1/2"
       assert_equal "Men Pro/1/2", Category.new(name: "Men Pro 1-2").name, "Men Pro 1-2"
+      assert_equal "Pro/Category 1 Men 19-39", Category.new(name: "Category 1/Pro Men 19-39").name, "Category 1/Pro Men 19-39"
       assert_equal "Men 1/2", Category.new(name: "Men1-2").name, "Men1-2"
       assert_equal "Women 1/2", Category.new(name: "W1/2").name, "W1/2"
       assert_equal "Women 4", Category.new(name: "W4").name, "W4"
@@ -40,13 +41,16 @@ module Categories
       assert_equal "Men U50 24-Hour", Category.new(name: "Men U50 24hr").name, "Men U50 24hr"
       assert_equal "Masters Men 30-34", Category.new(name: "Men Masters 30-34").name, "Men Masters 30-34"
       assert_equal "Masters Men 1/2/3 40+", Category.new(name: "Masters Men 1/2/3 40+").name, "Masters Men 1/2/3 40+"
+      assert_equal "Masters Men 3 40+", Category.new(name: "Masters Men 3 40+").name, "Masters Men 3 40+"
       assert_equal "Masters 30-34 Kilometer", Category.new(name: "Masters 30-34 Kilometer").name, "Masters 30-34 Kilometer"
+      assert_equal "Masters Men 35-49 A/B", Category.new(name: "Masters Men 35/49 A/B").name, "Masters Men 35/49 A/B"
       assert_equal "4", Category.new(name: "4").name, "4"
       assert_equal "4", Category.new(name: 4).name, "4 (Number)"
+      assert_equal "Four-Person Men Veteran (Over 160)", Category.new(name: "Four-Person Men Veteran (Over 160)").name, "Four-Person Men Veteran (Over 160)"
     end
 
     test "find_or_create_by_normalized_name" do
-      category = FactoryGirl.create(:category, name: "Senior Men")
+      category = FactoryBot.create(:category, name: "Senior Men")
       assert_equal category, Category.find_or_create_by_normalized_name(" Senior   Men  ")
     end
 
@@ -132,6 +136,7 @@ module Categories
       assert_equal "Six-day", Category.normalize_punctuation("Six-Day"), "Six-Day"
 
       assert_equal "Men 40+ B", Category.normalize_punctuation("Men 40+ - B"), "Men 40+ - B"
+      assert_equal "Junior Men 12-18", Category.normalize_age_group_punctuation("Junior Men (12-18)"), "Junior Men (12-18)"
     end
 
     test "#replace_roman_numeral_categories" do

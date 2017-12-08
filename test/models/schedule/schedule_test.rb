@@ -49,17 +49,17 @@ class ScheduleTest < ActiveSupport::TestCase
   end
 
   test "import excel" do
-    FactoryGirl.create(:discipline)
-    FactoryGirl.create(:cyclocross_discipline)
-    FactoryGirl.create(:mtb_discipline)
-    FactoryGirl.create(:discipline, name: "Track")
-    FactoryGirl.create(:discipline, name: "Time Trial").discipline_aliases.create(alias: "tt")
+    FactoryBot.create(:discipline)
+    FactoryBot.create(:cyclocross_discipline)
+    FactoryBot.create(:mtb_discipline)
+    FactoryBot.create(:discipline, name: "Track")
+    FactoryBot.create(:discipline, name: "Time Trial").discipline_aliases.create(alias: "tt")
 
     event_before = SingleDayEvent.create(name: 'Before Schedule Start', date: Date.new(2006, 1, 19))
     event_on = SingleDayEvent.create(name: 'On Schedule Start', date: Date.new(2006, 1, 20))
     event_after = SingleDayEvent.create(name: 'After Schedule Start', date: Date.new(2006, 1, 21))
 
-    FactoryGirl.create_list(:event, 4)
+    FactoryBot.create_list(:event, 4)
 
     before_import_after_schedule_start_date = Event.where("date >= ?", '2006-01-20').count
     assert_equal(6, before_import_after_schedule_start_date, "events after 2006 count before import")
@@ -135,7 +135,7 @@ class ScheduleTest < ActiveSupport::TestCase
     assert_equal(fast_twitch_series.start_date, fast_twitch_series.date, "Fast Twitch start date and date")
     sql_results = WeeklySeries.connection.select_one("select date from events where id=#{fast_twitch_series.id}")
     assert_equal_dates("2006-05-12", sql_results["date"], "Fast Twitch start date and date column from DB")
-    assert_equal(nil, sql_results["flyer"], "Fast Twitch parent series flyer")
+    assert_nil(sql_results["flyer"], "Fast Twitch parent series flyer")
 
     assert_not_nil(cream_puff, "Should have imported Cream Puff")
     assert(cream_puff.instance_of?(SingleDayEvent), "Cream Puff should be SingleDayEvent")
@@ -166,7 +166,7 @@ class ScheduleTest < ActiveSupport::TestCase
       assert_equal("bike-central@bike-central.com", event.promoter.email, "Fast Twitch Fridays promoter name")
       assert_equal(RacingAssociation.current.default_sanctioned_by, event.sanctioned_by, "Fast Twitch sanctioned_by")
       assert_equal(fast_twitch_series, event.parent, "Fast Twitch Fridays parent")
-      assert_equal(nil, event.flyer, "Fast Twitch flyer")
+      assert_nil(event.flyer, "Fast Twitch flyer")
     end
     assert_equal(1, Person.where(first_name: 'Jen', last_name: 'Featheringill').count, "Jen Featheringill should only be listed once in promoters")
 
@@ -343,8 +343,8 @@ class ScheduleTest < ActiveSupport::TestCase
   end
 
   test "import mbra tabbed" do
-    FactoryGirl.create(:discipline)
-    FactoryGirl.create(:discipline, name: "Criterium")
+    FactoryBot.create(:discipline)
+    FactoryBot.create(:discipline, name: "Criterium")
     Team.create!(id: 1200000, name: "Bike Team")
     filename = File.expand_path(File.dirname(__FILE__) + "/../../fixtures/schedule/tab-delimited.txt")
     Schedule::Schedule.import(filename)
@@ -378,8 +378,8 @@ class ScheduleTest < ActiveSupport::TestCase
   end
 
   test "import mbra csv" do
-    FactoryGirl.create(:discipline)
-    FactoryGirl.create(:discipline, name: "Criterium")
+    FactoryBot.create(:discipline)
+    FactoryBot.create(:discipline, name: "Criterium")
     Team.create!(id: 1200000, name: "Bike Team")
     filename = File.expand_path(File.dirname(__FILE__) + "/../../fixtures/schedule/comma-delimited.csv")
     Schedule::Schedule.import(filename)

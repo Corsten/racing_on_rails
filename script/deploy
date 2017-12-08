@@ -1,7 +1,9 @@
 #! /usr/bin/env ruby
 
-%w{ aba atra mbra obra nabra wsba }.each do |association|
+%w{ aba mbra obra wsba }.each do |association|
   puts "Deploy #{association}"
   `script/local #{association}`
   puts `cap production deploy`
+  puts `cap production puma:stop`
+  puts `cap production puma:start`
 end

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module People
   module Merge
     extend ActiveSupport::Concern
@@ -11,7 +12,6 @@ module People
       :billing_street,
       :billing_zip,
       :bmx_category,
-      :card_brand,
       :card_expires_on,
       :card_printed_at,
       :ccx_category,
@@ -46,7 +46,7 @@ module People
       :track_category,
       :work_phone,
       :zip
-    ]
+    ].freeze
 
     # Moves another people' aliases, results, and race numbers to this person,
     # and delete the other person.
@@ -64,19 +64,19 @@ module People
         other_name: other_person.try(:name)
       ) do
 
-        if !merge?(other_person, force: force)
+        unless merge?(other_person, force: force)
           ActiveSupport::Notifications.instrument(
             "failure.merge.people.admin.racing_on_rails",
             person_id: id,
             person_name: name,
             other_id: other_person.try(:id),
-            other_name: other_person.try(:name),
+            other_name: other_person.try(:name)
           )
           return false
         end
 
         Person.transaction do
-          self.merge_version do
+          merge_version do
             before_merge other_person
 
             if login.blank? && other_person.login.present?
@@ -111,9 +111,7 @@ module People
 
             # save! can trigger automatic deletion for people created for old orders
             # if that happens, don't try and merge associations
-            if !Person.exists?(id)
-              return true
-            end
+            return true unless Person.exists?(id)
 
             aliases << other_person.aliases
             editor_requests << other_person.editor_requests
@@ -124,7 +122,6 @@ module People
             names << other_person.names
             race_numbers << other_person.race_numbers
             results << other_person.results
-            roles << (other_person.roles - roles)
 
             begin
               versions << other_person.versions
@@ -139,7 +136,7 @@ module People
 
             other_person.event_team_memberships.reload.clear
             Person.delete other_person.id
-            existing_alias = aliases.detect{ |a| a.name.casecmp(other_person.name) == 0 }
+            existing_alias = aliases.detect { |a| a.name.casecmp(other_person.name) == 0 }
             if existing_alias.nil? && Person.find_all_by_name(other_person.name).empty?
               aliases.create(name: other_person.name)
             end
@@ -151,7 +148,7 @@ module People
           person_id: id,
           person_name: name,
           other_id: other_person.try(:id),
-          other_name: other_person.try(:name),
+          other_name: other_person.try(:name)
         )
       end
 
@@ -159,9 +156,7 @@ module People
     end
 
     def merge?(other_person, force: false)
-      if other_person.nil? || other_person == self
-        return false
-      end
+      return false if other_person.nil? || other_person == self
 
       return true if force
 
@@ -169,7 +164,7 @@ module People
     end
 
     # Callback
-    def before_merge(other_person)
+    def before_merge(_other_person)
       true
     end
   end

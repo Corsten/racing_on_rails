@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :person_alias, class: Alias do
     sequence(:name) { |n| "Person Alias #{n}" }
     person
@@ -43,6 +43,7 @@ FactoryGirl.define do
 
   factory :event, class: "SingleDayEvent" do
     promoter factory: :person
+
     factory :multi_day_event, class: "MultiDayEvent"
     factory :series, class: "Series"
     factory :weekly_series, class: "WeeklySeries"
@@ -126,7 +127,7 @@ FactoryGirl.define do
       factory :administrator do
         first_name "Candi"
         last_name "Murray"
-        roles { |r| [ r.association(:role) ] }
+        administrator true
         login "admin@example.com"
         email "admin@example.com"
         home_phone "(503) 555-1212"
@@ -173,10 +174,6 @@ FactoryGirl.define do
     number_issuer
     person
     sequence :value, "100"
-  end
-
-  factory :role do
-    name "Administrator"
   end
 
   factory :result do

@@ -16,9 +16,12 @@ module Events
       has_many :competitions, through: :competition_event_memberships, source: :competition, class_name: "Competitions::Competition"
       has_many :competition_event_memberships, class_name: "Competitions::CompetitionEventMembership"
 
+      scope :competition, -> { where("type is not null").where.not(type: %w{ Event SingleDayEvent MultiDayEvent Series WeeklySeries CombinedTimeTrialResults }) }
+
       def self.find_all_bar_for_discipline(discipline, year = Time.zone.today.year)
         discipline_names = [discipline]
         discipline_names << 'Circuit' if discipline.downcase == 'road'
+        discipline_names << 'Road/Gravel' if discipline.downcase == 'road'
         Event.distinct.year(year).where(discipline: discipline_names).where("bar_points > 0")
       end
     end
@@ -29,6 +32,10 @@ module Events
       competition_event_membership = competition_event_memberships.detect { |cem| cem.competition == competition }
       competition_event_membership.points_factor = points
       competition_event_membership.save!
+    end
+
+    def update_split_from!
+      races.each(&:update_split_from!)
     end
 
     def event_teams?

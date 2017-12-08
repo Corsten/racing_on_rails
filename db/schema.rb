@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151117051750) do
+ActiveRecord::Schema.define(version: 20170701201331) do
 
   create_table "adjustments", force: :cascade do |t|
     t.integer  "order_id",    limit: 4
@@ -81,14 +81,21 @@ ActiveRecord::Schema.define(version: 20151117051750) do
     t.integer  "ages_begin",     limit: 4,   default: 0
     t.integer  "ages_end",       limit: 4,   default: 999
     t.string   "friendly_param", limit: 255,               null: false
-    t.integer  "ability",        limit: 4,   default: 0,   null: false
     t.string   "gender",         limit: 255, default: "M", null: false
+    t.integer  "ability_begin",  limit: 4,   default: 0,   null: false
+    t.integer  "ability_end",    limit: 4,   default: 999, null: false
+    t.string   "weight",         limit: 255
+    t.string   "equipment",      limit: 255
   end
 
+  add_index "categories", ["ability_begin"], name: "index_categories_on_ability_begin", using: :btree
+  add_index "categories", ["ability_end"], name: "index_categories_on_ability_end", using: :btree
+  add_index "categories", ["equipment"], name: "index_categories_on_equipment", using: :btree
   add_index "categories", ["friendly_param"], name: "index_categories_on_friendly_param", using: :btree
   add_index "categories", ["name"], name: "categories_name_index", unique: true, using: :btree
-  add_index "categories", ["parent_id"], name: "parent_id", using: :btree
+  add_index "categories", ["parent_id"], name: "index_categories_on_parent_id", using: :btree
   add_index "categories", ["updated_at"], name: "index_categories_on_updated_at", using: :btree
+  add_index "categories", ["weight"], name: "index_categories_on_weight", using: :btree
 
   create_table "competition_event_memberships", force: :cascade do |t|
     t.integer "competition_id", limit: 4,                 null: false
@@ -108,7 +115,7 @@ ActiveRecord::Schema.define(version: 20151117051750) do
   end
 
   add_index "discipline_aliases", ["alias"], name: "idx_alias", using: :btree
-  add_index "discipline_aliases", ["discipline_id"], name: "idx_discipline_id", using: :btree
+  add_index "discipline_aliases", ["discipline_id"], name: "index_discipline_aliases_on_discipline_id", using: :btree
 
   create_table "discipline_bar_categories", id: false, force: :cascade do |t|
     t.integer "category_id",   limit: 4, default: 0, null: false
@@ -116,8 +123,7 @@ ActiveRecord::Schema.define(version: 20151117051750) do
   end
 
   add_index "discipline_bar_categories", ["category_id", "discipline_id"], name: "discipline_bar_categories_category_id_index", unique: true, using: :btree
-  add_index "discipline_bar_categories", ["category_id"], name: "idx_category_id", using: :btree
-  add_index "discipline_bar_categories", ["discipline_id"], name: "idx_discipline_id", using: :btree
+  add_index "discipline_bar_categories", ["discipline_id"], name: "index_discipline_bar_categories_on_discipline_id", using: :btree
 
   create_table "disciplines", force: :cascade do |t|
     t.string   "name",       limit: 64, default: "",    null: false
@@ -210,7 +216,7 @@ ActiveRecord::Schema.define(version: 20151117051750) do
     t.string   "discipline",                     limit: 32
     t.string   "flyer",                          limit: 255
     t.string   "name",                           limit: 255
-    t.string   "notes",                          limit: 255,                            default: ""
+    t.text     "notes",                          limit: 65535
     t.string   "sanctioned_by",                  limit: 255
     t.string   "state",                          limit: 64
     t.string   "type",                           limit: 255
@@ -264,10 +270,10 @@ ActiveRecord::Schema.define(version: 20151117051750) do
   end
 
   add_index "events", ["bar_points"], name: "index_events_on_bar_points", using: :btree
-  add_index "events", ["date"], name: "idx_date", using: :btree
+  add_index "events", ["date"], name: "index_events_on_date", using: :btree
   add_index "events", ["discipline"], name: "idx_disciplined", using: :btree
   add_index "events", ["number_issuer_id"], name: "events_number_issuer_id_index", using: :btree
-  add_index "events", ["parent_id"], name: "parent_id", using: :btree
+  add_index "events", ["parent_id"], name: "index_events_on_parent_id", using: :btree
   add_index "events", ["promoter_id"], name: "index_events_on_promoter_id", using: :btree
   add_index "events", ["region_id"], name: "index_events_on_region_id", using: :btree
   add_index "events", ["sanctioned_by"], name: "index_events_on_sanctioned_by", using: :btree
@@ -341,7 +347,7 @@ ActiveRecord::Schema.define(version: 20151117051750) do
     t.boolean  "public",                            default: true, null: false
   end
 
-  add_index "mailing_lists", ["name"], name: "idx_name", using: :btree
+  add_index "mailing_lists", ["name"], name: "index_mailing_lists_on_name", using: :btree
   add_index "mailing_lists", ["updated_at"], name: "index_mailing_lists_on_updated_at", using: :btree
 
   create_table "names", force: :cascade do |t|
@@ -564,6 +570,7 @@ ActiveRecord::Schema.define(version: 20151117051750) do
     t.integer  "non_member_result_id",                  limit: 4
     t.string   "name",                                  limit: 255,   default: "",    null: false
     t.boolean  "other_people_with_same_name",                         default: false, null: false
+    t.boolean  "administrator",                                       default: false, null: false
   end
 
   add_index "people", ["crypted_password"], name: "index_people_on_crypted_password", using: :btree
@@ -579,7 +586,7 @@ ActiveRecord::Schema.define(version: 20151117051750) do
   add_index "people", ["persistence_token"], name: "index_people_on_persistence_token", using: :btree
   add_index "people", ["print_card"], name: "index_people_on_print_card", using: :btree
   add_index "people", ["single_access_token"], name: "index_people_on_single_access_token", using: :btree
-  add_index "people", ["team_id"], name: "idx_team_id", using: :btree
+  add_index "people", ["team_id"], name: "index_people_on_team_id", using: :btree
   add_index "people", ["updated_at"], name: "index_people_on_updated_at", using: :btree
 
   create_table "people_people", id: false, force: :cascade do |t|
@@ -590,14 +597,6 @@ ActiveRecord::Schema.define(version: 20151117051750) do
   add_index "people_people", ["editor_id", "person_id"], name: "index_people_people_on_editor_id_and_person_id", unique: true, using: :btree
   add_index "people_people", ["editor_id"], name: "index_people_people_on_editor_id", using: :btree
   add_index "people_people", ["person_id"], name: "index_people_people_on_person_id", using: :btree
-
-  create_table "people_roles", id: false, force: :cascade do |t|
-    t.integer "role_id",   limit: 4, null: false
-    t.integer "person_id", limit: 4, null: false
-  end
-
-  add_index "people_roles", ["person_id"], name: "index_people_roles_on_person_id", using: :btree
-  add_index "people_roles", ["role_id"], name: "role_id", using: :btree
 
   create_table "photos", force: :cascade do |t|
     t.text     "caption",    limit: 65535
@@ -630,7 +629,7 @@ ActiveRecord::Schema.define(version: 20151117051750) do
   end
 
   add_index "posts", ["date", "mailing_list_id"], name: "idx_date_list", using: :btree
-  add_index "posts", ["date"], name: "idx_date", using: :btree
+  add_index "posts", ["date"], name: "index_posts_on_date", using: :btree
   add_index "posts", ["last_reply_at"], name: "index_posts_on_last_reply_at", using: :btree
   add_index "posts", ["mailing_list_id"], name: "idx_mailing_list_id", using: :btree
   add_index "posts", ["original_id"], name: "index_posts_on_original_id", using: :btree
@@ -702,7 +701,7 @@ ActiveRecord::Schema.define(version: 20151117051750) do
   create_table "races", force: :cascade do |t|
     t.integer  "category_id",          limit: 4,                                              null: false
     t.string   "city",                 limit: 128
-    t.string   "distance",             limit: 255
+    t.decimal  "distance",                           precision: 10, scale: 2
     t.string   "state",                limit: 64
     t.integer  "field_size",           limit: 4
     t.integer  "laps",                 limit: 4
@@ -721,10 +720,11 @@ ActiveRecord::Schema.define(version: 20151117051750) do
     t.integer  "field_limit",          limit: 4
     t.boolean  "additional_race_only",                                        default: false, null: false
     t.boolean  "visible",                                                     default: true
+    t.integer  "split_from_id",        limit: 4
   end
 
   add_index "races", ["bar_points"], name: "index_races_on_bar_points", using: :btree
-  add_index "races", ["category_id"], name: "idx_category_id", using: :btree
+  add_index "races", ["category_id"], name: "index_races_on_category_id", using: :btree
   add_index "races", ["event_id"], name: "index_races_on_event_id", using: :btree
   add_index "races", ["updated_at"], name: "index_races_on_updated_at", using: :btree
 
@@ -783,7 +783,6 @@ ActiveRecord::Schema.define(version: 20151117051750) do
   end
 
   create_table "refunds", force: :cascade do |t|
-    t.integer  "order_id",     limit: 4
     t.decimal  "amount",                 precision: 10, scale: 2
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -791,7 +790,6 @@ ActiveRecord::Schema.define(version: 20151117051750) do
   end
 
   add_index "refunds", ["line_item_id"], name: "index_refunds_on_line_item_id", using: :btree
-  add_index "refunds", ["order_id"], name: "index_refunds_on_order_id", using: :btree
 
   create_table "regions", force: :cascade do |t|
     t.string   "name",           limit: 255, null: false
@@ -806,21 +804,21 @@ ActiveRecord::Schema.define(version: 20151117051750) do
   create_table "results", force: :cascade do |t|
     t.integer  "category_id",             limit: 4
     t.integer  "person_id",               limit: 4
-    t.integer  "race_id",                 limit: 4,                     null: false
+    t.integer  "race_id",                 limit: 4,                                              null: false
     t.integer  "team_id",                 limit: 4
     t.integer  "age",                     limit: 4
     t.string   "city",                    limit: 128
     t.datetime "date_of_birth"
     t.boolean  "is_series"
-    t.string   "license",                 limit: 64,    default: ""
+    t.string   "license",                 limit: 64,                             default: ""
     t.string   "notes",                   limit: 255
-    t.string   "number",                  limit: 16,    default: ""
-    t.string   "place",                   limit: 8,     default: ""
-    t.integer  "place_in_category",       limit: 4,     default: 0
-    t.float    "points",                  limit: 24,    default: 0.0
-    t.float    "points_from_place",       limit: 24,    default: 0.0
-    t.float    "points_bonus_penalty",    limit: 24,    default: 0.0
-    t.float    "points_total",            limit: 24,    default: 0.0
+    t.string   "number",                  limit: 16,                             default: ""
+    t.string   "place",                   limit: 8,                              default: ""
+    t.integer  "place_in_category",       limit: 4,                              default: 0
+    t.float    "points",                  limit: 24,                             default: 0.0
+    t.float    "points_from_place",       limit: 24,                             default: 0.0
+    t.float    "points_bonus_penalty",    limit: 24,                             default: 0.0
+    t.float    "points_total",            limit: 24,                             default: 0.0
     t.string   "state",                   limit: 64
     t.string   "status",                  limit: 3
     t.float    "time",                    limit: 53
@@ -833,50 +831,45 @@ ActiveRecord::Schema.define(version: 20151117051750) do
     t.float    "time_total",              limit: 53
     t.integer  "laps",                    limit: 4
     t.string   "members_only_place",      limit: 8
-    t.integer  "points_bonus",            limit: 4,     default: 0,     null: false
-    t.integer  "points_penalty",          limit: 4,     default: 0,     null: false
+    t.integer  "points_bonus",            limit: 4,                              default: 0,     null: false
+    t.integer  "points_penalty",          limit: 4,                              default: 0,     null: false
     t.boolean  "preliminary"
-    t.boolean  "bar",                                   default: true
+    t.boolean  "bar",                                                            default: true
     t.string   "gender",                  limit: 8
     t.string   "category_class",          limit: 16
     t.string   "age_group",               limit: 16
     t.text     "custom_attributes",       limit: 65535
-    t.boolean  "competition_result",                                    null: false
-    t.boolean  "team_competition_result",                               null: false
+    t.boolean  "competition_result",                                                             null: false
+    t.boolean  "team_competition_result",                                                        null: false
     t.string   "category_name",           limit: 255
-    t.string   "event_date_range_s",      limit: 255,                   null: false
-    t.date     "date",                                                  null: false
-    t.date     "event_end_date",                                        null: false
-    t.integer  "event_id",                limit: 4,                     null: false
-    t.string   "event_full_name",         limit: 255,                   null: false
+    t.string   "event_date_range_s",      limit: 255,                                            null: false
+    t.date     "date",                                                                           null: false
+    t.date     "event_end_date",                                                                 null: false
+    t.integer  "event_id",                limit: 4,                                              null: false
+    t.string   "event_full_name",         limit: 255,                                            null: false
     t.string   "first_name",              limit: 255
     t.string   "last_name",               limit: 255
     t.string   "name",                    limit: 255
-    t.string   "race_name",               limit: 255,                   null: false
-    t.string   "race_full_name",          limit: 255,                   null: false
+    t.string   "race_name",               limit: 255,                                            null: false
+    t.string   "race_full_name",          limit: 255,                                            null: false
     t.string   "team_name",               limit: 255
-    t.integer  "year",                    limit: 4,                     null: false
+    t.integer  "year",                    limit: 4,                                              null: false
     t.integer  "non_member_result_id",    limit: 4
-    t.boolean  "single_event_license",                  default: false
-    t.boolean  "team_member",                           default: false, null: false
+    t.boolean  "single_event_license",                                           default: false
+    t.boolean  "team_member",                                                    default: false, null: false
+    t.decimal  "distance",                              precision: 10, scale: 2
   end
 
-  add_index "results", ["category_id"], name: "idx_category_id", using: :btree
+  add_index "results", ["category_id"], name: "index_results_on_category_id", using: :btree
   add_index "results", ["event_id"], name: "index_results_on_event_id", using: :btree
   add_index "results", ["members_only_place"], name: "index_results_on_members_only_place", using: :btree
   add_index "results", ["non_member_result_id"], name: "index_results_on_non_member_result_id", using: :btree
   add_index "results", ["person_id"], name: "idx_racer_id", using: :btree
   add_index "results", ["place"], name: "index_results_on_place", using: :btree
   add_index "results", ["race_id"], name: "idx_race_id", using: :btree
-  add_index "results", ["team_id"], name: "idx_team_id", using: :btree
+  add_index "results", ["team_id"], name: "index_results_on_team_id", using: :btree
   add_index "results", ["updated_at"], name: "index_results_on_updated_at", using: :btree
   add_index "results", ["year"], name: "index_results_on_year", using: :btree
-
-  create_table "roles", force: :cascade do |t|
-    t.string   "name",       limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "scores", force: :cascade do |t|
     t.integer  "competition_result_id", limit: 4
@@ -909,7 +902,7 @@ ActiveRecord::Schema.define(version: 20151117051750) do
     t.boolean  "show_on_public_page",              default: true
   end
 
-  add_index "teams", ["name"], name: "idx_name", unique: true, using: :btree
+  add_index "teams", ["name"], name: "index_teams_on_name", using: :btree
   add_index "teams", ["updated_at"], name: "index_teams_on_updated_at", using: :btree
 
   create_table "update_requests", force: :cascade do |t|
@@ -954,39 +947,37 @@ ActiveRecord::Schema.define(version: 20151117051750) do
   add_index "versions", ["user_name"], name: "index_versions_on_user_name", using: :btree
   add_index "versions", ["versioned_id", "versioned_type"], name: "index_versions_on_versioned_id_and_versioned_type", using: :btree
 
-  add_foreign_key "categories", "categories", column: "parent_id", name: "categories_categories_id_fk", on_delete: :cascade
+  add_foreign_key "categories", "categories", column: "parent_id", on_delete: :cascade
   add_foreign_key "competition_event_memberships", "events", column: "competition_id", name: "competition_event_memberships_competitions_id_fk", on_delete: :cascade
   add_foreign_key "competition_event_memberships", "events", name: "competition_event_memberships_events_id_fk", on_delete: :cascade
-  add_foreign_key "discipline_aliases", "disciplines", name: "discipline_aliases_disciplines_id_fk", on_delete: :cascade
+  add_foreign_key "discipline_aliases", "disciplines", on_delete: :cascade
   add_foreign_key "discipline_bar_categories", "categories", name: "discipline_bar_categories_categories_id_fk", on_delete: :cascade
-  add_foreign_key "discipline_bar_categories", "disciplines", name: "discipline_bar_categories_disciplines_id_fk", on_delete: :cascade
+  add_foreign_key "discipline_bar_categories", "disciplines", on_delete: :cascade
   add_foreign_key "discount_codes", "events", name: "discount_codes_ibfk_1"
   add_foreign_key "duplicates_people", "duplicates", name: "duplicates_racers_duplicates_id_fk", on_delete: :cascade
   add_foreign_key "duplicates_people", "people", name: "duplicates_people_person_id", on_delete: :cascade
   add_foreign_key "editor_requests", "people", column: "editor_id", name: "editor_requests_ibfk_1", on_delete: :cascade
   add_foreign_key "editor_requests", "people", name: "editor_requests_ibfk_2", on_delete: :cascade
-  add_foreign_key "events", "events", column: "parent_id", name: "events_events_id_fk", on_delete: :cascade
+  add_foreign_key "events", "events", column: "parent_id", on_delete: :cascade
   add_foreign_key "events", "number_issuers", name: "events_number_issuers_id_fk"
   add_foreign_key "events", "people", column: "promoter_id", name: "events_promoter_id", on_delete: :nullify
   add_foreign_key "events", "velodromes", name: "events_velodrome_id_fk"
   add_foreign_key "order_people", "orders", name: "order_people_ibfk_2", on_delete: :cascade
   add_foreign_key "order_people", "people", name: "order_people_ibfk_1", on_delete: :cascade
   add_foreign_key "pages", "pages", column: "parent_id", name: "pages_parent_id_fk"
-  add_foreign_key "people", "teams", name: "people_team_id_fk"
+  add_foreign_key "people", "teams"
   add_foreign_key "people_people", "people", column: "editor_id", name: "people_people_ibfk_1", on_delete: :cascade
   add_foreign_key "people_people", "people", name: "people_people_ibfk_2", on_delete: :cascade
-  add_foreign_key "people_roles", "people", name: "people_roles_person_id", on_delete: :cascade
-  add_foreign_key "people_roles", "roles", name: "roles_users_role_id_fk", on_delete: :cascade
   add_foreign_key "posts", "mailing_lists", name: "posts_mailing_list_id_fk"
   add_foreign_key "race_numbers", "disciplines", name: "race_numbers_discipline_id_fk"
   add_foreign_key "race_numbers", "number_issuers", name: "race_numbers_number_issuer_id_fk"
   add_foreign_key "race_numbers", "people", name: "race_numbers_person_id", on_delete: :cascade
-  add_foreign_key "races", "categories", name: "races_category_id_fk"
+  add_foreign_key "races", "categories"
   add_foreign_key "races", "events", name: "races_event_id_fk", on_delete: :cascade
-  add_foreign_key "results", "categories", name: "results_category_id_fk"
+  add_foreign_key "results", "categories"
   add_foreign_key "results", "people", name: "results_person_id"
   add_foreign_key "results", "races", name: "results_race_id_fk", on_delete: :cascade
-  add_foreign_key "results", "teams", name: "results_team_id_fk"
+  add_foreign_key "results", "teams"
   add_foreign_key "scores", "results", column: "competition_result_id", name: "scores_competition_result_id_fk", on_delete: :cascade
   add_foreign_key "scores", "results", column: "source_result_id", name: "scores_source_result_id_fk", on_delete: :cascade
   add_foreign_key "update_requests", "order_people", name: "update_requests_ibfk_1", on_delete: :cascade

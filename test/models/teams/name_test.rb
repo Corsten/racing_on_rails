@@ -1,4 +1,5 @@
 # coding: utf-8
+# frozen_string_literal: true
 
 require File.expand_path("../../../test_helper", __FILE__)
 
@@ -13,7 +14,7 @@ module Teams
       assert_equal "Twin Peaks",     team.name(2009)
       assert_equal "Twin Peaks",     team.name(2010)
       assert_equal "Team Tecate",    team.name(2011)
-      assert_equal "Tecate-Una Mas",    team.name(2012)
+      assert_equal "Tecate-Una Mas", team.name(2012)
       assert_equal "Tecate-Una Mas", team.name(Time.zone.today)
       assert_equal "Tecate-Una Mas", team.name(Time.zone.today.next_year)
       assert_equal "Tecate-Una Mas", team.name
@@ -21,8 +22,8 @@ module Teams
 
     test "create new name if there are results from previous year" do
       team = Team.create!(name: "Twin Peaks")
-      event = SingleDayEvent.create!(date: 1.years.ago)
-      senior_men = FactoryGirl.create(:category)
+      event = SingleDayEvent.create!(date: 1.year.ago)
+      senior_men = FactoryBot.create(:category)
       old_result = event.races.create!(category: senior_men).results.create!(team: team)
       assert_equal("Twin Peaks", old_result.team_name, "Team name on old result")
 
@@ -45,13 +46,13 @@ module Teams
       assert(!team.results_before_this_year?, "results_before_this_year? with no results")
 
       event = SingleDayEvent.create!(date: Time.zone.today)
-      senior_men = FactoryGirl.create(:category)
+      senior_men = FactoryBot.create(:category)
       result = event.races.create!(category: senior_men).results.create!(team: team)
       assert(!team.results_before_this_year?, "results_before_this_year? with results in this year")
 
       result.destroy
 
-      event = SingleDayEvent.create!(date: 1.years.ago)
+      event = SingleDayEvent.create!(date: 1.year.ago)
       event.races.create!(category: senior_men).results.create!(team: team)
       team.results_before_this_year?
       assert(team.results_before_this_year?, "results_before_this_year? with results only a year ago")
@@ -70,7 +71,7 @@ module Teams
     test "rename multiple times" do
       team = Team.create!(name: "Twin Peaks")
       event = SingleDayEvent.create!(date: 3.years.ago)
-      senior_men = FactoryGirl.create(:category)
+      senior_men = FactoryBot.create(:category)
       event.races.create!(category: senior_men).results.create!(team: team)
       assert_equal(0, team.names(true).size, "names")
 
@@ -95,7 +96,7 @@ module Teams
     end
 
     test "name date or year" do
-      team = FactoryGirl.create(:team, name: "Vanilla")
+      team = FactoryBot.create(:team, name: "Vanilla")
       team.names.create!(name: "Sacha's Team", year: 2001)
       assert_equal("Sacha's Team", team.name(Date.new(2001, 12, 31)), "name for 2001-12-31")
       assert_equal("Sacha's Team", team.name(Date.new(2001)), "name for 2001-01-01")
@@ -103,11 +104,11 @@ module Teams
     end
 
     test "multiple names" do
-      team = FactoryGirl.create(:team, name: "Vanilla")
+      team = FactoryBot.create(:team, name: "Vanilla")
       team.names.create!(name: "Mapei", year: 2001)
       team.names.create!(name: "Mapei-Clas", year: 2002)
       team.names.create!(name: "Quick Step", year: 2003)
-      assert_equal(3, team.names.size, "Historical names. #{team.names.map {|n| n.name}.join(', ')}")
+      assert_equal(3, team.names.size, "Historical names. #{team.names.map(&:name).join(', ')}")
       assert_equal("Mapei", team.name(2000), "Historical name 2000")
       assert_equal("Mapei", team.name(2001), "Historical name 2001")
       assert_equal("Mapei-Clas", team.name(2002), "Historical name 2002")
@@ -119,7 +120,7 @@ module Teams
     end
 
     test "rename to old name" do
-      team = FactoryGirl.create(:team, name: "Vanilla")
+      team = FactoryBot.create(:team, name: "Vanilla")
       team.names.create!(name: "Sacha's Team", year: 2001)
       assert_equal(1, team.names.size, "Historical names")
       assert_equal("Sacha's Team", team.name(2001), "Historical name 2001")
@@ -131,11 +132,11 @@ module Teams
 
     test "rename to other teams name" do
       team_o_safeway = Team.create!(name: "Team Oregon/Safeway")
-      team_o_safeway.names.create!(name: "Team Oregon", year: 1.years.ago.year)
+      team_o_safeway.names.create!(name: "Team Oregon", year: 1.year.ago.year)
 
       team_o_river_city = Team.create!(name: "Team Oregon/River City")
-      event = SingleDayEvent.create!(date: 1.years.ago)
-      senior_men = FactoryGirl.create(:category)
+      event = SingleDayEvent.create!(date: 1.year.ago)
+      senior_men = FactoryBot.create(:category)
       event.races.create!(category: senior_men).results.create!(team: team_o_river_city)
       team_o_river_city.name = "Team Oregon"
       team_o_river_city.save!
@@ -152,7 +153,7 @@ module Teams
     # Reproduce UTF-8 conversion issues
     test "rename to alias" do
       team = Team.create!(name: "Grundelbruisers/Stewie Bicycles")
-      team.names.create!(name: "Grundelbruisers/Stewie Bicycles", year: 1.years.ago.year)
+      team.names.create!(name: "Grundelbruisers/Stewie Bicycles", year: 1.year.ago.year)
 
       team.reload
       team.name = "Gründelbrüisers/Stewie Bicycles"
@@ -160,22 +161,22 @@ module Teams
 
       team.reload
       assert_equal("Gründelbrüisers/Stewie Bicycles", team.name, "Team name")
-      assert_equal(0, team.aliases.count, "aliases")
+      assert_equal(0, team.aliases.count, "Expected no aliases, but have: #{team.aliases.map(&:name).join(', ')}")
       assert_equal(1, team.names.count, "Historical names")
     end
 
     test "different teams with same name" do
       team_o_safeway = Team.create!(name: "Team Oregon/Safeway")
-      team_o_safeway.names.create!(name: "Team Oregon", year: 1.years.ago.year)
+      team_o_safeway.names.create!(name: "Team Oregon", year: 1.year.ago.year)
 
       team_o_river_city = Team.create!(name: "Team Oregon/River City")
-      team_o_river_city.names.create!(name: "Team Oregon", year: 1.years.ago.year)
+      team_o_river_city.names.create!(name: "Team Oregon", year: 1.year.ago.year)
     end
 
     test "renamed teams should keep aliases" do
       team = Team.create!(name: "Twin Peaks/The Bike Nook")
       event = SingleDayEvent.create!(date: 3.years.ago)
-      senior_men = FactoryGirl.create(:category)
+      senior_men = FactoryBot.create(:category)
       event.races.create!(category: senior_men).results.create!(team: team)
       team.aliases.create!(name: "Twin Peaks")
       assert_equal(0, team.names(true).size, "names")
@@ -189,47 +190,47 @@ module Teams
     end
 
     test "create and override alias" do
-      vanilla = FactoryGirl.create(:team, name: "Vanilla")
+      vanilla = FactoryBot.create(:team, name: "Vanilla")
       vanilla.aliases.create!(name: "Vanilla Bicycles")
-      assert_not_nil(Team.find_by_name('Vanilla'), 'Vanilla should exist')
-      assert_not_nil(Alias.find_by_name('Vanilla Bicycles'), 'Vanilla Bicycles alias should exist')
-      assert_nil(Team.find_by_name('Vanilla Bicycles'), 'Vanilla Bicycles should not exist')
+      assert_not_nil(Team.find_by(name: "Vanilla"), "Vanilla should exist")
+      assert_not_nil(Alias.find_by(name: "Vanilla Bicycles"), "Vanilla Bicycles alias should exist")
+      assert_nil(Team.find_by(name: "Vanilla Bicycles"), "Vanilla Bicycles should not exist")
 
-      dupe = Team.create!(name: 'Vanilla Bicycles')
-      assert(dupe.valid?, 'Dupe Vanilla should be valid')
+      dupe = Team.create!(name: "Vanilla Bicycles")
+      assert(dupe.valid?, "Dupe Vanilla should be valid")
 
-      assert_not_nil(Team.find_by_name('Vanilla Bicycles'), 'Vanilla Bicycles should exist')
-      assert_not_nil(Team.find_by_name('Vanilla'), 'Vanilla should exist')
-      assert_nil(Alias.find_by_name('Vanilla Bicycles'), 'Vanilla Bicycles alias should not exist')
-      assert_nil(Alias.find_by_name('Vanilla'), 'Vanilla alias should not exist')
+      assert_not_nil(Team.find_by(name: "Vanilla Bicycles"), "Vanilla Bicycles should exist")
+      assert_not_nil(Team.find_by(name: "Vanilla"), "Vanilla should exist")
+      assert_nil(Alias.find_by(name: "Vanilla Bicycles"), "Vanilla Bicycles alias should not exist")
+      assert_nil(Alias.find_by(name: "Vanilla"), "Vanilla alias should not exist")
     end
 
     test "update to alias" do
-      vanilla = FactoryGirl.create(:team, name: "Vanilla")
+      vanilla = FactoryBot.create(:team, name: "Vanilla")
       vanilla.aliases.create!(name: "Vanilla Bicycles")
-      assert_not_nil(Team.find_by_name('Vanilla'), 'Vanilla should exist')
-      assert_not_nil(Alias.find_by_name('Vanilla Bicycles'), 'Vanilla Bicycles alias should exist')
-      assert_nil(Team.find_by_name('Vanilla Bicycles'), 'Vanilla Bicycles should not exist')
+      assert_not_nil(Team.find_by(name: "Vanilla"), "Vanilla should exist")
+      assert_not_nil(Alias.find_by(name: "Vanilla Bicycles"), "Vanilla Bicycles alias should exist")
+      assert_nil(Team.find_by(name: "Vanilla Bicycles"), "Vanilla Bicycles should not exist")
 
-      vanilla.name = 'Vanilla Bicycles'
+      vanilla.name = "Vanilla Bicycles"
       vanilla.save!
-      assert(vanilla.valid?, 'Renamed Vanilla should be valid')
+      assert(vanilla.valid?, "Renamed Vanilla should be valid")
 
-      assert_not_nil(Team.find_by_name('Vanilla Bicycles'), 'Vanilla Bicycles should exist')
-      assert_nil(Team.find_by_name('Vanilla'), 'Vanilla should not exist')
-      assert_nil(Alias.find_by_name('Vanilla Bicycles'), 'Vanilla Bicycles alias should not exist')
-      assert_not_nil(Alias.find_by_name('Vanilla'), 'Vanilla alias should exist')
+      assert_not_nil(Team.find_by(name: "Vanilla Bicycles"), "Vanilla Bicycles should exist")
+      assert_nil(Team.find_by(name: "Vanilla"), "Vanilla should not exist")
+      assert_nil(Alias.find_by(name: "Vanilla Bicycles"), "Vanilla Bicycles alias should not exist")
+      assert_not_nil(Alias.find_by(name: "Vanilla"), "Vanilla alias should exist")
     end
 
     test "update name different case" do
-      vanilla = FactoryGirl.create(:team, name: "Vanilla")
+      vanilla = FactoryBot.create(:team, name: "Vanilla")
       vanilla.aliases.create!(name: "Vanilla Bicycles")
-      assert_equal('Vanilla', vanilla.name, 'Name before update')
-      vanilla.name = 'vanilla'
+      assert_equal("Vanilla", vanilla.name, "Name before update")
+      vanilla.name = "vanilla"
       vanilla.save
-      assert(vanilla.errors.empty?, 'Should have no errors after save')
+      assert(vanilla.errors.empty?, "Should have no errors after save")
       vanilla.reload
-      assert_equal('vanilla', vanilla.name, 'Name after update')
+      assert_equal("vanilla", vanilla.name, "Name after update")
     end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # There is duplication between BAR tests, but refactring the tests should wait until the Competition refactoring is complete
 
 require File.expand_path("../../../../test_helper", __FILE__)
@@ -6,46 +8,46 @@ module Competitions
   # :stopdoc:
   class OverallBarTest < ActiveSupport::TestCase
     test "calculate" do
-      alice  = FactoryGirl.create(:person, name: "Alice")
-      matson = FactoryGirl.create(:person, name: "Matson")
-      molly  = FactoryGirl.create(:person, name: "Molly")
-      tonkin = FactoryGirl.create(:person, name: "Tonkin")
-      weaver = FactoryGirl.create(:person, name: "Weaver")
+      alice  = FactoryBot.create(:person, name: "Alice")
+      matson = FactoryBot.create(:person, name: "Matson")
+      molly  = FactoryBot.create(:person, name: "Molly")
+      tonkin = FactoryBot.create(:person, name: "Tonkin")
+      weaver = FactoryBot.create(:person, name: "Weaver")
 
-      kona = FactoryGirl.create(:team)
+      kona = FactoryBot.create(:team)
 
-      association_category = FactoryGirl.create(:category, name: "CBRA")
-      senior_men           = FactoryGirl.create(:category, name: "Senior Men", parent: association_category)
-      men_a                = FactoryGirl.create(:category, name: "Men A", parent: senior_men)
-      sr_p_1_2             = FactoryGirl.create(:category, name: "Senior Men Pro/1/2", parent: senior_men)
-      senior_women         = FactoryGirl.create(:category, name: "Senior Women", parent: association_category)
-      senior_women_1_2_3 = FactoryGirl.create(:category, name: "Senior Women 1/2/3", parent: senior_women)
+      association_category = FactoryBot.create(:category, name: "CBRA")
+      senior_men           = FactoryBot.create(:category, name: "Senior Men", parent: association_category)
+      men_a                = FactoryBot.create(:category, name: "Men A", parent: senior_men)
+      sr_p_1_2             = FactoryBot.create(:category, name: "Senior Men Pro/1/2", parent: senior_men)
+      senior_women         = FactoryBot.create(:category, name: "Senior Women", parent: association_category)
+      senior_women_1_2_3 = FactoryBot.create(:category, name: "Senior Women 1/2/3", parent: senior_women)
 
-      discipline = FactoryGirl.create(:discipline, name: "Road")
+      discipline = FactoryBot.create(:discipline, name: "Road")
       discipline.bar_categories << senior_men
       discipline.bar_categories << senior_women
 
-      discipline = FactoryGirl.create(:discipline, name: "Time Trial")
+      discipline = FactoryBot.create(:discipline, name: "Time Trial")
       discipline.bar_categories << senior_men
       discipline.bar_categories << senior_women
 
-      discipline = FactoryGirl.create(:discipline, name: "Cyclocross")
+      discipline = FactoryBot.create(:discipline, name: "Cyclocross")
       discipline.bar_categories << men_a
 
-      discipline = FactoryGirl.create(:discipline, name: "Track")
+      discipline = FactoryBot.create(:discipline, name: "Track")
       discipline.bar_categories << senior_men
 
-      discipline = FactoryGirl.create(:discipline, name: "Criterium")
+      discipline = FactoryBot.create(:discipline, name: "Criterium")
       discipline.bar_categories << senior_men
 
-      discipline = FactoryGirl.create(:discipline, name: "Mountain Bike")
+      discipline = FactoryBot.create(:discipline, name: "Mountain Bike")
       discipline.bar_categories << senior_men
 
-      discipline = FactoryGirl.create(:discipline, name: "Overall")
+      discipline = FactoryBot.create(:discipline, name: "Overall")
       discipline.bar_categories << senior_men
       discipline.bar_categories << senior_women
 
-      cross_crusade = Series.create!(name: "Cross Crusade")
+      cross_crusade = Series.create!(name: "River City Bicycles Cyclocross Crusade")
       barton = SingleDayEvent.create!(
         name: "Cross Crusade: Barton Park",
         discipline: "Cyclocross",
@@ -154,7 +156,7 @@ module Competitions
         team: kona
       )
 
-      event = FactoryGirl.create(:event, date: Date.new(2004))
+      event = FactoryBot.create(:event, date: Date.new(2004))
       race = event.races.create!(category: sr_p_1_2)
       race.results.create!(place: "1", person: tonkin)
       race.results.create!(place: "2", person: weaver)
@@ -164,12 +166,12 @@ module Competitions
       race.results.create!(place: "15", person: molly)
 
       # previous year does note count
-      event = FactoryGirl.create(:event, date: Date.new(2003, 12, 31))
+      event = FactoryBot.create(:event, date: Date.new(2003, 12, 31))
       race = event.races.create!(category: sr_p_1_2)
       race.results.create!(place: "4", person: tonkin)
 
       # next year does note count
-      event = FactoryGirl.create(:event, date: Date.new(2005, 1, 1))
+      event = FactoryBot.create(:event, date: Date.new(2005, 1, 1))
       race = event.races.create!(category: sr_p_1_2)
       race.results.create!(place: "5", person: tonkin)
 
@@ -187,7 +189,7 @@ module Competitions
       assert_equal(Date.new(2004, 1, 1), overall_bar.date, "2004 Bar date")
       assert_equal("2004 Overall BAR", overall_bar.name, "2004 Bar name")
       assert_equal_dates(Time.zone.today, overall_bar.updated_at, "BAR last updated")
-      assert_equal(15, overall_bar.races.size, "2004 Overall Bar races")
+      assert_equal(18, overall_bar.races.size, "2004 Overall Bar races")
       assert_equal 6, overall_bar.children.size, "Overall BAR children"
 
       senior_men_overall_bar = overall_bar.races.detect do |b|
@@ -232,60 +234,60 @@ module Competitions
     end
 
     test "drop cat 5 discipline results" do
-               FactoryGirl.create(:person, name: "Alice Pennington")
-      matson = FactoryGirl.create(:person, name: "Mark Matson")
-      molly  = FactoryGirl.create(:person, name: "Molly Cameron")
-      tonkin = FactoryGirl.create(:person, name: "Erik Tonkin")
-      weaver = FactoryGirl.create(:person)
+               FactoryBot.create(:person, name: "Alice Pennington")
+      matson = FactoryBot.create(:person, name: "Mark Matson")
+      molly  = FactoryBot.create(:person, name: "Molly Cameron")
+      tonkin = FactoryBot.create(:person, name: "Erik Tonkin")
+      weaver = FactoryBot.create(:person)
 
-      association_category = FactoryGirl.create(:category, name: "CBRA")
-      senior_men           = FactoryGirl.create(:category, name: "Senior Men", parent: association_category)
-      men_a                = FactoryGirl.create(:category, name: "Men A", parent: senior_men)
-                             FactoryGirl.create(:category, name: "Senior Men Pro/1/2", parent: senior_men)
-      senior_women         = FactoryGirl.create(:category, name: "Senior Women", parent: association_category)
-                             FactoryGirl.create(:category, name: "Senior Women 1/2/3", parent: senior_women)
-      category_3_men       = FactoryGirl.create(:category, name: "Category 3 Men", parent: association_category)
-      category_4_5_men     = FactoryGirl.create(:category, name: "Category 4/5 Men", parent: association_category)
-      category_4_men       = FactoryGirl.create(:category, name: "Category 4 Men", parent: category_4_5_men)
-      category_5_men       = FactoryGirl.create(:category, name: "Category 5 Men", parent: category_4_5_men)
+      association_category = FactoryBot.create(:category, name: "CBRA")
+      senior_men           = FactoryBot.create(:category, name: "Senior Men", parent: association_category)
+      men_a                = FactoryBot.create(:category, name: "Men A", parent: senior_men)
+                             FactoryBot.create(:category, name: "Senior Men Pro/1/2", parent: senior_men)
+      senior_women         = FactoryBot.create(:category, name: "Senior Women", parent: association_category)
+                             FactoryBot.create(:category, name: "Senior Women 1/2/3", parent: senior_women)
+      category_3_men       = FactoryBot.create(:category, name: "Category 3 Men", parent: association_category)
+      category_4_5_men     = FactoryBot.create(:category, name: "Category 4/5 Men", parent: association_category)
+      category_4_men       = FactoryBot.create(:category, name: "Category 4 Men", parent: category_4_5_men)
+      category_5_men       = FactoryBot.create(:category, name: "Category 5 Men", parent: category_4_5_men)
 
-      discipline = FactoryGirl.create(:discipline, name: "Road")
+      discipline = FactoryBot.create(:discipline, name: "Road")
       discipline.bar_categories << senior_men
       discipline.bar_categories << senior_women
       discipline.bar_categories << category_3_men
       discipline.bar_categories << category_4_men
       discipline.bar_categories << category_5_men
 
-      discipline = FactoryGirl.create(:discipline, name: "Time Trial")
+      discipline = FactoryBot.create(:discipline, name: "Time Trial")
       discipline.bar_categories << senior_men
       discipline.bar_categories << senior_women
       discipline.bar_categories << category_3_men
       discipline.bar_categories << category_4_men
       discipline.bar_categories << category_5_men
 
-      discipline = FactoryGirl.create(:discipline, name: "Cyclocross")
+      discipline = FactoryBot.create(:discipline, name: "Cyclocross")
       discipline.bar_categories << men_a
 
-      discipline = FactoryGirl.create(:discipline, name: "Track")
+      discipline = FactoryBot.create(:discipline, name: "Track")
       discipline.bar_categories << senior_men
       discipline.bar_categories << category_3_men
       discipline.bar_categories << category_4_men
       discipline.bar_categories << category_5_men
 
-      discipline = FactoryGirl.create(:discipline, name: "Criterium")
+      discipline = FactoryBot.create(:discipline, name: "Criterium")
       discipline.bar_categories << senior_men
       discipline.bar_categories << senior_women
       discipline.bar_categories << category_3_men
       discipline.bar_categories << category_4_men
       discipline.bar_categories << category_5_men
 
-      discipline = FactoryGirl.create(:discipline, name: "Mountain Bike")
+      discipline = FactoryBot.create(:discipline, name: "Mountain Bike")
       discipline.bar_categories << senior_men
       discipline.bar_categories << category_3_men
       discipline.bar_categories << category_4_men
       discipline.bar_categories << category_5_men
 
-      discipline = FactoryGirl.create(:discipline, name: "Overall")
+      discipline = FactoryBot.create(:discipline, name: "Overall")
       discipline.bar_categories << senior_men
       discipline.bar_categories << senior_women
       discipline.bar_categories << category_3_men
@@ -337,30 +339,27 @@ module Competitions
       assert_equal(2, cat_5_road_bar.results.size, "Cat 5 Overall BAR results")
 
       overall_bar = OverallBar.find_by_date(Date.new(current_year, 1, 1))
-      cat_4_5_overall_bar = overall_bar.races.detect { |race| race.category == category_4_5_men }
-      assert_equal(4, cat_4_5_overall_bar.results.size, "Cat 4/5 Overall BAR results")
+      cat_4_overall_bar = overall_bar.races.detect { |race| race.category == category_4_men }
+      assert_equal(4, cat_4_overall_bar.results.size, "Cat 4 Overall BAR results")
 
-      matson_result = cat_4_5_overall_bar.results.detect { |result| result.person == matson }
-      assert_equal("1", matson_result.place, "Matson Cat 4/5 Overall BAR place")
-      assert_equal(1497.0, matson_result.points, "Matson Cat 4/5 Overall BAR points")
-      assert_equal(5, matson_result.scores.size, "Matson Cat 4/5 Overall BAR 1st place scores")
+      matson_result = cat_4_overall_bar.results.detect { |result| result.person == matson }
+      assert_equal("1", matson_result.place, "Matson Cat 4 Overall BAR place")
+      assert_equal(1198.0, matson_result.points, "Matson Cat 4 Overall BAR points")
+      assert_equal(4, matson_result.scores.size, "Matson Cat 4 Overall BAR 1st place scores")
 
-      weaver_result = cat_4_5_overall_bar.results.detect { |result| result.person == weaver }
-      assert_equal("2", weaver_result.place, "Weaver Cat 4/5 Overall BAR place")
+      weaver_result = cat_4_overall_bar.results.detect { |result| result.person == weaver }
+      assert_equal("2", weaver_result.place, "Weaver Cat 4 Overall BAR place")
       assert_equal(300, weaver_result.scores.detect { |s| s.source_result.race.discipline == "Road" }.points, "Road points")
-      assert_equal(300, weaver_result.scores.detect { |s| s.source_result.race.discipline == "Time Trial" }.points, "Time Trial points")
       assert_equal(299, weaver_result.scores.detect { |s| s.source_result.race.discipline == "Mountain Bike" }.points, "Mountain Bike points")
       assert_equal(298, weaver_result.scores.detect { |s| s.source_result.race.discipline == "Track" }.points, "Track points")
       assert_equal(297, weaver_result.scores.detect { |s| s.source_result.race.discipline == "Criterium" }.points, "Criterium points")
-      assert_equal(300 + 300 + 299 + 298 + 297, weaver_result.points, "Weaver Cat 4/5 Overall BAR points")
-      assert_equal(5, weaver_result.scores.size, "Weaver Cat 4/5 Overall BAR 1st place scores")
+      assert_equal(300 + 299 + 298 + 297, weaver_result.points, "Weaver Cat 4 Overall BAR points")
+      assert_equal(4, weaver_result.scores.size, "Weaver Cat 4 Overall BAR 1st place scores")
 
-      tonkin_result = cat_4_5_overall_bar.results.detect { |result| result.person == tonkin }
-      assert_equal("3", tonkin_result.place, "Tonkin Cat 4/5 Overall BAR place")
-      assert_equal(898.0, tonkin_result.points, "Tonkin Cat 4/5 Overall BAR points")
-      assert_equal(3, tonkin_result.scores.size, "Tonkin Cat 4/5 Overall BAR 1st place scores")
-      assert_equal(299, tonkin_result.scores.detect { |s| s.source_result.race.discipline == "Road" }.points, "Road points")
-      assert_equal(category_5_men, tonkin_result.scores.detect { |s| s.source_result.race.discipline == "Road" }.source_result.race.category, "Road category")
+      tonkin_result = cat_4_overall_bar.results.detect { |result| result.person == tonkin }
+      assert_equal("3", tonkin_result.place, "Tonkin Cat 4 Overall BAR place")
+      assert_equal(599.0, tonkin_result.points, "Tonkin Cat 4 Overall BAR points")
+      assert_equal(2, tonkin_result.scores.size, "Tonkin Cat 4 Overall BAR 1st place scores")
       assert_equal(300, tonkin_result.scores.detect { |s| s.source_result.race.discipline == "Track" }.points, "Track points")
       assert_equal(category_4_men, tonkin_result.scores.detect { |s| s.source_result.race.discipline == "Track" }.source_result.race.category, "Road category")
       assert_equal(299, tonkin_result.scores.detect { |s| s.source_result.race.discipline == "Criterium" }.points, "Criterium points")

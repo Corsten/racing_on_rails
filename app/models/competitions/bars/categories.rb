@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Competitions
   module Bars
     module Categories
@@ -21,11 +23,14 @@ module Competitions
           end
         end
 
-        # Cat 4/5 is a special case. Can't config in database because it's a circular relationship.
-        category_4_5_men = ::Category.find_by_name("Category 4/5 Men")
-        category_4_men = ::Category.find_by_name("Category 4 Men")
-        if category_4_5_men && category_4_men && race.category == category_4_men
-          cats << category_4_5_men
+        if race.category.name == "Category 2/3 Men" && race.discipline == "Cyclocross"
+          cats << ::Category.find_by_name("Category 3 Men")
+          cats << ::Category.find_by_name("Men 3")
+        end
+
+        if race.category.name == "Category 1/2 Men" && race.discipline == "Cyclocross"
+          cats.delete ::Category.find_by_name("Category 3 Men")
+          cats.delete ::Category.find_by_name("Men 3")
         end
 
         cats

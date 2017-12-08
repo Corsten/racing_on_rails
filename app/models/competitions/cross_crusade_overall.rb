@@ -2,46 +2,12 @@ module Competitions
   # Minimum three-race requirement
   # but ... should show not apply until there are at least three races
   class CrossCrusadeOverall < Overall
+    include Competitions::CrossCrusade::Common
+
     before_create :set_notes, :set_name
 
     def self.parent_event_name
-      "Cross Crusade"
-    end
-
-    def category_names
-      [
-        "Athena",
-        "Beginner Men",
-        "Beginner Women",
-        "Category A",
-        "Category B",
-        "Category C",
-        "Clydesdale",
-        "Junior Men 10-12",
-        "Junior Men 13-14",
-        "Junior Men 15-16",
-        "Junior Men 17-18",
-        "Junior Men",
-        "Junior Women 10-12",
-        "Junior Women 13-14",
-        "Junior Women 15-16",
-        "Junior Women 17-18",
-        "Junior Women",
-        "Masters 35+ A",
-        "Masters 35+ B",
-        "Masters 35+ C",
-        "Masters 50+",
-        "Masters 60+",
-        "Masters Women 35+ A",
-        "Masters Women 35+ B",
-        "Masters Women 45+",
-        "Singlespeed Women",
-        "Singlespeed",
-        "Unicycle",
-        "Women A",
-        "Women B",
-        "Women C"
-      ]
+      "River City Bicycles Cyclocross Crusade"
     end
 
     def point_schedule
@@ -53,32 +19,36 @@ module Competitions
     end
 
     def maximum_events(race)
-      6
+      7
     end
 
     def set_notes
-      self.notes = %Q{ Three event minimum. Results that don't meet the minimum are listed in italics. See the <a href="http://crosscrusade.com/series.html">series rules</a>. }
+      self.notes = %Q{ Three event minimum. Results that don't meet the minimum are listed in italics. See the <a href="http://www.crosscrusade.com/series-info-rules/">series rules</a>. }
     end
 
     def set_name
       self.name = "Series Overall"
     end
 
-    # Use combined Junior results from race day. Don't combine all the age groups races into one.
     def categories_for(race)
-      case race.name
-      when "Junior Men", "Junior Women"
-        [ Category.find_or_create_by(name: race.name) ]
+      result_categories_by_race[race.category]
+    end
+
+    def categories_clause(race)
+      if race.name["Elite"] || race.name["3/4/5"]
+        super
       else
-        super race
+        super.where.not("categories.name like ? or (ability_begin = 3 and ability_end = 5)", "%elite%")
       end
     end
 
-    def after_source_results(results, race)
-      results.reject do |result|
-        # Racers sent off-course. Don't count for overall.
-        result["event_id"] == 23827 && result["category_name"] == "Category C"
-      end
+    def after_calculate
+      races.select { |race| race.name["Elite"] || race.name["3/4/5"] }
+           .each do |race|
+             race.update_attributes! bar_points: 0
+           end
+
+      super
     end
   end
 end

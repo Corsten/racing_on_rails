@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module People
   module Authorization
     extend ActiveSupport::Concern
@@ -7,11 +8,6 @@ module People
       has_and_belongs_to_many :editors, class_name: "Person", association_foreign_key: "editor_id", before_add: :validate_unique_editors
       has_many :editor_requests, dependent: :destroy
       has_many :sent_editor_requests, foreign_key: "editor_id", class_name: "EditorRequest", dependent: :destroy
-      has_and_belongs_to_many :roles
-    end
-
-    def administrator?
-      roles.any? { |role| role.name == "Administrator" }
     end
 
     def promoter?

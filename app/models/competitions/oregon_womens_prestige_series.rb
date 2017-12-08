@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Competitions
   class OregonWomensPrestigeSeries < Competition
     include Competitions::OregonWomensPrestigeSeriesModules::Common
@@ -7,14 +9,24 @@ module Competitions
     end
 
     def category_names
-      [ "Women 1/2/3", "Women 4" ]
+      [ "Women 1/2", "Women 3", "Women 4/5" ]
+    end
+
+    def categories_for(race)
+      if race.name == "Women 1/2"
+        super + [ Category.find_by(name: "Pro/1/2 Women"), Category.find_by(name: "Women Category 1/2") ]
+      elsif race.name == "Women 3"
+        super + [ Category.find_by(name: "Category 3 Women"), Category.find_by(name: "Women Category 3") ]
+      elsif race.name == "Women 4/5"
+        super + [ Category.find_by(name: "Category 4/5 Women"),
+                  Category.find_by(name: "Women 4"),
+                  Category.find_by(name: "Women Category 4/5") ]
+      else
+        super
+      end
     end
 
     def source_events?
-      true
-    end
-
-    def categories?
       true
     end
 
@@ -23,33 +35,23 @@ module Competitions
     end
 
     def source_event_ids(race)
-      if women_4?(race)
+      if women_4_5?(race)
         source_events.map(&:id) - cat_123_only_event_ids
       else
         source_events.map(&:id)
       end
     end
 
-    def source_results_query(race)
-      # Only consider results with categories that match +race+'s category
-      if categories?
-        super.where("races.category_id" => categories_for(race))
-      else
-        super
-      end
-    end
-
-    def after_source_results(results, race)
+    def after_source_results(results, _)
       # Ignore BAR points multiplier. Leave query "universal".
       set_multiplier results
       results
     end
 
-
     private
 
-    def women_4?(race)
-      race.category.name == "Women 4"
+    def women_4_5?(race)
+      race.category.name == "Women 4/5"
     end
   end
 end

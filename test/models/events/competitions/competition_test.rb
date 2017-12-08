@@ -17,12 +17,12 @@ module Competitions
     end
 
     test "find for year" do
-      assert_equal nil, Competition.find_for_year, "Should not find anything when no Competitions in DB"
-      assert_equal nil, Competition.find_for_year(2005), "Should not find anything when no Competitions in DB"
+      assert_nil Competition.find_for_year, "Should not find anything when no Competitions in DB"
+      assert_nil Competition.find_for_year(2005), "Should not find anything when no Competitions in DB"
 
       competition = Competition.create!
       assert_equal competition, Competition.find_for_year, "Should find current Competition"
-      assert_equal nil, Competition.find_for_year(2005), "Should not find anything when no Competitions in DB for this year"
+      assert_nil Competition.find_for_year(2005), "Should not find anything when no Competitions in DB for this year"
 
       competition_in_2005 = Competition.create!(date: Time.zone.local(2005))
       assert_equal competition, Competition.find_for_year, "Should find current Competition"
@@ -30,11 +30,11 @@ module Competitions
     end
 
     test "team competition find for year" do
-      assert_equal nil, TestCompetition.find_for_year, "find with nothing in DB"
+      assert_nil TestCompetition.find_for_year, "find with nothing in DB"
 
       competition = TestCompetition.create!
       assert_equal competition, TestCompetition.find_for_year, "find in DB"
-      assert_equal nil, TestCompetition.find_for_year(2005), "find in DB, different year"
+      assert_nil TestCompetition.find_for_year(2005), "find in DB, different year"
 
       competition = TestCompetition.create!(date: Date.new(2005))
       assert_equal competition, TestCompetition.find_for_year(2005), "find in DB with multiple events"
@@ -70,7 +70,7 @@ module Competitions
 
     test "calc no source results" do
       competition = TestCompetition.find_or_create_for_year
-      competition.source_events << FactoryGirl.create(:event)
+      competition.source_events << FactoryBot.create(:event)
       TestCompetition.calculate!
     end
 
@@ -84,9 +84,9 @@ module Competitions
       competition = TestCompetition.find_or_create_for_year
       assert_equal(0, competition.source_events.count, 'Events')
 
-      competition.source_events << FactoryGirl.create(:event)
+      competition.source_events << FactoryBot.create(:event)
       assert_equal(1, competition.source_events.count, 'Events')
-      competition.source_events << FactoryGirl.create(:event)
+      competition.source_events << FactoryBot.create(:event)
       assert_equal(2, competition.source_events.count, 'Events')
     end
 
@@ -108,8 +108,8 @@ module Competitions
     test "partition_results" do
       competition = TestCompetition.find_or_create_for_year
       race = competition.races(true).first
-      result_1 = FactoryGirl.create(:result, race: race, event: competition)
-      result_2 = FactoryGirl.create(:result, race: race, event: competition)
+      result_1 = FactoryBot.create(:result, race: race, event: competition)
+      result_2 = FactoryBot.create(:result, race: race, event: competition)
 
       new_calculated_result = ::Struct::CalculatorResult.new
       new_calculated_result.participant_id = 9999
@@ -121,7 +121,7 @@ module Competitions
 
       assert_equal [ 9999 ], new_results.map(&:participant_id), "new_results"
       assert_equal [ result_2.person_id ], existing_results.map(&:participant_id), "existing_results"
-      assert_equal [ result_1.person_id ], obselete_results.map(&:person_id), "obselete_results"
+      assert_equal [ result_1 ], obselete_results, "obselete_results"
     end
   end
 end

@@ -1,18 +1,18 @@
-require File.expand_path("../../../../test_helper", __FILE__)
+require "test_helper"
 
 module Competitions
   # :stopdoc:
   class MtbBarTest < ActiveSupport::TestCase
     test "no masters or junior ability categories" do
-      FactoryGirl.create(:discipline, name: "Super D")
-      mtb = FactoryGirl.create(:discipline, name: "Mountain Bike")
+      FactoryBot.create(:discipline, name: "Super D")
+      mtb = FactoryBot.create(:discipline, name: "Mountain Bike")
 
-      junior_men        = FactoryGirl.create(:category, name: "Junior Men")
-      expert_junior_men = FactoryGirl.create(:category, name: "Expert Junior Men", parent: junior_men)
-      sport_junior_men  = FactoryGirl.create(:category, name: "Sport Junior Men", parent: junior_men)
+      junior_men        = FactoryBot.create(:category, name: "Junior Men")
+      expert_junior_men = FactoryBot.create(:category, name: "Expert Junior Men", parent: junior_men)
+      novice_junior_men  = FactoryBot.create(:category, name: "Novice (Category 3) Junior Men 10-13", parent: junior_men)
       mtb.bar_categories << expert_junior_men
       mtb.bar_categories << junior_men
-      mtb.bar_categories << sport_junior_men
+      mtb.bar_categories << novice_junior_men
 
       marin_knobular = SingleDayEvent.create!(name: "Marin Knobular", date: Date.new(2001, 9, 7), discipline: "Mountain Bike")
       race = marin_knobular.races.create!(category: expert_junior_men)
@@ -22,7 +22,7 @@ module Competitions
       race.results.create!(person: chris_woods, place: 12)
 
       lemurian = SingleDayEvent.create!(name: "Lemurian", date: Date.new(2001, 9, 14), discipline: "Super D")
-      race = lemurian.races.create!(category: sport_junior_men)
+      race = lemurian.races.create!(category: novice_junior_men)
       race.results.create!(person: chris_woods, place: 14)
 
       Bar.calculate!(2001)
@@ -41,11 +41,11 @@ module Competitions
 
     test "numerical mtb categories" do
       # Map categories as if they were road cats
-      mtb         = FactoryGirl.create(:discipline, name: "Mountain Bike")
-      road        = FactoryGirl.create(:discipline, name: "Road")
-      overall     = FactoryGirl.create(:discipline, name: "Overall")
-      short_track = FactoryGirl.create(:discipline, name: "Short Track")
-                    FactoryGirl.create(:discipline, name: "Downhill")
+      mtb         = FactoryBot.create(:discipline, name: "Mountain Bike")
+      road        = FactoryBot.create(:discipline, name: "Road")
+      overall     = FactoryBot.create(:discipline, name: "Overall")
+      short_track = FactoryBot.create(:discipline, name: "Short Track")
+                    FactoryBot.create(:discipline, name: "Downhill")
 
       elite_men = Category.find_or_create_by(name: "Elite Men")
       senior_men = Category.find_or_create_by(name: "Senior Men")
@@ -116,20 +116,20 @@ module Competitions
       short_track.bar_categories << Category.find_by_name("Category 3 Men")
 
       # Create road and MTB/DH result for each category
-      tonkin = FactoryGirl.create(:person, name: "Tonkin")
+      tonkin = FactoryBot.create(:person, name: "Tonkin")
       event = SingleDayEvent.create!(discipline: "Road")
       event.races.create!(category: elite_men, field_size: 6).results.create!(place: "3", person: tonkin)
 
-      weaver = FactoryGirl.create(:person, name: "Weaver")
+      weaver = FactoryBot.create(:person, name: "Weaver")
       event.races.create!(category: men_1, field_size: 6).results.create!(place: "2", person: weaver)
 
-      molly = FactoryGirl.create(:person, name: "Molly")
+      molly = FactoryBot.create(:person, name: "Molly")
       event.races.create!(category: men_2, field_size: 6).results.create!(place: "5", person: molly)
 
-      alice = FactoryGirl.create(:person, name: "Alice")
+      alice = FactoryBot.create(:person, name: "Alice")
       event.races.create!(category: men_3, field_size: 6).results.create!(place: "6", person: alice)
 
-      matson = FactoryGirl.create(:person, name: "Matson")
+      matson = FactoryBot.create(:person, name: "Matson")
       event.races.create!(category: category_4_men, field_size: 6).results.create!(place: "1", person: matson)
 
       event = SingleDayEvent.create!(discipline: "Mountain Bike")
@@ -247,8 +247,11 @@ module Competitions
       senior_men_3_overall_bar = overall_bar.races.detect { |race| race.name == "Category 3 Men" }
       assert_equal(2, senior_men_3_overall_bar.results.size, "Senior Men 3 Overall BAR results")
 
-      senior_men_4_5_overall_bar = overall_bar.races.detect { |race| race.name == "Category 4/5 Men" }
-      assert_equal(2, senior_men_4_5_overall_bar.results.size, "Senior Men 4/5 Overall BAR results")
+      senior_men_4_overall_bar = overall_bar.races.detect { |race| race.name == "Category 4 Men" }
+      assert_equal(2, senior_men_4_overall_bar.results.size, "Senior Men 4 Overall BAR results")
+
+      senior_men_5_overall_bar = overall_bar.races.detect { |race| race.name == "Category 5 Men" }
+      assert_equal(0, senior_men_5_overall_bar.results.size, "Senior Men 5 Overall BAR results")
 
       senior_women_overall_bar = overall_bar.races.detect { |race| race.name == "Senior Women" }
       assert_equal(4, senior_women_overall_bar.results.size, "Senior Women Overall BAR results")
@@ -291,7 +294,7 @@ module Competitions
       assert_equal(300, results[1].points, "Men 3 Overall BAR results points")
       assert_equal(1, results[1].scores.size, "Men 3 Overall BAR results scores")
 
-      results = senior_men_4_5_overall_bar.results.to_a.sort
+      results = senior_men_4_overall_bar.results.to_a.sort
       assert_equal weaver, results[0].person, "Men 4 Overall BAR results person"
       assert_equal("1", results[0].place, "Men 4 Overall BAR results place")
       assert_equal(600, results[0].points, "Men 4 Overall BAR results points")
@@ -349,9 +352,9 @@ module Competitions
     end
 
     test "masters state champs" do
-      mtb = FactoryGirl.create(:discipline, name: "Mountain Bike")
+      mtb = FactoryBot.create(:discipline, name: "Mountain Bike")
       event = SingleDayEvent.create!(name: "Mudslinger", date: Date.new(2001, 9, 7), discipline: "Mountain Bike", bar_points: 2)
-      masters_men = FactoryGirl.create(:category, name: "Masters Men")
+      masters_men = FactoryBot.create(:category, name: "Masters Men")
       masters_men_45_54 = masters_men.children.create!(name: "Masters Men 45 -54")
       race = event.races.create!(category: masters_men_45_54)
       kc = Person.create!(name: "KC Mautner", member_from: Date.new(2001, 1, 1))

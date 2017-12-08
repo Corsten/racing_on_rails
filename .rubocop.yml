@@ -1,5 +1,8 @@
 AllCops:
-  RunRailsCops: true
+  TargetRubyVersion: 2.3
+
+Rails:
+  Enabled: true
 
 ClassLength:
   Enabled: false
@@ -14,7 +17,7 @@ MethodLength:
   Enabled: false
 
 Metrics/AbcSize:
-  Max: 20
+  Max: 40
 
 Metrics/CyclomaticComplexity:
   Max: 10
@@ -27,12 +30,23 @@ Metrics/ModuleLength:
   CountComments: false
   Max: 300
 
+Rails/FilePath:
+  Enabled: false
+
 SingleLineBlockParams:
   Enabled: false
-  
+
 SpaceInsideBrackets:
   Enabled: false
 
 StringLiterals:
-  EnforcedStyle:
-    Enabled: false
+  EnforcedStyle: double_quotes
+
+Style/NumericPredicate:
+  Enabled: false  
+
+Style/SpaceInsidePercentLiteralDelimiters:
+  Enabled: false
+
+Style/VariableNumber:
+  Enabled: false

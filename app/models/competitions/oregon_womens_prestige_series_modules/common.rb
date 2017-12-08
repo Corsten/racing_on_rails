@@ -1,9 +1,12 @@
 module Competitions
   module OregonWomensPrestigeSeriesModules
     module Common
-      # Decreasing points to 20th place, then 2 points for 21st through 100th
+      def members_only?
+        false
+      end
+
       def point_schedule
-        [ 100, 80, 70, 60, 55, 50, 45, 40, 35, 30, 25, 20, 18, 16, 14, 12, 10, 8, 6, 4 ] + ([ 2 ] * 80)
+        [ 25, 21, 18, 16, 14, 12, 10, 8, 7, 6, 5, 4, 3, 2, 1 ]
       end
 
       def set_multiplier(results)
@@ -17,7 +20,14 @@ module Competitions
       end
 
       def cat_123_only_event_ids
-        [ 21334, 21148, 21393, 21146, 21186 ]
+        []
+      end
+
+      def upgrades
+        {
+          "Women 3" => "Women 4/5",
+          "Women 1/2" => "Women 3"
+        }
       end
     end
   end
