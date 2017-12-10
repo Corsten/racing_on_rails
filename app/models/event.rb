@@ -43,9 +43,9 @@ class Event < ActiveRecord::Base
   include Events::Slugs
   include Events::Results
   include ActsAsTree::Extensions
-  include RacingOnRails::VestalVersions::Versioned
   include Export::Events
   include Sanctioned
+
 
   before_save :set_team
   before_destroy :destroy_event_team_memberships
@@ -80,6 +80,8 @@ class Event < ActiveRecord::Base
       today: Time.zone.today,
       later: number_of_weeks.weeks.from_now.to_date)
   }
+
+  has_paper_trail
 
   def self.upcoming(weeks = 2)
     single_day_events   = upcoming_single_day_events(weeks)

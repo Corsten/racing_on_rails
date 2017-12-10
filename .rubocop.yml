@@ -1,5 +1,5 @@
 AllCops:
-  TargetRubyVersion: 2.3
+  TargetRubyVersion: 2.4
 
 Rails:
   Enabled: true
@@ -8,6 +8,9 @@ ClassLength:
   Enabled: false
 
 Documentation:
+  Enabled: false
+
+Layout/SpaceInsidePercentLiteralDelimiters:
   Enabled: false
 
 LineLength:
@@ -42,10 +45,10 @@ SpaceInsideBrackets:
 StringLiterals:
   EnforcedStyle: double_quotes
 
-Style/NumericPredicate:
-  Enabled: false  
+Style/GuardClause:
+  Enabled: false
 
-Style/SpaceInsidePercentLiteralDelimiters:
+Style/NumericPredicate:
   Enabled: false
 
 Style/VariableNumber:

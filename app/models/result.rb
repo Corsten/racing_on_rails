@@ -38,8 +38,6 @@ class Result < ActiveRecord::Base
     where(team_id: team.id)
   }
 
-  attr_accessor :updated_by
-
   # Replace any new +person+, or +team+ with one that already exists if name matches
   # TODO rationalize names
   def set_associated_records

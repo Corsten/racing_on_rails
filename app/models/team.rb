@@ -6,7 +6,6 @@
 #
 # Team names must be unique
 class Team < ActiveRecord::Base
-  include RacingOnRails::VestalVersions::Versioned
   include Export::Teams
   include Names::Nameable
 
@@ -22,6 +21,8 @@ class Team < ActiveRecord::Base
   has_many :event_teams
   has_many :people
   has_many :results
+
+  has_paper_trail
 
   def self.find_by_name_or_alias(name)
     Team.find_by_name(name) || Alias.where(name: name, aliasable_type: "Team").first&.team

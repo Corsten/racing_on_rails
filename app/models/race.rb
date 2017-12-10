@@ -7,10 +7,8 @@
 # Race +result_columns+: populated columns displayed on results page. Usually Result attributes, but also creates
 # virtual "custom" columns.
 class Race < ActiveRecord::Base
-
   include Comparable
   include Export::Races
-  include RacingOnRails::VestalVersions::Versioned
   include Sanctioned
 
   DEFAULT_RESULT_COLUMNS = %W{ place number last_name first_name team_name points time }.freeze
@@ -40,6 +38,8 @@ class Race < ActiveRecord::Base
 
   default_value_for(:result_columns) { DEFAULT_RESULT_COLUMNS.dup }
   default_value_for :custom_columns, []
+
+  has_paper_trail
 
   # Defaults to Event's BAR points
   def bar_points

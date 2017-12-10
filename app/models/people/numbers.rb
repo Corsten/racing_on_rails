@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module People
   module Numbers
     extend ActiveSupport::Concern
@@ -34,9 +35,7 @@ module People
     end
 
     # Look for RaceNumber +year+ in +attributes+. Not sure if there's a simple and better way to do that.
-    # Need to set +updated_by+ before setting numbers to ensure updated_by is passed to number. Setting all via a
-    # parameter hash may add number before updated_by is set.
-    def add_number(value, discipline, issuer = nil, _year = year)
+    def add_number(value, discipline, issuer = nil, number_year = year)
       return false if discipline.blank? && value.blank?
 
       mapped_discipline = if discipline.nil? || !discipline.numbers?
@@ -45,39 +44,37 @@ module People
                             discipline
                           end
       issuer = NumberIssuer.find_by(name: RacingAssociation.current.short_name) if issuer.nil?
-      _year ||= RacingAssociation.current.year
+      number_year ||= RacingAssociation.current.year
 
       if value.present?
         if new_record?
-          build_number value, mapped_discipline, issuer, updated_by, _year
+          build_number value, mapped_discipline, issuer, number_year
         else
-          create_number value, mapped_discipline, issuer, updated_by, _year
+          create_number value, mapped_discipline, issuer, number_year
         end
       else
-        destroy_number discipline, issuer, _year unless new_record?
+        destroy_number discipline, issuer, number_year unless new_record?
       end
     end
 
-    def build_number(value, discipline, issuer, updated_by, year)
+    def build_number(value, discipline, issuer, year)
       unless race_number?(value, discipline, issuer, year)
         race_numbers.build(
           discipline: discipline,
           number_issuer: issuer,
           person: self,
-          updated_by: updated_by,
           value: value,
           year: year
         )
       end
     end
 
-    def create_number(value, discipline, issuer, updated_by, year)
+    def create_number(value, discipline, issuer, year)
       unless race_number?(value, discipline, issuer, year)
         race_numbers.create(
           discipline: discipline,
           number_issuer: issuer,
           person: self,
-          updated_by: updated_by,
           value: value,
           year: year
         )

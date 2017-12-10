@@ -156,10 +156,10 @@ module Competitions
 
     def split_races(event, competition_category)
       races_to_split = select_races_to_split(event, competition_category)
-      return unless races_to_split.present?
+      return if races_to_split.blank?
 
       existing_race = event.races.detect { |r| r.category == competition_category }
-      race = existing_race || event.races.create!(category: competition_category, bar_points: 0, updated_by: self, visible: false)
+      race = existing_race || event.races.create!(category: competition_category, bar_points: 0, visible: false)
 
       races_to_split.each do |race_to_split|
         split_race competition_category, race_to_split, race
@@ -192,7 +192,7 @@ module Competitions
       if races_to_combine.present?
         logger.debug "Combine races for #{event.full_name} #{competition_category.name}: #{races_to_combine.map(&:name).sort}"
         existing_race = event.races.detect { |r| r.category == competition_category }
-        race = existing_race || event.races.create!(category: competition_category, bar_points: 0, updated_by: self, visible: false)
+        race = existing_race || event.races.create!(category: competition_category, bar_points: 0, visible: false)
 
         races_to_combine.each do |race_to_combine|
           combine_race race_to_combine, race, competition_category
@@ -219,12 +219,12 @@ module Competitions
     def combine_race(race_to_combine, race, competition_category)
       race_to_combine.results.select do |result|
         result.time &&
-        result.time > 0 &&
-        (result.person&.racing_age.nil? ||
-          (result.person.racing_age >= competition_category.ages_begin && result.person.racing_age <= competition_category.ages_end)
-        )
+          result.time > 0 &&
+          (result.person&.racing_age.nil? ||
+            (result.person.racing_age >= competition_category.ages_begin && result.person.racing_age <= competition_category.ages_end)
+          )
       end
-      .each { |result| create_result(race, result) }
+                     .each { |result| create_result(race, result) }
     end
 
     def split?(competition_category, result)
@@ -237,16 +237,15 @@ module Competitions
     def adjust_times
       races_created_for_competition.each do |race|
         distances = race.results.map(&:distance).compact.select(&:positive?)
-        if distances.size > 0
-          max_distance = distances.max
-          race.results.each do |result|
-            if result.distance.nil? || result.distance == 0
-              raise StandardError, "#{result.id} for #{result.race_full_name} #{result.event_full_name} does not have a distance"
-            end
-
-            new_time = result.time * (max_distance / result.distance) * 1.1
-            result.update!(time: new_time)
+        next if distances.empty?
+        max_distance = distances.max
+        race.results.each do |result|
+          if result.distance.nil? || result.distance == 0
+            raise StandardError, "#{result.id} for #{result.race_full_name} #{result.event_full_name} does not have a distance"
           end
+
+          new_time = result.time * (max_distance / result.distance) * 1.1
+          result.update!(time: new_time)
         end
       end
     end

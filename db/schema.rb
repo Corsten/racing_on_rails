@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170701201331) do
+ActiveRecord::Schema.define(version: 20171209155903) do
 
   create_table "adjustments", force: :cascade do |t|
     t.integer  "order_id",    limit: 4
@@ -927,6 +927,17 @@ ActiveRecord::Schema.define(version: 20170701201331) do
   add_index "velodromes", ["name"], name: "index_velodromes_on_name", using: :btree
 
   create_table "versions", force: :cascade do |t|
+    t.string   "item_type",  limit: 191,        null: false
+    t.integer  "item_id",    limit: 4,          null: false
+    t.string   "event",      limit: 255,        null: false
+    t.string   "whodunnit",  limit: 255
+    t.text     "object",     limit: 4294967295
+    t.datetime "created_at"
+  end
+
+  add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
+
+  create_table "vestal_versions", force: :cascade do |t|
     t.integer  "versioned_id",   limit: 4
     t.string   "versioned_type", limit: 255
     t.integer  "user_id",        limit: 4
@@ -940,12 +951,12 @@ ActiveRecord::Schema.define(version: 20170701201331) do
     t.integer  "reverted_from",  limit: 4
   end
 
-  add_index "versions", ["created_at"], name: "index_versions_on_created_at", using: :btree
-  add_index "versions", ["number"], name: "index_versions_on_number", using: :btree
-  add_index "versions", ["tag"], name: "index_versions_on_tag", using: :btree
-  add_index "versions", ["user_id", "user_type"], name: "index_versions_on_user_id_and_user_type", using: :btree
-  add_index "versions", ["user_name"], name: "index_versions_on_user_name", using: :btree
-  add_index "versions", ["versioned_id", "versioned_type"], name: "index_versions_on_versioned_id_and_versioned_type", using: :btree
+  add_index "vestal_versions", ["created_at"], name: "index_vestal_versions_on_created_at", using: :btree
+  add_index "vestal_versions", ["number"], name: "index_vestal_versions_on_number", using: :btree
+  add_index "vestal_versions", ["tag"], name: "index_vestal_versions_on_tag", using: :btree
+  add_index "vestal_versions", ["user_id", "user_type"], name: "index_vestal_versions_on_user_id_and_user_type", using: :btree
+  add_index "vestal_versions", ["user_name"], name: "index_vestal_versions_on_user_name", using: :btree
+  add_index "vestal_versions", ["versioned_id", "versioned_type"], name: "index_vestal_versions_on_versioned_id_and_versioned_type", using: :btree
 
   add_foreign_key "categories", "categories", column: "parent_id", on_delete: :cascade
   add_foreign_key "competition_event_memberships", "events", column: "competition_id", name: "competition_event_memberships_competitions_id_fk", on_delete: :cascade

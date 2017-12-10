@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "action_controller/force_https"
 require "sentient_user/sentient_controller"
 
@@ -16,8 +18,7 @@ class ApplicationController < ActionController::Base
   include Mobile
   include SentientController
 
-  before_action :clear_racing_association, :toggle_tabs, :allow_iframes
-
+  before_action :clear_racing_association, :toggle_tabs, :allow_iframes, :set_paper_trail_whodunnit
 
   protected
 
@@ -48,23 +49,15 @@ class ApplicationController < ActionController::Base
 
     @page = find_mobile_page(page_path)
 
-    if !@page
-      @page = Page.find_by_path(page_path)
-    end
+    @page = Page.find_by(path: page_path) unless @page
 
-    if @page
-      render(inline: @page.body, layout: true)
-    end
+    render(inline: @page.body, layout: true) if @page
   end
 
   def page
-    begin
-      if params[:page].to_i > 0
-        params[:page].to_i
-      end
-    rescue
-      nil
-    end
+    params[:page].to_i if params[:page].to_i > 0
+  rescue
+    nil
   end
 
   private

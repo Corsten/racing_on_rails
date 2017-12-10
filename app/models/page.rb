@@ -7,7 +7,6 @@ class Page < ActiveRecord::Base
   include ActsAsTree::Validation
 
   include Pages::Paths
-  include RacingOnRails::VestalVersions::Versioned
   include SentientUser
 
   before_validation :set_slug, :set_path, :set_body
@@ -15,6 +14,8 @@ class Page < ActiveRecord::Base
 
   after_create :update_parent
   after_destroy :update_parent
+
+  has_paper_trail
 
   # Friendly param. Last segment in +path+
   def set_slug
