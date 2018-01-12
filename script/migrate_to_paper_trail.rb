@@ -25,6 +25,10 @@ PaperTrailVersion.transaction do
       modifications.delete("notification")
       modifications.delete("lock_version")
       version.update_attributes! modifications: modifications
+    when "Page"
+      modifications = version.modifications
+      modifications.delete("lock_version")
+      version.update_attributes! modifications: modifications
     end
   end
 
@@ -86,6 +90,4 @@ PaperTrailVersion.transaction do
       end
     end
   end
-
-  rollback!
 end
