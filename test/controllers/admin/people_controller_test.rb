@@ -141,7 +141,7 @@ module Admin
       molly = FactoryBot.create(:person, first_name: "Molly", last_name: "Cameron", road_number: "2", team: vanilla)
       Alias.create!(name: "Mollie Cameron", person: molly)
       FactoryBot.create :result, person: molly, team: vanilla
-      assert_equal 1, molly.versions.size, "versions"
+      assert_equal 1, molly.paper_trail_versions.size, "versions"
       molly_road_number = RaceNumber.first
 
       put(:update, "commit" => "Save",
@@ -171,8 +171,8 @@ module Admin
       assert_equal_dates("2004-12-31", molly.member_to, "member_to after update")
       assert_equal(true, molly.ccx_only?, "ccx_only?")
 
-      assert_equal 2, molly.versions.size, "versions"
-      version = molly.versions.last
+      assert_equal 2, molly.paper_trail_versions.size, "versions"
+      version = molly.paper_trail_versions.last
       assert_equal @administrator, version.user, "version user"
       changes = version.changes
       assert_equal 26, changes.size, "changes"

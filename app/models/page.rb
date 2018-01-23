@@ -12,6 +12,10 @@ class Page < ActiveRecord::Base
   include RacingOnRails::VestalVersions::Versioned
   include SentientUser
 
+  has_paper_trail class_name: "PaperTrailVersion",
+                  versions: :paper_trail_versions,
+                  version:  :paper_trail_version
+
   before_validation :set_slug, :set_path, :set_body
   validates :path, uniqueness: { message: "'%{value}' has already been taken" }
 

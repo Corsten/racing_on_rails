@@ -38,6 +38,10 @@ class Person < ActiveRecord::Base
     config.maintain_sessions false
   end
 
+  has_paper_trail class_name: "PaperTrailVersion",
+                  versions: :paper_trail_versions,
+                  version:  :paper_trail_version
+
   before_validation :find_associated_records
   before_validation :set_membership_dates
   before_save { |r| r.license = nil if license.blank? }

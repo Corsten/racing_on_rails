@@ -111,6 +111,7 @@ PaperTrailVersion.transaction do
             item_type: version.versioned_type,
             item_id: record.id,
             object: attributes.to_yaml,
+            object_changes: version.changes.to_yaml,
             whodunnit: record.updated_by_person_name
           )
         rescue ActiveModel::MissingAttributeError => e

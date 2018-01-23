@@ -21,6 +21,10 @@ class Race < ActiveRecord::Base
     team_name time time_bonus_penalty time_gap_to_leader time_gap_to_previous time_gap_to_winner time_total
   ].freeze
 
+  has_paper_trail class_name: "PaperTrailVersion",
+                  versions: :paper_trail_versions,
+                  version:  :paper_trail_version
+
   validates :event, :category, presence: true
 
   before_validation :find_associated_records

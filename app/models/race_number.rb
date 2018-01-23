@@ -20,6 +20,10 @@ class RaceNumber < ActiveRecord::Base
   validates :value, presence: true
   validate :unique_number
 
+  has_paper_trail class_name: "PaperTrailVersion",
+                  versions: :paper_trail_versions,
+                  version:  :paper_trail_version
+
   before_save :validate_year
 
   belongs_to :discipline

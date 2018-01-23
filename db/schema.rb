@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180110004232) do
+ActiveRecord::Schema.define(version: 20180123021019) do
 
   create_table "#Tableau_01_sid_00026E8B_4_Group", id: false, force: :cascade do |t|
     t.string  "Age (group)", limit: 21
@@ -1061,6 +1061,7 @@ ActiveRecord::Schema.define(version: 20180110004232) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "reverted_from",  limit: 4
+    t.text     "object_changes", limit: 4294967295
   end
 
   add_index "versions", ["created_at"], name: "index_versions_on_created_at", using: :btree

@@ -10,6 +10,10 @@ class Team < ActiveRecord::Base
   include Export::Teams
   include Names::Nameable
 
+  has_paper_trail class_name: "PaperTrailVersion",
+                  versions: :paper_trail_versions,
+                  version:  :paper_trail_version
+
   before_save :destroy_shadowed_aliases
   after_save :add_alias_for_old_name
   before_destroy :ensure_no_results

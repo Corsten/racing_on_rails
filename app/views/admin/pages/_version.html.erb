@@ -1,4 +1,4 @@
-<% if version == version.versioned.versions.last -%>
+<% if version == version.versioned.paper_trail_versions.last -%>
 
 <tr <%= "class='selected'" if version == selected %>>
   <td><%= link_to version.updated_at.to_s(:long), edit_admin_page_path(version.versioned) %></td>
