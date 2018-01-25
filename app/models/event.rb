@@ -48,10 +48,7 @@ class Event < ActiveRecord::Base
   include RacingOnRails::VestalVersions::Versioned
   include Export::Events
   include Sanctioned
-
-  has_paper_trail class_name: "PaperTrailVersion",
-                  versions: :paper_trail_versions,
-                  version:  :paper_trail_version
+  include Versions
 
   before_save :set_team
   before_destroy :destroy_event_team_memberships

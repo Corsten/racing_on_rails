@@ -13,6 +13,7 @@ class Race < ActiveRecord::Base
   include Export::Races
   include RacingOnRails::VestalVersions::Versioned
   include Sanctioned
+  include Versions
 
   DEFAULT_RESULT_COLUMNS = %w[ place number last_name first_name team_name points time ].freeze
   RESULT_COLUMNS = %w[
@@ -20,10 +21,6 @@ class Race < ActiveRecord::Base
     number place points points_bonus points_bonus_penalty points_from_place points_penalty points_total state
     team_name time time_bonus_penalty time_gap_to_leader time_gap_to_previous time_gap_to_winner time_total
   ].freeze
-
-  has_paper_trail class_name: "PaperTrailVersion",
-                  versions: :paper_trail_versions,
-                  version:  :paper_trail_version
 
   validates :event, :category, presence: true
 

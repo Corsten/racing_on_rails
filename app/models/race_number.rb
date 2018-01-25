@@ -13,16 +13,13 @@
 # to identify person results with misspelled names.
 class RaceNumber < ActiveRecord::Base
   include RacingOnRails::VestalVersions::Versioned
+  include Versions
 
   validates :discipline, presence: true
   validates :number_issuer, presence: true
   validates :person, presence: true
   validates :value, presence: true
   validate :unique_number
-
-  has_paper_trail class_name: "PaperTrailVersion",
-                  versions: :paper_trail_versions,
-                  version:  :paper_trail_version
 
   before_save :validate_year
 

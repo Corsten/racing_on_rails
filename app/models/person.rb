@@ -19,6 +19,7 @@ class Person < ActiveRecord::Base
   include People::Numbers
   include RacingOnRails::VestalVersions::Versioned
   include SentientUser
+  include Versions
 
   acts_as_authentic do |config|
     config.crypto_provider Authlogic::CryptoProviders::Sha512
@@ -37,10 +38,6 @@ class Person < ActiveRecord::Base
     config.disable_perishable_token_maintenance true
     config.maintain_sessions false
   end
-
-  has_paper_trail class_name: "PaperTrailVersion",
-                  versions: :paper_trail_versions,
-                  version:  :paper_trail_version
 
   before_validation :find_associated_records
   before_validation :set_membership_dates
