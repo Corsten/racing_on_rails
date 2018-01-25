@@ -66,7 +66,7 @@ module Competitions
       when "Senior Men Pro/1/2"
         ["Men Category 1/2"]
       when "Category 4/5 Men"
-        ["Category 4 Men", "Category 5 Men", "Category 4/5 Men", "Men Category 4/5"]
+        category_4_5_men_categories
       when "Senior Women 1/2"
         ["Senior Women", "Women Category 1/2"]
       when "Category 4/5 Women"
@@ -85,10 +85,21 @@ module Competitions
         []
       end.each do |name|
         category = Category.find_by(name: name)
-        ids << category.id if category
+        ids << category if category
       end
 
       ids
+    end
+
+    def category_4_5_men_categories
+      [
+        "Category 4 Men",
+        "Category 4/5",
+        "Category 5 Men",
+        "Men 4/5",
+        "Men Category 4",
+        "Men Category 4/5"
+      ]
     end
 
     def after_source_results(results, race)
@@ -97,8 +108,8 @@ module Competitions
       end
 
       if race.name == "Tandem"
-        beginning_of_year = Time.zone.now.beginning_of_year
-        end_of_year = Time.zone.now.end_of_year
+        beginning_of_year = Time.zone.local(year).beginning_of_year
+        end_of_year = Time.zone.local(year).end_of_year
 
         results.each do |result|
           result["member_from"] = beginning_of_year
@@ -221,7 +232,7 @@ module Competitions
         result.time &&
           result.time > 0 &&
           (result.person&.racing_age.nil? ||
-            (result.person.racing_age >= competition_category.ages_begin && result.person.racing_age <= competition_category.ages_end)
+            (result.person.racing_age(year) >= competition_category.ages_begin && result.person.racing_age(year) <= competition_category.ages_end)
           )
       end
                      .each { |result| create_result(race, result) }
@@ -229,7 +240,7 @@ module Competitions
 
     def split?(competition_category, result)
       result.person&.racing_age &&
-        competition_category.ages.include?(result.person.racing_age) &&
+        competition_category.ages.include?(result.person.racing_age(year)) &&
         result.time &&
         result.time > 0
     end
