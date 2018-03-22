@@ -38,11 +38,11 @@ ActiveRecord::Schema.define(version: 20180308160323) do
 
   create_table "article_categories", force: :cascade do |t|
     t.string   "name",        limit: 255
-    t.integer  "parent_id",   limit: 4,   default: 0
-    t.integer  "position",    limit: 4,   default: 0
-    t.string   "description", limit: 255
+    t.integer  "position",    limit: 4
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "parent_id",   limit: 4,   default: 0, null: false
+    t.string   "description", limit: 255
   end
 
   add_index "article_categories", ["updated_at"], name: "index_article_categories_on_updated_at", using: :btree
@@ -53,10 +53,10 @@ ActiveRecord::Schema.define(version: 20180308160323) do
     t.string   "description",         limit: 255
     t.boolean  "display"
     t.text     "body",                limit: 65535
-    t.integer  "position",            limit: 4,     default: 0
     t.integer  "article_category_id", limit: 4
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "position",            limit: 4,     default: 0
   end
 
   add_index "articles", ["article_category_id"], name: "index_articles_on_article_category_id", using: :btree
@@ -234,34 +234,34 @@ ActiveRecord::Schema.define(version: 20180308160323) do
     t.string   "time",                           limit: 255
     t.boolean  "instructional",                                                         default: false
     t.boolean  "practice",                                                              default: false
+    t.integer  "team_id",                        limit: 4
     t.boolean  "atra_points_series",                                                    default: false, null: false
     t.integer  "bar_points",                     limit: 4,                                              null: false
     t.boolean  "ironman",                                                                               null: false
     t.boolean  "auto_combined_results",                                                 default: true,  null: false
-    t.integer  "team_id",                        limit: 4
     t.string   "sanctioning_org_event_id",       limit: 16
     t.integer  "promoter_id",                    limit: 4
     t.string   "phone",                          limit: 255
     t.string   "email",                          limit: 255
-    t.decimal  "price",                                        precision: 10, scale: 2
     t.boolean  "postponed",                                                             default: false, null: false
     t.string   "chief_referee",                  limit: 255
-    t.boolean  "registration",                                                          default: false, null: false
     t.boolean  "beginner_friendly",                                                     default: false, null: false
+    t.string   "website",                        limit: 255
+    t.string   "registration_link",              limit: 1024
+    t.integer  "region_id",                      limit: 4
+    t.date     "end_date",                                                                              null: false
+    t.decimal  "price",                                        precision: 10, scale: 2
+    t.boolean  "registration",                                                          default: false, null: false
     t.boolean  "promoter_pays_registration_fee",                                        default: false, null: false
     t.boolean  "membership_required",                                                   default: false, null: false
     t.datetime "registration_ends_at"
     t.boolean  "override_registration_ends_at",                                         default: false, null: false
     t.decimal  "all_events_discount",                          precision: 10, scale: 2
     t.decimal  "additional_race_price",                        precision: 10, scale: 2
-    t.string   "website",                        limit: 255
-    t.string   "registration_link",              limit: 1024
     t.string   "custom_suggestion",              limit: 255
     t.integer  "field_limit",                    limit: 4
     t.text     "refund_policy",                  limit: 65535
     t.boolean  "refunds",                                                               default: true,  null: false
-    t.integer  "region_id",                      limit: 4
-    t.date     "end_date",                                                                              null: false
     t.boolean  "registration_public",                                                   default: true,  null: false
     t.decimal  "junior_price",                                 precision: 10, scale: 2
     t.boolean  "suggest_membership",                                                    default: true,  null: false
@@ -539,14 +539,13 @@ ActiveRecord::Schema.define(version: 20180308160323) do
     t.boolean  "print_card",                                          default: false
     t.boolean  "ccx_only",                                            default: false, null: false
     t.string   "bmx_category",                          limit: 255
+    t.date     "license_expiration_date"
+    t.string   "status",                                limit: 255
     t.boolean  "wants_email",                                         default: false, null: false
     t.boolean  "wants_mail",                                          default: false, null: false
-    t.boolean  "volunteer_interest",                                  default: false, null: false
-    t.boolean  "official_interest",                                   default: false, null: false
-    t.boolean  "race_promotion_interest",                             default: false, null: false
-    t.boolean  "team_interest",                                       default: false, null: false
+    t.string   "club_name",                             limit: 255
+    t.string   "ncca_club_name",                        limit: 255
     t.date     "member_usac_to"
-    t.string   "status",                                limit: 255
     t.string   "crypted_password",                      limit: 255
     t.string   "password_salt",                         limit: 255
     t.string   "persistence_token",                     limit: 255
@@ -559,9 +558,18 @@ ActiveRecord::Schema.define(version: 20180308160323) do
     t.string   "current_login_ip",                      limit: 255
     t.string   "last_login_ip",                         limit: 255
     t.string   "login",                                 limit: 100
-    t.date     "license_expiration_date"
-    t.string   "club_name",                             limit: 255
-    t.string   "ncca_club_name",                        limit: 255
+    t.boolean  "volunteer_interest",                                  default: false, null: false
+    t.boolean  "official_interest",                                   default: false, null: false
+    t.boolean  "race_promotion_interest",                             default: false, null: false
+    t.boolean  "team_interest",                                       default: false, null: false
+    t.string   "emergency_contact",                     limit: 255
+    t.string   "emergency_contact_phone",               limit: 255
+    t.datetime "card_printed_at"
+    t.string   "license_type",                          limit: 255
+    t.string   "country_code",                          limit: 2,     default: "US"
+    t.boolean  "membership_card",                                     default: false, null: false
+    t.boolean  "official",                                            default: false, null: false
+    t.string   "name",                                  limit: 255,   default: "",    null: false
     t.string   "billing_first_name",                    limit: 255
     t.string   "billing_last_name",                     limit: 255
     t.string   "billing_street",                        limit: 255
@@ -572,15 +580,7 @@ ActiveRecord::Schema.define(version: 20180308160323) do
     t.string   "card_brand",                            limit: 255
     t.date     "card_expires_on"
     t.boolean  "membership_address_is_billing_address",               default: true,  null: false
-    t.string   "license_type",                          limit: 255
-    t.string   "country_code",                          limit: 2,     default: "US"
-    t.string   "emergency_contact",                     limit: 255
-    t.string   "emergency_contact_phone",               limit: 255
-    t.datetime "card_printed_at"
-    t.boolean  "membership_card",                                     default: false, null: false
-    t.boolean  "official",                                            default: false, null: false
     t.integer  "non_member_result_id",                  limit: 4
-    t.string   "name",                                  limit: 255,   default: "",    null: false
     t.boolean  "other_people_with_same_name",                         default: false, null: false
     t.boolean  "administrator",                                       default: false, null: false
     t.boolean  "velodrome_committee_interest",                        default: false, null: false
@@ -590,6 +590,7 @@ ActiveRecord::Schema.define(version: 20180308160323) do
   add_index "people", ["email"], name: "index_people_on_email", using: :btree
   add_index "people", ["first_name"], name: "idx_first_name", using: :btree
   add_index "people", ["last_name"], name: "idx_last_name", using: :btree
+  add_index "people", ["license"], name: "index_people_on_license", unique: true, using: :btree
   add_index "people", ["login"], name: "index_people_on_login", using: :btree
   add_index "people", ["member_from"], name: "index_racers_on_member_from", using: :btree
   add_index "people", ["member_to"], name: "index_racers_on_member_to", using: :btree
@@ -727,10 +728,9 @@ ActiveRecord::Schema.define(version: 20180308160323) do
     t.string   "result_columns",       limit: 255
     t.integer  "bar_points",           limit: 4
     t.integer  "event_id",             limit: 4,                                              null: false
-    t.decimal  "custom_price",                       precision: 10, scale: 2
     t.text     "custom_columns",       limit: 65535
+    t.decimal  "custom_price",                       precision: 10, scale: 2
     t.boolean  "full",                                                        default: false, null: false
-    t.integer  "field_limit",          limit: 4
     t.boolean  "additional_race_only",                                        default: false, null: false
     t.boolean  "visible",                                                     default: true
     t.integer  "split_from_id",        limit: 4
@@ -771,7 +771,7 @@ ActiveRecord::Schema.define(version: 20180308160323) do
     t.string   "default_sanctioned_by",                              limit: 255
     t.string   "email",                                              limit: 255, default: "scott.willson@gmail.com",             null: false
     t.string   "exempt_team_categories",                             limit: 255, default: "0",                                   null: false
-    t.string   "membership_email",                                   limit: 255
+    t.string   "membership_email",                                   limit: 255, default: "scott.willson@gmail.com",             null: false
     t.string   "name",                                               limit: 255, default: "Cascadia Bicycle Racing Association", null: false
     t.string   "rails_host",                                         limit: 255, default: "localhost:3000"
     t.string   "sanctioning_organizations",                          limit: 255
@@ -819,7 +819,7 @@ ActiveRecord::Schema.define(version: 20180308160323) do
     t.integer  "person_id",               limit: 4
     t.integer  "race_id",                 limit: 4,                                              null: false
     t.integer  "team_id",                 limit: 4
-    t.integer  "age",                     limit: 4
+    t.string   "age_group",               limit: 16
     t.string   "city",                    limit: 128
     t.datetime "date_of_birth"
     t.boolean  "is_series"
@@ -834,14 +834,8 @@ ActiveRecord::Schema.define(version: 20180308160323) do
     t.float    "points_total",            limit: 24,                             default: 0.0
     t.string   "state",                   limit: 64
     t.string   "status",                  limit: 3
-    t.float    "time",                    limit: 53
-    t.float    "time_bonus_penalty",      limit: 53
-    t.float    "time_gap_to_leader",      limit: 53
-    t.float    "time_gap_to_previous",    limit: 53
-    t.float    "time_gap_to_winner",      limit: 53
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.float    "time_total",              limit: 53
     t.integer  "laps",                    limit: 4
     t.string   "members_only_place",      limit: 8
     t.integer  "points_bonus",            limit: 4,                              default: 0,     null: false
@@ -850,7 +844,13 @@ ActiveRecord::Schema.define(version: 20180308160323) do
     t.boolean  "bar",                                                            default: true
     t.string   "gender",                  limit: 8
     t.string   "category_class",          limit: 16
-    t.string   "age_group",               limit: 16
+    t.integer  "age",                     limit: 4
+    t.float    "time",                    limit: 53
+    t.float    "time_gap_to_leader",      limit: 53
+    t.float    "time_gap_to_previous",    limit: 53
+    t.float    "time_gap_to_winner",      limit: 53
+    t.float    "time_total",              limit: 24
+    t.float    "time_bonus_penalty",      limit: 53
     t.text     "custom_attributes",       limit: 65535
     t.boolean  "competition_result",                                                             null: false
     t.boolean  "team_competition_result",                                                        null: false
@@ -867,9 +867,9 @@ ActiveRecord::Schema.define(version: 20180308160323) do
     t.string   "race_full_name",          limit: 255,                                            null: false
     t.string   "team_name",               limit: 255
     t.integer  "year",                    limit: 4,                                              null: false
+    t.boolean  "team_member",                                                    default: false, null: false
     t.integer  "non_member_result_id",    limit: 4
     t.boolean  "single_event_license",                                           default: false
-    t.boolean  "team_member",                                                    default: false, null: false
     t.decimal  "distance",                              precision: 10, scale: 2
   end
 
@@ -967,7 +967,6 @@ ActiveRecord::Schema.define(version: 20180308160323) do
   add_foreign_key "discipline_aliases", "disciplines", on_delete: :cascade
   add_foreign_key "discipline_bar_categories", "categories", name: "discipline_bar_categories_categories_id_fk", on_delete: :cascade
   add_foreign_key "discipline_bar_categories", "disciplines", on_delete: :cascade
-  add_foreign_key "discount_codes", "events", name: "discount_codes_ibfk_1"
   add_foreign_key "duplicates_people", "duplicates", name: "duplicates_racers_duplicates_id_fk", on_delete: :cascade
   add_foreign_key "duplicates_people", "people", name: "duplicates_people_person_id", on_delete: :cascade
   add_foreign_key "editor_requests", "people", column: "editor_id", name: "editor_requests_ibfk_1", on_delete: :cascade
@@ -976,8 +975,6 @@ ActiveRecord::Schema.define(version: 20180308160323) do
   add_foreign_key "events", "number_issuers", name: "events_number_issuers_id_fk"
   add_foreign_key "events", "people", column: "promoter_id", name: "events_promoter_id", on_delete: :nullify
   add_foreign_key "events", "velodromes", name: "events_velodrome_id_fk"
-  add_foreign_key "order_people", "orders", name: "order_people_ibfk_2", on_delete: :cascade
-  add_foreign_key "order_people", "people", name: "order_people_ibfk_1", on_delete: :cascade
   add_foreign_key "pages", "pages", column: "parent_id", name: "pages_parent_id_fk"
   add_foreign_key "people", "teams"
   add_foreign_key "people_people", "people", column: "editor_id", name: "people_people_ibfk_1", on_delete: :cascade
@@ -994,5 +991,4 @@ ActiveRecord::Schema.define(version: 20180308160323) do
   add_foreign_key "results", "teams"
   add_foreign_key "scores", "results", column: "competition_result_id", name: "scores_competition_result_id_fk", on_delete: :cascade
   add_foreign_key "scores", "results", column: "source_result_id", name: "scores_source_result_id_fk", on_delete: :cascade
-  add_foreign_key "update_requests", "order_people", name: "update_requests_ibfk_1", on_delete: :cascade
 end
