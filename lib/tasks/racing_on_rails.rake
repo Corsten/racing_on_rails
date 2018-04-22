@@ -19,8 +19,8 @@ namespace :racing_on_rails do
 
   task database_dump: :environment do
     db = ActiveRecord::Base.configurations
-    puts `mysqldump -u #{db[Rails.env]["username"]} -p#{db[Rails.env]["password"]} -h #{db[Rails.env]["host"]} --compress --single-transaction --ignore-table=#{db[Rails.env]["database"]}.posts #{db[Rails.env]["database"]} > db/#{Rails.env}.sql`
-    puts `mysqldump -u #{db[Rails.env]["username"]} -p#{db[Rails.env]["password"]} -h #{db[Rails.env]["host"]} --compress --single-transaction --no-data #{db[Rails.env]["database"]} posts >> db/#{Rails.env}.sql`
+    puts `mysqldump -u #{db[Rails.env]["username"]} #{db_password_arg(db[Rails.env]["password"])} #{db_host_arg(db[Rails.env]["host"])} --compress --single-transaction --ignore-table=#{db[Rails.env]["database"]}.posts #{db[Rails.env]["database"]} > db/#{Rails.env}.sql`
+    puts `mysqldump -u #{db[Rails.env]["username"]} #{db_password_arg(db[Rails.env]["password"])} #{db_host_arg(db[Rails.env]["host"])} --compress --single-transaction --no-data #{db[Rails.env]["database"]} posts >> db/#{Rails.env}.sql`
   end
 
   namespace :competitions do
@@ -108,11 +108,19 @@ def ask(message)
   STDIN.gets.chomp
 end
 
+def db_host_arg(db_host)
+  if db_host.blank?
+    ""
+  else
+    " --password=#{db_password}"
+  end
+end
+
 def db_password_arg(db_password)
   if db_password.blank?
     ""
   else
-    " --password=#{db_password}"
+    " -h #{db_host}"
   end
 end
 
