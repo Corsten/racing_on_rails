@@ -23,6 +23,7 @@ chromedriver.log
 coverage
 db/*.sqlite3
 db/acceptance_structure.sql
+db/development.sql
 db/production.sql
 doc/app
 doc/README_FOR_APP
