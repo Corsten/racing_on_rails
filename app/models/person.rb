@@ -19,7 +19,7 @@ class Person < ActiveRecord::Base
   include People::Numbers
   include RacingOnRails::VestalVersions::Versioned
   include SentientUser
-  include Versions
+  include RacingOnRails::PaperTrail::Versions
 
   acts_as_authentic do |config|
     config.crypto_provider Authlogic::CryptoProviders::Sha512
