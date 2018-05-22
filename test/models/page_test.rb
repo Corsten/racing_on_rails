@@ -38,7 +38,7 @@ class PageTest < ActiveSupport::TestCase
     administrator = FactoryBot.create(:administrator)
     Person.current = administrator
     page = Page.create!(body: "<h1>Welcome</h1>", title: "")
-    page.versions(true)
+    page.paper_trail_versions(true)
     assert_equal(administrator, page.created_by, "created_by")
     assert_equal(administrator, page.updated_by_person, "updated_by_person")
   end
@@ -81,11 +81,11 @@ class PageTest < ActiveSupport::TestCase
     assert_equal(admin, page.updated_by_person, "updated_by_person")
     assert_equal(2, page.version, "version")
 
-    original = page.versions.first
+    original = page.paper_trail_versions.first
     assert(original.changes.empty?, "original should have no changes")
     assert_equal(admin, original.user, "updated_by_person")
 
-    last_version = page.versions.last
+    last_version = page.paper_trail_versions.last
     assert_equal("Original content", last_version.changes["body"].first, "body in #{last_version.changes.inspect}")
     assert_equal("New content", last_version.changes["body"].last, "body in #{last_version.changes.inspect}")
     assert_equal admin, last_version.user, "version updated"
@@ -101,10 +101,10 @@ class PageTest < ActiveSupport::TestCase
     new_parent = Page.create!(title: "Root")
     page.updated_by = nil
     Person.current = new_person
-    assert_equal(1, page.versions.count, "versions")
+    assert_equal(1, page.paper_trail_versions.count, "versions")
     page.update! parent_id: new_parent.id, title: "Revised Title", body: "Revised content"
 
-    assert_equal(2, page.versions.count, "versions")
+    assert_equal(2, page.paper_trail_versions.count, "versions")
     assert_equal(new_parent.id, page.parent_id, "parent_id")
     assert_equal("Revised Title", page.title, "title")
     assert_equal("new_page", page.slug, "slug")
@@ -112,8 +112,8 @@ class PageTest < ActiveSupport::TestCase
     assert_equal("Revised content", page.body, "body")
     assert_equal(new_person, page.updated_by_person, "updated_by_person")
 
-    original = page.versions.second
-    assert_equal(parent.id, original.changes["parent_id"].first, "parent_id in #{original.changes.inspect}, #{page.versions.last.changes.inspect}")
+    original = page.paper_trail_versions.second
+    assert_equal(parent.id, original.changes["parent_id"].first, "parent_id in #{original.changes.inspect}, #{page.paper_trail_versions.last.changes.inspect}")
     assert_equal(new_parent.id, original.changes["parent_id"].last, "parent_id in #{original.changes.inspect}")
     assert_equal("New Page", original.changes["title"].first, "title")
     assert_equal("Original content", original.changes["body"].first, "body")
@@ -130,13 +130,13 @@ class PageTest < ActiveSupport::TestCase
       admin = FactoryBot.create(:administrator)
       Person.current = admin
       child = parent.children.create!(title: "New Page", body: "Original content")
-      assert_equal(1, parent.versions.size, "versions")
+      assert_equal(1, parent.paper_trail_versions.size, "versions")
       assert parent.reload.updated_at > updated_at, "New child should updated updated_at"
       updated_at = parent.updated_at
 
       child.title = "New Title"
       child.save!
-      assert_equal(1, parent.versions.size, "versions")
+      assert_equal(1, parent.paper_trail_versions.size, "versions")
       assert_equal(updated_at, parent.reload.updated_at, "New child update title should not updated updated_at")
 
       # Go down to the SQL to avoid all the magic
@@ -148,7 +148,7 @@ class PageTest < ActiveSupport::TestCase
     Timecop.freeze(3.days.from_now) do
       assert child.destroy, "Child destroy returned false. #{child.errors.full_messages.join(', ')}"
       assert child.destroyed?, "Should have destroyed page. #{child.errors.full_messages.join(', ')}"
-      assert_equal(1, parent.versions.size, "versions")
+      assert_equal(1, parent.paper_trail_versions.size, "versions")
       assert(parent.reload.updated_at > updated_at, "Parent should updated updated_at after child destroyed")
     end
   end

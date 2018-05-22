@@ -15,7 +15,7 @@ module Admin
       test "Edit page version" do
         page = FactoryBot.create(:page)
         page.update title: "New Title"
-        version = page.versions.last
+        version = page.paper_trail_versions.last
         get(:edit, id: version.to_param)
         assert_response(:success)
       end
@@ -26,7 +26,7 @@ module Admin
         page.save!
         page.body = "<h1>TTYL!</h1>"
         page.save!
-        get(:show, id: page.versions.first.to_param)
+        get(:show, id: page.paper_trail_versions.first.to_param)
         assert_select("h1", text: "TTYL!")
       end
 
@@ -35,10 +35,10 @@ module Admin
         page.body = "<h1>TTYL!</h1>"
         page.save!
 
-        assert_equal(2, page.versions.size, "versions")
-        delete(:destroy, id: page.versions.first.to_param)
+        assert_equal(2, page.paper_trail_versions.size, "versions")
+        delete(:destroy, id: page.paper_trail_versions.first.to_param)
 
-        assert_equal(1, page.versions(true).size, "versions")
+        assert_equal(1, page.paper_trail_versions.reload.size, "versions")
       end
 
       test "Revert to version" do
@@ -48,7 +48,7 @@ module Admin
         page.body = "<h1>TTYL!</h1>"
         page.save!
 
-        get(:revert, id: page.versions.first.to_param)
+        get(:revert, id: page.paper_trail_versions.first.to_param)
 
         page.reload
         assert_equal(4, page.version, "version")

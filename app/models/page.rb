@@ -11,6 +11,7 @@ class Page < ActiveRecord::Base
   include Pages::Paths
   include RacingOnRails::VestalVersions::Versioned
   include SentientUser
+  include Versions
 
   before_validation :set_slug, :set_path, :set_body
   validates :path, uniqueness: { message: "'%{value}' has already been taken" }

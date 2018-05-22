@@ -91,13 +91,13 @@ module Teams
       team.updated_by = person
       team.name = "7-11"
       team.save!
-      assert_equal person, team.versions.last.user, " version user"
+      assert_equal person, team.paper_trail_versions.last.user, " version user"
       assert_equal person, team.updated_by_person, "updated_by_person"
 
       person.destroy
       assert !Person.exists?(person.id), "Updater Person should be destroyed"
 
-      assert_nil team.versions(true).last.user, " version user"
+      assert_nil team.paper_trail_versions(true).last.user, " version user"
       assert_nil team.updated_by_person, "updated_by_person"
     end
   end

@@ -13,6 +13,7 @@ class Race < ActiveRecord::Base
   include Export::Races
   include RacingOnRails::VestalVersions::Versioned
   include Sanctioned
+  include Versions
 
   DEFAULT_RESULT_COLUMNS = %w[ place number last_name first_name team_name points time ].freeze
   RESULT_COLUMNS = %w[

@@ -23,8 +23,8 @@ class LoginTest < ActionController::TestCase
 
     assert_equal 1, ActionMailer::Base.deliveries.size, "Should deliver confirmation email"
     person = Person.last
-    assert_equal 1, person.versions(true).size
-    assert_equal person, person.created_by, "created_by not set for #{person.versions.first.inspect}"
+    assert_equal 1, person.paper_trail_versions(true).size
+    assert_equal person, person.created_by, "created_by not set for #{person.paper_trail_versions.first.inspect}"
     assert_equal person, person.created_by_paper_trail, "created_by_paper_trail"
   end
 

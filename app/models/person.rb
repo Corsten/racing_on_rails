@@ -19,6 +19,7 @@ class Person < ActiveRecord::Base
   include People::Numbers
   include RacingOnRails::VestalVersions::Versioned
   include SentientUser
+  include Versions
 
   acts_as_authentic do |config|
     config.crypto_provider Authlogic::CryptoProviders::Sha512
@@ -45,6 +46,7 @@ class Person < ActiveRecord::Base
   validate :membership_dates
   before_destroy :ensure_no_results
 
+  has_many :creations, class_name: "Person", inverse_of: :created_by, dependent: :nullify
   has_and_belongs_to_many :editable_events, class_name: "Event", foreign_key: "editor_id", join_table: "editors_events"
   has_many :events, foreign_key: "promoter_id"
   has_many :event_teams, through: :event_team_memberships

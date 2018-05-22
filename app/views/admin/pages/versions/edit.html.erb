@@ -8,7 +8,7 @@
   <h3>Versions</h3>
   <%= table class: "versions", id: :versions, insert_header: true, columns: 2 do %>
     <%= render partial: "admin/pages/version",
-               collection: @page.versions.sort_by(&:number).reverse,
+               collection: @page.paper_trail_versions.sort_by(&:number).reverse,
                locals: {selected: @version} %>
   <% end -%>
 </div>

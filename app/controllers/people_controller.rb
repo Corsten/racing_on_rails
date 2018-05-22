@@ -148,7 +148,6 @@ class PeopleController < ApplicationController
     return render(:new_login) if @person.errors.any?
 
     if @person.update(person_params)
-      set_created_by @person
       flash[:notice] = "Created your new login"
       ActiveSupport::Notifications.instrument "create_person.login.people.racing_on_rails", login: person_params[:login]
       PersonSession.create @person
@@ -178,14 +177,6 @@ class PeopleController < ApplicationController
               else
                 Person.none
               end
-  end
-
-  def set_created_by(person)
-    first_version = person.versions(true).first
-    if first_version.user.nil?
-      first_version.user = person
-      first_version.save!
-    end
   end
 
   def person_params
@@ -244,5 +235,9 @@ class PeopleController < ApplicationController
       :work_phone,
       :zip
     )
+  end
+
+  def user_for_paper_trail
+    @person
   end
 end

@@ -26,13 +26,13 @@ class PersonTest < ActiveSupport::TestCase
     assert(!person_from_db.new_record?, "person_from_db.new_record")
     assert_equal admin, person.created_by, "created_by"
     assert_equal admin, person.updated_by_person, "updated_by_person"
-    assert_equal 1, person.versions.size, "Should create initial version"
+    assert_equal 1, person.paper_trail_versions.size, "Should create initial version"
 
     another_admin = FactoryBot.create(:person)
     Person.current = another_admin
     person.city = "Boulder"
     person.save!
-    assert_equal 2, person.versions.size, "Should create second version after update"
+    assert_equal 2, person.paper_trail_versions.size, "Should create second version after update"
     assert_equal admin, person.created_by, "created_by"
     assert_equal admin, person.created_by_paper_trail, "created_by_paper_trail"
     assert_equal another_admin, person.updated_by_person, "updated_by_person"
@@ -198,8 +198,8 @@ class PersonTest < ActiveSupport::TestCase
     assert_equal "Gentle Lovers", person_to_keep.team_name, "should set team from person to merge"
     assert_equal 1, EventTeamMembership.count, "event team memberships"
 
-    assert_equal 3, person_to_keep.versions.size, "versions in #{person_to_keep.versions}"
-    assert_equal [2, 3, 4], person_to_keep.versions.map(&:number).sort, "version numbers"
+    assert_equal 3, person_to_keep.paper_trail_versions.size, "versions in #{person_to_keep.paper_trail_versions}"
+    assert_equal [2, 3, 4], person_to_keep.paper_trail_versions.map(&:number).sort, "version numbers"
   end
 
   test "merge login" do
@@ -209,15 +209,15 @@ class PersonTest < ActiveSupport::TestCase
     Timecop.freeze(1.hour.from_now) do
       person_to_merge_old_password = person_to_merge.crypted_password
 
-      assert_equal 1, person_to_merge.versions.size, "versions"
-      assert_equal 1, person_to_keep.versions.size, "versions"
+      assert_equal 1, person_to_merge.paper_trail_versions.size, "versions"
+      assert_equal 1, person_to_keep.paper_trail_versions.size, "versions"
       person_to_keep.merge person_to_merge
-      assert_equal 3, person_to_keep.versions.size, "Merge should create only one version and keep initial versions from both, but: #{person_to_keep.versions}"
+      assert_equal 3, person_to_keep.paper_trail_versions.size, "Merge should create only one version and keep initial versions from both, but: #{person_to_keep.paper_trail_versions}"
 
       person_to_keep.reload
       assert_equal "tonkin", person_to_keep.login, "Should merge login"
       assert_equal person_to_merge_old_password, person_to_keep.crypted_password, "Should merge password"
-      changes = person_to_keep.versions.last.changes
+      changes = person_to_keep.paper_trail_versions.last.changes
       assert_equal [nil, "tonkin"], changes["login"], "login change should be recorded"
     end
   end
