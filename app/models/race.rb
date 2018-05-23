@@ -11,9 +11,9 @@
 class Race < ActiveRecord::Base
   include Comparable
   include Export::Races
+  include RacingOnRails::PaperTrail::Versions
   include RacingOnRails::VestalVersions::Versioned
   include Sanctioned
-  include RacingOnRails::PaperTrail::Versions
 
   DEFAULT_RESULT_COLUMNS = %w[ place number last_name first_name team_name points time ].freeze
   RESULT_COLUMNS = %w[

@@ -17,9 +17,9 @@ class Person < ActiveRecord::Base
   include People::Merge
   include People::Names
   include People::Numbers
+  include RacingOnRails::PaperTrail::Versions
   include RacingOnRails::VestalVersions::Versioned
   include SentientUser
-  include RacingOnRails::PaperTrail::Versions
 
   acts_as_authentic do |config|
     config.crypto_provider Authlogic::CryptoProviders::Sha512

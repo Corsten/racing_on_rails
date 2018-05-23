@@ -9,9 +9,9 @@ class Page < ActiveRecord::Base
   include ActsAsTree::Validation
 
   include Pages::Paths
+  include RacingOnRails::PaperTrail::Versions
   include RacingOnRails::VestalVersions::Versioned
   include SentientUser
-  include RacingOnRails::PaperTrail::Versions
 
   before_validation :set_slug, :set_path, :set_body
   validates :path, uniqueness: { message: "'%{value}' has already been taken" }

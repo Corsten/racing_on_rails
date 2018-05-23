@@ -6,9 +6,6 @@ module RacingOnRails
       extend ActiveSupport::Concern
 
       included do
-        belongs_to :created_by_paper_trail, polymorphic: true
-        belongs_to :updated_by_paper_trail, polymorphic: true
-
         versioned except: %i[
                              created_by_paper_trail_id
                              created_by_paper_trail_type
@@ -25,7 +22,6 @@ module RacingOnRails
                              updated_by_paper_trail_type],
                   initial_version: true
         before_save :set_updated_by
-        before_save :set_created_by_and_updated_by_paper_trail
       end
 
       def created_by
@@ -38,12 +34,6 @@ module RacingOnRails
 
       def set_updated_by
         self.updated_by ||= ::Person.current
-        true
-      end
-
-      def set_created_by_and_updated_by_paper_trail
-        self.created_by_paper_trail ||= (created_by || updated_by_record || ::Person.current)
-        self.updated_by_paper_trail = updated_by_record || created_by_paper_trail
         true
       end
 
