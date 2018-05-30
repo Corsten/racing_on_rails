@@ -58,6 +58,11 @@ class ApplicationController < ActionController::Base
     nil
   end
 
+  def user_for_paper_trail
+    current_person&.name
+  end
+
+
   private
 
   def secure_redirect_options

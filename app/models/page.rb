@@ -9,8 +9,8 @@ class Page < ActiveRecord::Base
   include ActsAsTree::Validation
 
   include Pages::Paths
-  include RacingOnRails::PaperTrail::Versions
   include RacingOnRails::VestalVersions::Versioned
+  include RacingOnRails::PaperTrail::Versions
   include SentientUser
 
   before_validation :set_slug, :set_path, :set_body

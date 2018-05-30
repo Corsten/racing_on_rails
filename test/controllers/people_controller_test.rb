@@ -96,7 +96,7 @@ class PeopleControllerTest < ActionController::TestCase
     assert_equal gentle_lovers, person.reload.team, "Team should be updated"
     assert_equal 2, person.paper_trail_versions.size, "versions"
     version = person.paper_trail_versions.last
-    assert_equal "my_login", version.user.name_or_login, "version user"
+    assert_equal "my_login", version.paper_trail_originator, "version paper_trail_originator"
     changes = version.changes
     assert_equal 1, changes.size, "changes"
     change = changes["team_id"]

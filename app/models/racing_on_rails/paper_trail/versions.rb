@@ -4,25 +4,41 @@ module RacingOnRails::PaperTrail::Versions
   extend ActiveSupport::Concern
 
   included do
-    belongs_to :created_by_paper_trail, polymorphic: true
-    belongs_to :updated_by_paper_trail, polymorphic: true
+    # Record (usually Person but can be ImportFile, Event, etc.) about to make this update.
+    # Need separate attribute from updated_by to differentiate from previous, stored updated_by and new updated_by.
+    attr_accessor :updater
 
     has_paper_trail class_name: "RacingOnRails::PaperTrail::Version",
                     versions: :paper_trail_versions,
                     version:  :paper_trail_version
 
-    before_save :set_created_by
-    before_save :set_created_by_and_updated_by_paper_trail
+    before_save :set_created_by_paper_trail
+    before_save :set_updated_by_paper_trail
   end
 
-  def set_created_by
-    return if created_by
-    self.created_by_paper_trail = PaperTrail.whodunnit
+  def set_created_by_paper_trail
+    return true if created_by_paper_trail_name
+
+    if updater
+      self.created_by_paper_trail_name = updater.name
+      self.created_by_paper_trail_type = updater.class.name
+    else
+      self.created_by_paper_trail_name = ::Person.current&.name
+      self.created_by_paper_trail_type = ::Person.current&.class&.name
+    end
+
+    true
   end
 
-  def set_created_by_and_updated_by_paper_trail
-    self.created_by_paper_trail ||= (created_by || updated_by_record || ::Person.current)
-    self.updated_by_paper_trail = updated_by_record || created_by_paper_trail
+  def set_updated_by_paper_trail
+    if updater
+      self.updated_by_paper_trail_name = updater.name
+      self.updated_by_paper_trail_type = updater.class.name
+    else
+      self.updated_by_paper_trail_name = ::Person.current&.name
+      self.updated_by_paper_trail_type = ::Person.current&.class&.name
+    end
+
     true
   end
 end

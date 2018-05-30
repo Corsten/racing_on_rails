@@ -40,7 +40,7 @@ class PageTest < ActiveSupport::TestCase
     page = Page.create!(body: "<h1>Welcome</h1>", title: "")
     page.paper_trail_versions(true)
     assert_equal(administrator, page.created_by, "created_by")
-    assert_equal(administrator, page.updated_by_person, "updated_by_person")
+    assert_equal(administrator, page.updated_by_papertrail, "updated_by_papertrail")
   end
 
   test "Do not update path or slug when title changes" do
@@ -68,7 +68,7 @@ class PageTest < ActiveSupport::TestCase
     assert_equal("plain/new_page", page.path, "path")
     assert_equal("Original content", page.body, "body")
     assert_equal(admin, page.created_by, "created_by")
-    assert_equal(admin, page.updated_by_person, "updated_by_person")
+    assert_equal(admin, page.updated_by_papertrail, "updated_by_papertrail")
     assert_equal(1, page.version, "version")
 
     page.body = "New content"
@@ -78,12 +78,12 @@ class PageTest < ActiveSupport::TestCase
     assert_equal("new_page", page.slug, "slug")
     assert_equal("plain/new_page", page.path, "path")
     assert_equal("New content", page.body, "body")
-    assert_equal(admin, page.updated_by_person, "updated_by_person")
+    assert_equal(admin, page.updated_by_papertrail, "updated_by_papertrail")
     assert_equal(2, page.version, "version")
 
     original = page.paper_trail_versions.first
     assert(original.changes.empty?, "original should have no changes")
-    assert_equal(admin, original.user, "updated_by_person")
+    assert_equal(admin, original.updated_by_papertrail, "updated_by_papertrail")
 
     last_version = page.paper_trail_versions.last
     assert_equal("Original content", last_version.changes["body"].first, "body in #{last_version.changes.inspect}")
@@ -110,7 +110,7 @@ class PageTest < ActiveSupport::TestCase
     assert_equal("new_page", page.slug, "slug")
     assert_equal("root/new_page", page.path, "path")
     assert_equal("Revised content", page.body, "body")
-    assert_equal(new_person, page.updated_by_person, "updated_by_person")
+    assert_equal(new_person, page.updated_by_papertrail, "updated_by_papertrail")
 
     original = page.paper_trail_versions.second
     assert_equal(parent.id, original.changes["parent_id"].first, "parent_id in #{original.changes.inspect}, #{page.paper_trail_versions.last.changes.inspect}")
@@ -118,7 +118,7 @@ class PageTest < ActiveSupport::TestCase
     assert_equal("New Page", original.changes["title"].first, "title")
     assert_equal("Original content", original.changes["body"].first, "body")
     assert_equal(admin, page.created_by, "created_by")
-    assert_equal(new_person, page.updated_by_person, "updated_by_person")
+    assert_equal(new_person, page.updated_by_papertrail, "updated_by_papertrail")
   end
 
   test "update updated at if child changes" do

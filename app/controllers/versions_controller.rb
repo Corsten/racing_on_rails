@@ -9,6 +9,6 @@ class VersionsController < ApplicationController
   before_action :require_same_person_or_administrator_or_editor
 
   def assign_person
-    @person = Person.find(params[:person_id])
+    @person = Person.includes(:paper_trail_versions).find(params[:person_id])
   end
 end

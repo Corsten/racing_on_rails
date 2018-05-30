@@ -8,6 +8,7 @@ module RacingOnRails
       included do
         versioned except: %i[
                              created_by_paper_trail_id
+                             created_by_paper_trail_name
                              created_by_paper_trail_type
                              current_login_at
                              current_login_ip
@@ -19,8 +20,11 @@ module RacingOnRails
                              persistence_token
                              single_access_token
                              updated_by_paper_trail_id
-                             updated_by_paper_trail_type],
+                             updated_by_paper_trail_name
+                             updated_by_paper_trail_type
+                           ],
                   initial_version: true
+
         before_save :set_updated_by
       end
 
@@ -33,7 +37,12 @@ module RacingOnRails
       end
 
       def set_updated_by
-        self.updated_by ||= ::Person.current
+        if updater
+          self.updated_by = updater
+        elsif ::Person.current
+          self.updated_by = ::Person.current
+        end
+
         true
       end
 

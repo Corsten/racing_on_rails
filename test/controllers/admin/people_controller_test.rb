@@ -174,7 +174,7 @@ module Admin
 
       assert_equal 2, molly.paper_trail_versions.size, "versions"
       version = molly.paper_trail_versions.last
-      assert_equal @administrator, version.user, "version user"
+      assert_equal @administrator, version.paper_trail_originator, "version user"
       changes = version.changes
       assert_equal 26, changes.size, "changes"
       change = changes["team_id"]
