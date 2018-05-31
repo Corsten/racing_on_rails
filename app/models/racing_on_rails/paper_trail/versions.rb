@@ -4,10 +4,6 @@ module RacingOnRails::PaperTrail::Versions
   extend ActiveSupport::Concern
 
   included do
-    # Record (usually Person but can be ImportFile, Event, etc.) about to make this update.
-    # Need separate attribute from updated_by to differentiate from previous, stored updated_by and new updated_by.
-    attr_accessor :updater
-
     has_paper_trail class_name: "RacingOnRails::PaperTrail::Version",
                     versions: :paper_trail_versions,
                     version:  :paper_trail_version

@@ -133,7 +133,7 @@ class Person < ActiveRecord::Base
       self.team = nil
     else
       self.team = Team.find_by_name_or_alias(value)
-      self.team = Team.new(name: value, updated_by: new_record? ? updated_by : nil) unless team
+      self.team = Team.new(name: value, updater: new_record? ? updater : nil) unless team
     end
   end
 

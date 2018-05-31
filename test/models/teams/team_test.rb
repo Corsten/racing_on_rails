@@ -88,7 +88,7 @@ module Teams
     test "delete updated by" do
       team = FactoryBot.create(:team)
       person = FactoryBot.create(:person)
-      team.updated_by = person
+      team.updater = person
       team.name = "7-11"
       team.save!
       assert_equal person, team.paper_trail_versions.last.user, " version user"

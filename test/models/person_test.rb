@@ -18,14 +18,17 @@ class PersonTest < ActiveSupport::TestCase
     assert_nil person.updated_by_paper_trail_name, "updated_by_paper_trail_name"
     assert_nil person.created_by_paper_trail_type, "created_by_paper_trail_type"
     assert_nil person.updated_by_paper_trail_type, "updated_by_paper_trail_type"
-    person.save!
 
-    person_from_db = Person.where(last_name: "Hampsten").first!
+    person.save!
+    person.reload
+
     assert Team.exists?(name: "7-11"), "7-11 should be in DB"
-    assert_equal person.team, person_from_db.team, "person.team"
+    assert_equal person.team, person.team, "person.team"
 
     assert_equal admin, person.created_by, "created_by"
     assert_equal admin, person.updated_by_person, "updated_by_person"
+    assert_equal admin, person.updated_by, "updated_by"
+    assert_nil person.updater, "updater"
 
     assert_equal 1, person.paper_trail_versions.size, "Should create initial version"
     assert_equal "Candi Murray", person.created_by_paper_trail_name, "created_by_paper_trail_name"
@@ -715,7 +718,7 @@ class PersonTest < ActiveSupport::TestCase
     FactoryBot.create(:discipline, name: "Time Trial")
 
     person = FactoryBot.create(:person)
-    tonkin = Person.create!(updated_by: person)
+    tonkin = Person.create!(updater: person)
     tonkin.road_number = "102"
     road_number = tonkin.race_numbers.first
     assert_equal person, road_number.created_by, "created_by"
@@ -931,8 +934,9 @@ class PersonTest < ActiveSupport::TestCase
 
     person = Person.create!
     event = FactoryBot.create(:event, name: "Bike Race")
-    person.updated_by = event
+    person.updater = event
     person.add_number "7890", nil
+    person.reload
     assert_equal "7890", person.road_number, "Road number after add with nil discipline"
     assert_equal event, person.race_numbers.first.created_by, "Number created_by"
     assert_equal "Bike Race", person.race_numbers.first.created_by_paper_trail_name, "Number created_by_paper_trail"

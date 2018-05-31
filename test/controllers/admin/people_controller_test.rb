@@ -50,7 +50,7 @@ module Admin
 
     test "edit created by import file" do
       alice = FactoryBot.create(:person)
-      alice.updated_by = ImportFile.create!(name: "some_very_long_import_file_name.xls")
+      alice.updater = ImportFile.create!(name: "some_very_long_import_file_name.xls")
       alice.save!
 
       get(:edit, id: alice.to_param)
