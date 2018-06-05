@@ -213,7 +213,6 @@ class PersonTest < ActiveSupport::TestCase
     assert_equal 1, EventTeamMembership.count, "event team memberships"
 
     assert_equal 3, person_to_keep.paper_trail_versions.size, "versions in #{person_to_keep.paper_trail_versions}"
-    assert_equal [2, 3, 4], person_to_keep.paper_trail_versions.map(&:number).sort, "version numbers"
   end
 
   test "merge login" do
@@ -226,12 +225,12 @@ class PersonTest < ActiveSupport::TestCase
       assert_equal 1, person_to_merge.paper_trail_versions.size, "versions"
       assert_equal 1, person_to_keep.paper_trail_versions.size, "versions"
       person_to_keep.merge person_to_merge
-      assert_equal 3, person_to_keep.paper_trail_versions.size, "Merge should create only one version and keep initial versions from both, but: #{person_to_keep.paper_trail_versions}"
+      assert_equal 4, person_to_keep.paper_trail_versions.size, "Merge should keep initial versions from both, but: #{person_to_keep.paper_trail_versions}"
 
       person_to_keep.reload
       assert_equal "tonkin", person_to_keep.login, "Should merge login"
       assert_equal person_to_merge_old_password, person_to_keep.crypted_password, "Should merge password"
-      changes = person_to_keep.paper_trail_versions.last.changes
+      changes = person_to_keep.paper_trail_versions.last.changeset
       assert_equal [nil, "tonkin"], changes["login"], "login change should be recorded"
     end
   end
