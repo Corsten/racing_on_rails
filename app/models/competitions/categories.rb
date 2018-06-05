@@ -54,8 +54,8 @@ module Competitions
     end
 
     def result_categories
-      categories = Category.results_in_year(year).where("results.event_id" => source_events)
-      logger.debug("Competition::Categories#result_categories #{id} #{name} #{date} #{categories.count}") if logger.debug?
+      categories = Category.results_in_year(year).where("results.event_id" => source_events.map(&:id))
+      logger.debug("Competition::Categories#result_categories #{id} #{name} #{date} categories: #{categories.count} source_events: #{source_events.size}") if logger.debug?
       categories
     end
 
