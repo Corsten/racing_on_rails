@@ -14,13 +14,13 @@ module Admin
 
       def show
         @version = PaperTrail::Version.find(params[:id])
-        @page = @version.versioned
+        @page = @version.reify
         render inline: @page.body, layout: "application"
       end
 
       def destroy
         @version = PaperTrail::Version.find(params[:id])
-        @page = @version.versioned
+        @page = @version.reify
         @version.destroy
         flash[:notice] = "Deleted #{@page.title}"
         redirect_to edit_admin_page_path(@page)
