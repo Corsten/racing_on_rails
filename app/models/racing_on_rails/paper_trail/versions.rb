@@ -5,6 +5,23 @@ module RacingOnRails::PaperTrail::Versions
 
   included do
     has_paper_trail class_name: "RacingOnRails::PaperTrail::Version",
+                    ignore: %i[
+                               created_by_paper_trail_id
+                               created_by_paper_trail_name
+                               created_by_paper_trail_type
+                               current_login_at
+                               current_login_ip
+                               last_login_at
+                               last_login_ip
+                               login_count
+                               password_salt
+                               perishable_token
+                               persistence_token
+                               single_access_token
+                               updated_by_paper_trail_id
+                               updated_by_paper_trail_name
+                               updated_by_paper_trail_type
+                             ],
                     versions: :paper_trail_versions,
                     version:  :paper_trail_version
 
