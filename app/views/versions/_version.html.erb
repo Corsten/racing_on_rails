@@ -1,4 +1,4 @@
-<h4>Updated by <%= version.paper_trail_originator.&name || "unknown" %> on <%= version.updated_at.to_s(:long) %> </h4>
+<h4>Updated by <%= version.paper_trail_originator || "unknown" %> on <%= version.updated_at&.to_s(:long) || "unknown" %> </h4>
 
 <% if version.changes.is_a?(String) %>
   <p><%= version.changes %></p>
