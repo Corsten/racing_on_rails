@@ -147,6 +147,7 @@ class PeopleController < ApplicationController
 
     return render(:new_login) if @person.errors.any?
 
+    @person.updater = @person
     if @person.update(person_params)
       flash[:notice] = "Created your new login"
       ActiveSupport::Notifications.instrument "create_person.login.people.racing_on_rails", login: person_params[:login]
