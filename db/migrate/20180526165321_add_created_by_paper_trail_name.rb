@@ -10,11 +10,6 @@ class AddCreatedByPaperTrailName < ActiveRecord::Migration
       t.string :updated_by_paper_trail_name, default: nil
     end
 
-    change_table :pages do |t|
-      t.string :created_by_paper_trail_name, default: nil
-      t.string :updated_by_paper_trail_name, default: nil
-    end
-
     change_table :people do |t|
       t.string :created_by_paper_trail_name, default: nil
       t.string :updated_by_paper_trail_name, default: nil
