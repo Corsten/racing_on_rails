@@ -125,8 +125,8 @@ module Admin
         assert_equal("AZY", molly.xc_number(true, 2008), "MTB number should be updated")
         assert_nil(molly.member_from, "member_from after update")
         assert_nil(molly.member_to, "member_to after update")
-        assert_nil(RaceNumber.find(molly_road_number.to_param).updated_by_person, "updated_by_person")
-        assert_equal(@administrator, RaceNumber.find_by(value: "AZY").updated_by_person, "updated_by_person")
+        assert_nil(RaceNumber.find(molly_road_number.to_param).updated_by_paper_trail_name, "updated_by_paper_trail_name")
+        assert_equal("Candi Murray", RaceNumber.find_by(value: "AZY").updated_by_paper_trail_name, "updated_by_paper_trail_name")
       end
     end
 
@@ -175,14 +175,14 @@ module Admin
 
       assert_equal 2, molly.paper_trail_versions.size, "versions"
       version = molly.paper_trail_versions.last
-      assert_equal @administrator, version.paper_trail_originator, "version user"
+      assert_equal @administrator.name, version.paper_trail_originator, "version user"
       changes = version.changes
       assert_equal 26, changes.size, "changes"
       change = changes["team_id"]
       assert_not_nil change, "Should have change for team ID"
       assert_equal vanilla.id, change.first, "Team ID before"
       assert_nil change.last, "Team ID after"
-      assert_equal @administrator, molly.updated_by_person, "updated_by_person"
+      assert_equal @administrator, molly.updated_by_paper_trail_name, "updated_by_paper_trail_name"
     end
 
     test "update bad member from date" do

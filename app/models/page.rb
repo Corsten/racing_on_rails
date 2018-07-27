@@ -7,7 +7,6 @@
 class Page < ActiveRecord::Base
   acts_as_tree
   include ActsAsTree::Validation
-
   include Pages::Paths
 
   before_validation :set_slug, :set_path, :set_body

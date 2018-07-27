@@ -26,7 +26,7 @@ class PersonTest < ActiveSupport::TestCase
     assert_equal person.team, person.team, "person.team"
 
     assert_equal admin, person.created_by, "created_by"
-    assert_equal admin, person.updated_by_person, "updated_by_person"
+    assert_equal "Candi Murray", person.updated_by_paper_trail_name, "updated_by_paper_trail_name"
     assert_equal admin, person.updated_by, "updated_by"
     assert_nil person.updater, "updater"
 
