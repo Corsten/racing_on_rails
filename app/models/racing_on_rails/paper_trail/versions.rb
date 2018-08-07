@@ -6,6 +6,7 @@ module RacingOnRails::PaperTrail::Versions
   included do
     has_paper_trail class_name: "RacingOnRails::PaperTrail::Version",
                     ignore: %i[
+                               created_at
                                created_by_paper_trail_id
                                created_by_paper_trail_name
                                created_by_paper_trail_type
@@ -18,6 +19,7 @@ module RacingOnRails::PaperTrail::Versions
                                perishable_token
                                persistence_token
                                single_access_token
+                               updated_at
                                updated_by_paper_trail_id
                                updated_by_paper_trail_name
                                updated_by_paper_trail_type

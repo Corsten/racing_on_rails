@@ -239,6 +239,6 @@ class PeopleController < ApplicationController
   end
 
   def user_for_paper_trail
-    @person
+    (current_person || @person)&.name_or_login
   end
 end
