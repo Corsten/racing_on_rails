@@ -19,7 +19,7 @@ def versions_query
 end
 
 puts
-puts "Copy versions to PaperTrail"
+puts "Update created_by and updated_by PaperTrail"
 [
   DiscountCode,
   Event,
