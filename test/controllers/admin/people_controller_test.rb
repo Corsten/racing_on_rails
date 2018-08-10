@@ -176,13 +176,13 @@ module Admin
       assert_equal 2, molly.paper_trail_versions.size, "versions"
       version = molly.paper_trail_versions.last
       assert_equal @administrator.name, version.paper_trail_originator, "version user"
-      changes = version.changes
+      changes = version.changeset
       assert_equal 26, changes.size, "changes"
       change = changes["team_id"]
       assert_not_nil change, "Should have change for team ID"
       assert_equal vanilla.id, change.first, "Team ID before"
       assert_nil change.last, "Team ID after"
-      assert_equal @administrator, molly.updated_by_paper_trail_name, "updated_by_paper_trail_name"
+      assert_equal @administrator.name, molly.updated_by_paper_trail_name, "updated_by_paper_trail_name"
     end
 
     test "update bad member from date" do
