@@ -9,6 +9,7 @@ class VersionsController < ApplicationController
   before_action :require_same_person_or_administrator_or_editor
 
   def assign_person
-    @person = Person.includes(:paper_trail_versions).find(params[:person_id])
+    @person = Person.find(params[:person_id])
+    @paper_trail_versions = RacingOnRails::PaperTrail::Version.where(item_id: @person.id, item_type: "Person")
   end
 end
