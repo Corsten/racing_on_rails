@@ -13,6 +13,7 @@ RacingOnRails::PaperTrail::Version.delete_all
   Refund,
   Team
 ].each do |record_class|
+
   RacingOnRails::PaperTrail::Version.transaction do
     count = record_class.count
     index = 0
@@ -54,8 +55,8 @@ RacingOnRails::PaperTrail::Version.delete_all
             item_type: version.versioned_type,
             item_id: record.id,
             object: attributes.to_yaml,
-            object_changes: version.changes.to_yaml,
-            whodunnit: record.updated_by_person_name
+            object_changes: version.modifications.to_yaml,
+            whodunnit: version.user&.name
           )
         rescue ActiveModel::MissingAttributeError => e
           puts "#{e} for #{record_class} ID #{record.id} version #{version_index} version ID #{version.id}"
